@@ -273,5 +273,24 @@ export const schema: Schema = {
       },
       primaryKey: "id",
     },
+    // High-volume, disposable agent activity trace. POLLED via the thread-extras
+    // API (NOT a held Electric *_SHAPE — ADR-003 shape budget). Retention: the
+    // producer prunes to the last few runs per thread on each new run; see
+    // pruneThreadActivity() in api/channels/trigger/route.ts.
+    thread_activity_events: {
+      columns: {
+        id: { type: "text" },
+        thread_id: { type: "text" },
+        run_id: { type: "text" },
+        seq: { type: "int" },
+        kind: { type: "text" },
+        label: { type: "text" },
+        detail: { type: "text" },
+        status: { type: "text" },
+        created_at: { type: "text" },
+        updated_at: { type: "text" },
+      },
+      primaryKey: "id",
+    },
   },
 };

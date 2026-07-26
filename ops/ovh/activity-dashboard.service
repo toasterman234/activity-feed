@@ -1,0 +1,36 @@
+# Next.js production server for the activity dashboard on OVH.
+# Install:
+#   sudo cp ~/activity-feed/ops/ovh/activity-dashboard.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now activity-dashboard
+#
+# Channel @mentions call `pi` directly (not Paseo). Install once on the VPS:
+#   npm install --prefix ~/.local @earendil-works/pi-coding-agent
+#   ln -sfn ~/.local/node_modules/@earendil-works/pi-coding-agent/dist/cli.js ~/.local/bin/pi
+#   # copy ~/.commandcode/{auth,config}.json from the Mini (Command Code API key)
+[Unit]
+Description=Activity Feed dashboard (Next.js production)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/activity-feed/dashboard
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+Environment=ACTIVITY_DB_URL=postgres://activity:activity@localhost:5433/activity_log
+Environment=PATH=/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=HOME=/home/ubuntu
+Environment=CHANNEL_AGENT_CWD=/home/ubuntu/activity-feed
+Environment=CHANNEL_PI_BIN=/home/ubuntu/.local/bin/pi
+Environment=CHANNEL_LIVE_ACTIVITY=1
+Environment=CHANNEL_AIWG_BIN=/home/ubuntu/.local/bin/aiwg
+Environment=CHANNEL_AIWG_ROOT=/home/ubuntu/.local/lib/node_modules/aiwg
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=3
+MemoryMax=3G
+
+[Install]
+WantedBy=multi-user.target
