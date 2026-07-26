@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useHomeOverview, type HomeOverview } from "./useHomeOverview";
 
 function relativeTime(iso: string | null | undefined): string {
@@ -274,8 +275,57 @@ export default function HomeDashboard() {
           <ActiveWorkPanel data={data} />
           <ThreadsPanel data={data} />
           <SystemPanel data={data} />
+          <AgentHealthCard />
         </div>
       </div>
     </div>
+  );
+}
+
+function AgentHealthCard() {
+  const [health, setHealth] = useState<{ successRate: string; driftRate: string; total: number } | null>(null);
+
+  const fetchHealth = useCallback(async () => {
+    try {
+      const r = await fetch("/api/agent-runs/overview", { cache: "no-store" });
+      if (!r.ok) return;
+      const d = await r.json();
+      // Calculate overall success/drift rates across all sources
+      let total = 0, success = 0, drifted = 0;
+      for (const outcomes of Object.values(d.bySourceOutcome || {}) as Record<string, number>[]) {
+        for (const [outcome, count] of Object.entries(outcomes)) {
+          const n = Number(count) || 0;
+          total += n;
+          if (outcome === "success") success += n;
+          if (outcome === "drifted") drifted += n;
+        }
+      }
+      if (total > 0) {
+        setHealth({
+          successRate: `${Math.round((success / total) * 100)}%`,
+          driftRate: `${Math.round((drifted / total) * 100)}%`,
+          total,
+        });
+      }
+    } catch { /* silent — health card is non-critical */ }
+  }, []);
+
+  useEffect(() => {
+    fetchHealth();
+  }, [fetchHealth]);
+
+  if (!health) return null;
+
+  const successTone = parseInt(health.successRate) >= 70 ? "good" : parseInt(health.successRate) >= 50 ? "warn" : "danger";
+  const driftTone = parseInt(health.driftRate) <= 15 ? "good" : parseInt(health.driftRate) <= 30 ? "warn" : "danger";
+
+  return (
+    <Card title="Agent health" action={<Link href="/runs" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Runs</Link>}>
+      <div className="flex gap-2">
+        <CountPill label="Success" value={health.successRate} href="/runs" tone={successTone} />
+        <CountPill label="Drift" value={health.driftRate} href="/runs?tab=Runs&outcome=drifted" tone={driftTone} />
+        <CountPill label="Runs" value={health.total} href="/runs" tone="neutral" />
+      </div>
+    </Card>
   );
 }

@@ -32,6 +32,10 @@ export const BALANCES_SHAPE: ShapeDef = {
   table: "portfolio_balances",
 };
 
+export const TRANSACTIONS_SHAPE: ShapeDef = {
+  table: "portfolio_transactions",
+};
+
 export const NET_WORTH_SHAPE: ShapeDef = {
   table: "portfolio_net_worth",
 };
@@ -42,4 +46,55 @@ export const BENCHMARKS_SHAPE: ShapeDef = {
 
 export const ALLOCATION_SHAPE: ShapeDef = {
   table: "portfolio_allocation",
+};
+
+export const AGENT_RUNS_SHAPE: ShapeDef = {
+  table: "agent_runs",
+};
+
+export const COLLECTIONS_SHAPE: ShapeDef = {
+  table: "judgment_collections",
+};
+
+export const JUDGMENTS_SHAPE: ShapeDef = {
+  table: "judgments",
+};
+
+export const CHANNELS_SHAPE: ShapeDef = {
+  table: "channels",
+};
+
+export const CHANNEL_MEMBERS_SHAPE: ShapeDef = {
+  table: "channel_members",
+};
+
+export const MESSAGES_SHAPE: ShapeDef = {
+  table: "messages",
+};
+
+export const THREAD_PLANS_SHAPE: ShapeDef = {
+  table: "thread_plans",
+};
+
+export const THREAD_WORKFLOW_STEPS_SHAPE: ShapeDef = {
+  table: "thread_workflow_steps",
+};
+
+export const THREAD_ARTIFACTS_SHAPE: ShapeDef = {
+  table: "thread_artifacts",
+};
+
+export const REPOS_SHAPE: ShapeDef = {
+  table: "repos",
+};
+
+// thread_meta is polled (client.query), not a held live shape (ADR-003).
+// The shape def is kept here for query table-name reference only.
+export const THREAD_META_SHAPE = {
+  table: "thread_meta",
+};
+
+// thread_promotions is also polled (not held live).
+export const THREAD_PROMOTIONS_SHAPE = {
+  table: "thread_promotions",
 };
