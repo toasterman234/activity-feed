@@ -365,9 +365,7 @@ function MetricsTab({
   );
 }
 
-// ── Runs Tab ────────────────────────────────────────────────────────
-
-function RunsTab() {
+export function RunsTab() {
   const [data, setData] = useState<RunsData | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [source, setSource] = useState("");

@@ -9,6 +9,7 @@ import { client, ACTIVITY_LOG_SHAPE, COLLECTIONS_SHAPE, JUDGMENTS_SHAPE } from "
 import { acquireShape, releaseShape } from "../shape-registry";
 import { writeRow } from "../writeRow";
 import { CollectionsContent } from "../collections/CollectionsContent";
+import { RunsTab } from "../runs/page";
 import { measure } from "@/lib/perf";
 
 const VERDICTS = [
@@ -31,7 +32,7 @@ interface ActivityRow {
   summary: string; detail: string; created_at: string;
 }
 
-type TabId = "activity" | "projects" | "memory" | "collections";
+type TabId = "activity" | "projects" | "memory" | "collections" | "runs";
 
 const SOURCES = ["git", "claude-code", "pi", "setup"] as const;
 const SOURCE_LABELS: Record<string, string> = {
@@ -327,7 +328,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
   const ts = (s: string) => setEnabledSources((p) => { const n = new Set(p); n.has(s)?n.delete(s):n.add(s); return n; });
   const tx = (id: string) => setExpanded((p) => { const n = new Set(p); n.has(id)?n.delete(id):n.add(id); return n; });
 
-  const tabSrcs: Record<TabId, string[]> = { activity: ["claude-code","pi"], projects: [...SOURCES], memory: ["claude-code","pi"], collections: [] };
+  const tabSrcs: Record<TabId, string[]> = { activity: ["claude-code","pi"], projects: [...SOURCES], memory: ["claude-code","pi"], collections: [], runs: [] };
 
   // Measured: maps every synced row and re-runs on each delta, so it is the
   // first thing to check when this page feels slow (ADR-004). See /perf.
@@ -344,7 +345,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
 
   // counts
   const tc = useMemo(() => {
-    const c: Record<TabId,number> = { activity:0,projects:0,memory:0,collections:0 };
+    const c: Record<TabId,number> = { activity:0,projects:0,memory:0,collections:0,runs:0 };
     for (const r of rows) {
       if (tabSrcs.activity.includes(r.source)) c.activity++; c.projects++;
       if (r.source==="claude-code"||r.source==="pi") c.memory++;
@@ -585,7 +586,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         <div className="mx-auto max-w-5xl px-2 pt-1.5">
           {/* row 1: activity tabs, evenly spread, own row, no scroll */}
           <div className="flex w-full">
-            {(["activity","projects","memory","collections"] as TabId[]).map((id) => (
+            {(["activity","projects","memory","runs","collections"] as TabId[]).map((id) => (
               <button key={id} onClick={() => setTab(id)}
                 className={`flex-1 min-w-0 px-0.5 py-1 text-[11px] font-medium rounded-md transition-colors truncate ${tab===id?"bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100":"text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"}`}>
                 {id.charAt(0).toUpperCase()+id.slice(1)}
@@ -654,6 +655,10 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         ) : (
           <p className="py-12 text-center text-sm text-zinc-400">Loading collections…</p>
         )
+      ) : tab==="runs" ? (
+        <div className="mx-auto max-w-5xl px-3 py-2">
+          <RunsTab />
+        </div>
       ) : (
       <div className="mx-auto max-w-5xl px-3 py-2">
         {/* MEMORY */}
