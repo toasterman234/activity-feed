@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>ACTIVITY_DB_URL</key>
+		<string>postgres://activity:activity@ovh-vps.taila1553c.ts.net:5433/activity_log</string>
+		<key>AUTO_JUDGE_BATCH_SIZE</key>
+		<string>20</string>
+		<key>PATH</key>
+		<string>/opt/homebrew/bin:/usr/bin:/bin:/Users/bencharney/.local/bin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.bencharney.activityfeed.autojudge</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/bencharney/.local/bin/node</string>
+		<string>/Users/bencharney/activity-feed/feeders/auto-judge.js</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>600</integer>
+	<key>StandardErrorPath</key>
+	<string>/Users/bencharney/activity-feed/auto-judge.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/bencharney/activity-feed/auto-judge.log</string>
+	<key>WorkingDirectory</key>
+	<string>/Users/bencharney/activity-feed</string>
+</dict>
+</plist>
