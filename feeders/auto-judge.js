@@ -52,14 +52,14 @@ async function upsertJudgment(client, run) {
     return { action: 'skipped', reason: 'human-protected' };
   }
 
-  // Update agent_runs
+  // Update agent_runs — guard against concurrent hook overwrite
   await client.query(
     `UPDATE agent_runs SET
        outcome = $2, outcome_score = $3, outcome_source = $4,
        drifted = $5, dead_end = $6,
        headline = COALESCE(NULLIF($7, ''), headline),
        judged_at = $8
-     WHERE id = $1`,
+     WHERE id = $1 AND outcome_source != 'human'`,
     [
       run.id,
       run.judged_outcome,

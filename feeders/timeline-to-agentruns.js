@@ -86,7 +86,9 @@ async function main() {
     // 'partial' and 'unknown' stay null — not enough signal.
 
     if (existing.has(row.id)) {
-      // Hook-to-hook re-sync: update all fields
+      // Hook-to-hook re-sync: update all fields, but only if the row
+      // hasn't been auto-judged or human-judged since our last read
+      // (race guard: auto-judge runs concurrently)
       await client.query(
         `UPDATE agent_runs SET
            source = $2, agent_id = $3, project = $4, cwd = $5,
@@ -95,7 +97,7 @@ async function main() {
            outcome = $12, outcome_score = $13, outcome_source = $14,
            drifted = $15, dead_end = $16, headline = $17, summary = $18,
            judged_at = $19, raw_ref = $20
-         WHERE id = $1`,
+         WHERE id = $1 AND outcome_source = 'hook'`,
         [
           row.id, row.source,
           row.agent_id || null,
