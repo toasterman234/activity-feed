@@ -5,76 +5,68 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [
-      totalRes,
-      outcomeRes,
-      weeklyRes,
-      projectFailRes,
-      agentRes,
-      judgedRes,
-      driftRes,
-    ] = await Promise.all([
-      pool.query<{ source: string; count: string }>(
-        `SELECT source, count(*)::int AS count FROM agent_runs GROUP BY source ORDER BY count DESC`
-      ),
-      pool.query<{ source: string; outcome: string; count: string }>(
-        `SELECT source, outcome, count(*)::int AS count FROM agent_runs GROUP BY source, outcome ORDER BY source, count DESC`
-      ),
-      // Weekly success/drift rates for the last 8 weeks
-      pool.query<{ week: string; source: string; total: string; success: string; drifted: string; dead: string; failed: string }>(
-        `SELECT
-           to_char(started_at::timestamp, 'IYYY-IW') AS week,
-           source,
-           count(*)::int AS total,
-           count(*) FILTER (WHERE outcome = 'success')::int AS success,
-           count(*) FILTER (WHERE outcome = 'drifted')::int AS drifted,
-           count(*) FILTER (WHERE outcome = 'dead_end')::int AS dead,
-           count(*) FILTER (WHERE outcome = 'failed')::int AS failed
-         FROM agent_runs
-         WHERE started_at IS NOT NULL
-           AND started_at >= (now() - interval '8 weeks')::text
-         GROUP BY week, source
-         ORDER BY week DESC, source`
-      ),
-      // Top failing projects (fail + drift + dead_end)
-      pool.query<{ project: string; total: string; success: string; fail: string }>(
-        `SELECT
-           COALESCE(NULLIF(project, ''), '(unknown)') AS project,
-           count(*)::int AS total,
-           count(*) FILTER (WHERE outcome = 'success')::int AS success,
-           count(*) FILTER (WHERE outcome IN ('failed','dead_end','drifted'))::int AS fail
-         FROM agent_runs
-         GROUP BY project
-         HAVING count(*) >= 3
-         ORDER BY fail DESC, total DESC
-         LIMIT 10`
-      ),
-      // Agent-level breakdown
-      pool.query<{ agent_id: string; source: string; total: string; success: string; fail: string; drift: string }>(
-        `SELECT
-           COALESCE(NULLIF(agent_id, ''), '(unknown)') AS agent_id,
-           source,
-           count(*)::int AS total,
-           count(*) FILTER (WHERE outcome = 'success')::int AS success,
-           count(*) FILTER (WHERE outcome IN ('failed','dead_end'))::int AS fail,
-           count(*) FILTER (WHERE outcome = 'drifted')::int AS drift
-         FROM agent_runs
-         GROUP BY agent_id, source
-         HAVING count(*) >= 2
-         ORDER BY total DESC
-         LIMIT 20`
-      ),
-      // Judged vs unjudged
-      pool.query<{ outcome_source: string; count: string }>(
-        `SELECT outcome_source, count(*)::int AS count FROM agent_runs GROUP BY outcome_source`
-      ),
-      // Drift rate per source overall
-      pool.query<{ source: string; total: string; drifted: string }>(
-        `SELECT source, count(*)::int AS total,
-                count(*) FILTER (WHERE outcome = 'drifted')::int AS drifted
-         FROM agent_runs GROUP BY source ORDER BY total DESC`
-      ),
-    ]);
+    // Run queries sequentially to avoid saturating the pool over Tailscale
+    const totalRes = await pool.query<{ source: string; count: string }>(
+      `SELECT source, count(*)::int AS count FROM agent_runs GROUP BY source ORDER BY count DESC`
+    );
+
+    const outcomeRes = await pool.query<{ source: string; outcome: string; count: string }>(
+      `SELECT source, outcome, count(*)::int AS count FROM agent_runs GROUP BY source, outcome ORDER BY source, count DESC`
+    );
+
+    const weeklyRes = await pool.query<{ week: string; source: string; total: string; success: string; drifted: string; dead: string; failed: string }>(
+      `SELECT
+         to_char(started_at::timestamp, 'IYYY-IW') AS week,
+         source,
+         count(*)::int AS total,
+         count(*) FILTER (WHERE outcome = 'success')::int AS success,
+         count(*) FILTER (WHERE outcome = 'drifted')::int AS drifted,
+         count(*) FILTER (WHERE outcome = 'dead_end')::int AS dead,
+         count(*) FILTER (WHERE outcome = 'failed')::int AS failed
+       FROM agent_runs
+       WHERE started_at IS NOT NULL
+         AND started_at >= (now() - interval '8 weeks')::text
+       GROUP BY week, source
+       ORDER BY week DESC, source`
+    );
+
+    const driftRes = await pool.query<{ source: string; total: string; drifted: string }>(
+      `SELECT source, count(*)::int AS total,
+              count(*) FILTER (WHERE outcome = 'drifted')::int AS drifted
+       FROM agent_runs GROUP BY source ORDER BY total DESC`
+    );
+
+    const judgedRes = await pool.query<{ outcome_source: string; count: string }>(
+      `SELECT outcome_source, count(*)::int AS count FROM agent_runs GROUP BY outcome_source`
+    );
+
+    const projectFailRes = await pool.query<{ project: string; total: string; success: string; fail: string }>(
+      `SELECT
+         COALESCE(NULLIF(project, ''), '(unknown)') AS project,
+         count(*)::int AS total,
+         count(*) FILTER (WHERE outcome = 'success')::int AS success,
+         count(*) FILTER (WHERE outcome IN ('failed','dead_end','drifted'))::int AS fail
+       FROM agent_runs
+       GROUP BY project
+       HAVING count(*) >= 3
+       ORDER BY fail DESC, total DESC
+       LIMIT 10`
+    );
+
+    const agentRes = await pool.query<{ agent_id: string; source: string; total: string; success: string; fail: string; drift: string }>(
+      `SELECT
+         COALESCE(NULLIF(agent_id, ''), '(unknown)') AS agent_id,
+         source,
+         count(*)::int AS total,
+         count(*) FILTER (WHERE outcome = 'success')::int AS success,
+         count(*) FILTER (WHERE outcome IN ('failed','dead_end'))::int AS fail,
+         count(*) FILTER (WHERE outcome = 'drifted')::int AS drift
+       FROM agent_runs
+       GROUP BY agent_id, source
+       HAVING count(*) >= 2
+       ORDER BY total DESC
+       LIMIT 20`
+    );
 
     // Remap by-source outcome counts into a nested structure
     const bySourceOutcome: Record<string, Record<string, number>> = {};
