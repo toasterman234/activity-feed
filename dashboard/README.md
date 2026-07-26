@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Activity Feed Dashboard
 
-## Getting Started
+Next.js 16 PWA for Ben's activity dashboard on OVH. The app is mobile-first and serves as a one-screen control panel for work, threads, approvals, and system status, with deeper detail behind the main tabs.
 
-First, run the development server:
+**Production URL:** `https://ovh-vps.taila1553c.ts.net:8446`
+
+## What the app shows
+
+- **Home** — compact overview: unread, needs-me, active work, hot threads, agent/system pulse
+- **Activity** — raw activity feed and memory/projects/collections tabs
+- **Channels** — channel list, thread list, thread detail, lifecycle/state controls
+- **Finance** — portfolio, banking, watchlist, trades, screener, personal views
+- **Models** — model/proxy status, swaps, subscription usage
+- **Settings** — perf diagnostics and operational settings
+
+## Production topology
+
+- Next.js production server runs on the **OVH VPS** at `127.0.0.1:3000`
+- Tailscale Serve exposes it at **HTTPS 8446**
+- Postgres + electric-circuits also run on OVH
+- Feeders still run on the Mac Mini and write into OVH Postgres
+
+See `openwiki/deployment/ovh-production.md` for the full runbook.
+
+## Local development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The dev server picks the next available port. Open the URL it prints.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Visual editing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`react-rewrite` can edit the local dev server visually:
 
-## Learn More
+```bash
+# 1. Start the dev server
+npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+# 2. In another terminal, launch react-rewrite
+npx react-rewrite <port>
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Changes are staged until you click **Confirm**. `Cmd+Shift+L` shows the changelog.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy to OVH
 
-## Deploy on Vercel
+Preferred:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run deploy:ovh
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Equivalent manual flow:
+
+```bash
+rsync -az --delete --exclude node_modules --exclude .next --exclude .git \
+  ~/activity-feed/dashboard/ ovhvps:~/activity-feed/dashboard/
+ssh ovhvps 'cd ~/activity-feed/dashboard && npm ci && npm run build && sudo systemctl restart activity-dashboard'
+```
+
+## PWA cache gotcha
+
+If the phone still shows an old shell after deploy:
+
+1. Open the production URL in the browser, not the installed icon
+2. Hard refresh once
+3. If still stale, close/remove the installed PWA and re-add it
+
+The service worker can keep an older shell until the client reloads.
