@@ -70,7 +70,36 @@ export async function POST(req: NextRequest) {
           { status: 409 },
         );
       }
-      return NextResponse.json({ run });
+      const text = String(run.request_payload.text || "").trim();
+      const rootId = String(run.request_payload.rootId || run.thread_id).trim();
+      const handle = String(run.request_payload.handle || "").replace(/^@/, "").trim();
+      if (!text || !rootId || !handle) {
+        await requestWorkRunCancellation(pool, run.id);
+        return NextResponse.json(
+          { error: "This older attempt does not contain enough context for an automatic retry" },
+          { status: 409 },
+        );
+      }
+      const triggerResponse = await fetch(new URL("/api/channels/trigger", req.url), {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          channelId: run.channel_id,
+          threadId: rootId,
+          text,
+          mentions: [handle],
+          workRunId: run.id,
+        }),
+      });
+      if (!triggerResponse.ok) {
+        const failure = await triggerResponse.json().catch(() => ({}));
+        await requestWorkRunCancellation(pool, run.id);
+        return NextResponse.json(
+          { error: failure.error || "The retry could not be dispatched" },
+          { status: 502 },
+        );
+      }
+      return NextResponse.json({ run, dispatched: true });
     }
 
     if (body.action === "retry") {
