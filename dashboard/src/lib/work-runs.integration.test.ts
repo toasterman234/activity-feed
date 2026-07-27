@@ -9,6 +9,7 @@ import {
   interruptExpiredWorkRuns,
   listThreadWorkRuns,
   queueWorkRun,
+  startWorkRun,
 } from "./work-runs.ts";
 
 const connectionString = process.env.WORK_RUN_TEST_DB_URL;
@@ -41,6 +42,41 @@ test("queueWorkRun is idempotent and queryable by thread", { skip: !connectionSt
     assert.equal(first.config_hash.length, 64);
     assert.equal((await getWorkRun(client, first.id))?.thread_id, input.threadId);
     assert.equal((await listThreadWorkRuns(client, input.threadId)).length, 1);
+  } finally {
+    await client.query("ROLLBACK");
+    await client.end();
+  }
+});
+
+test("a request-bound worker can start only its queued attempt", { skip: !connectionString }, async () => {
+  const client = new pg.Client({ connectionString });
+  await client.connect();
+  await client.query("BEGIN");
+  try {
+    const queued = await queueWorkRun(client, {
+      idempotencyKey: `test:${crypto.randomUUID()}`,
+      threadId: crypto.randomUUID(),
+      channelId: crypto.randomUUID(),
+      stageId: "open",
+      agent: { agentRegistryId: "agent:pi" },
+    });
+    const started = await startWorkRun(client, {
+      runId: queued.id,
+      workerId: "dashboard:test",
+      workerHost: "test-host",
+      now: new Date("2026-07-27T00:00:00.000Z"),
+    });
+
+    assert.equal(started?.id, queued.id);
+    assert.equal(started?.status, "running");
+    assert.equal(
+      await startWorkRun(client, {
+        runId: queued.id,
+        workerId: "dashboard:other",
+        workerHost: "other-host",
+      }),
+      null,
+    );
   } finally {
     await client.query("ROLLBACK");
     await client.end();

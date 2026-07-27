@@ -175,6 +175,41 @@ export async function claimNextWorkRun(
   return result.rows[0] || null;
 }
 
+export async function startWorkRun(
+  db: Queryable,
+  input: {
+    runId: string;
+    workerId: string;
+    workerHost: string;
+    leaseMs?: number;
+    now?: Date;
+  },
+): Promise<WorkRunRow | null> {
+  const now = input.now || new Date();
+  const result = await db.query<WorkRunRow>(
+    `UPDATE work_runs
+        SET status = 'running',
+            worker_id = $2,
+            worker_host = $3,
+            started_at = COALESCE(started_at, $4::timestamptz),
+            heartbeat_at = $4::timestamptz,
+            lease_expires_at = $5::timestamptz,
+            updated_at = $4::timestamptz
+      WHERE id = $1
+        AND status = 'queued'
+        AND cancel_requested_at IS NULL
+      RETURNING *`,
+    [
+      input.runId,
+      input.workerId,
+      input.workerHost,
+      now.toISOString(),
+      leaseExpiry(now, input.leaseMs || 120_000),
+    ],
+  );
+  return result.rows[0] || null;
+}
+
 export async function heartbeatWorkRun(
   db: Queryable,
   input: { runId: string; workerId: string; leaseMs?: number; now?: Date },
