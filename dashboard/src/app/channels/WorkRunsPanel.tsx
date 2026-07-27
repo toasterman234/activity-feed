@@ -25,6 +25,15 @@ type WorkRun = {
   completed_at: string | null;
 };
 
+type WorkRunCheck = {
+  id: string;
+  run_id: string;
+  label: string;
+  required: boolean;
+  status: "running" | "passed" | "failed" | "skipped";
+  output_excerpt: string | null;
+};
+
 const STATUS_STYLE: Record<WorkRunStatus, string> = {
   queued: "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-300",
   running: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300",
@@ -45,6 +54,7 @@ function elapsed(run: WorkRun): string {
 
 export function WorkRunsPanel({ threadId }: { threadId: string }) {
   const [runs, setRuns] = useState<WorkRun[]>([]);
+  const [checks, setChecks] = useState<WorkRunCheck[]>([]);
   const [error, setError] = useState("");
   const [acting, setActing] = useState<string | null>(null);
 
@@ -56,6 +66,7 @@ export function WorkRunsPanel({ threadId }: { threadId: string }) {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || "Could not load attempts");
       setRuns(Array.isArray(payload.runs) ? payload.runs : []);
+      setChecks(Array.isArray(payload.checks) ? payload.checks : []);
       setError("");
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Could not load attempts");
@@ -104,6 +115,7 @@ export function WorkRunsPanel({ threadId }: { threadId: string }) {
 
       <ol className="mt-3 space-y-2">
         {runs.map((run) => {
+          const runChecks = checks.filter((check) => check.run_id === run.id);
           const canCancel = run.status === "queued" || (run.status === "running" && !run.cancel_requested_at);
           const canRetry = (run.status === "failed" || run.status === "interrupted") && run.attempt < run.max_attempts;
           return (
@@ -122,6 +134,21 @@ export function WorkRunsPanel({ threadId }: { threadId: string }) {
                 {run.model || "default model"} · config {run.config_hash.slice(0, 8)}
               </p>
               {run.error_detail && <p className="mt-1 whitespace-pre-wrap break-words text-[11px] text-red-600 dark:text-red-400">{run.error_detail}</p>}
+              {runChecks.length > 0 && (
+                <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 dark:border-zinc-800">
+                  {runChecks.map((check) => (
+                    <li key={check.id} className="flex items-start gap-2 text-[10px]">
+                      <span className={check.status === "passed" ? "text-emerald-500" : check.status === "failed" ? "text-red-500" : "text-amber-500"}>
+                        {check.status === "passed" ? "✓" : check.status === "failed" ? "✕" : "●"}
+                      </span>
+                      <details className="min-w-0 flex-1">
+                        <summary className="cursor-pointer text-zinc-500 dark:text-zinc-300">{check.label}{check.required ? "" : " (optional)"}</summary>
+                        {check.output_excerpt && <pre className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap break-words text-[10px] text-zinc-400">{check.output_excerpt}</pre>}
+                      </details>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {(canCancel || canRetry) && (
                 <div className="mt-2 flex gap-2">
                   {canCancel && (

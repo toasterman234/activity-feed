@@ -22,8 +22,19 @@ export async function GET(req: NextRequest) {
   try {
     const recovered = await interruptExpiredWorkRuns(pool);
     const runs = await listThreadWorkRuns(pool, threadId, limit);
+    const checks = runs.length
+      ? await pool.query(
+          `SELECT id, run_id, check_key, label, required, status, exit_code,
+                  output_excerpt, started_at, completed_at
+             FROM work_run_checks
+            WHERE run_id = ANY($1::text[])
+            ORDER BY started_at ASC`,
+          [runs.map((run) => run.id)],
+        ).then((result) => result.rows).catch(() => [])
+      : [];
     return NextResponse.json({
       runs,
+      checks,
       recovered: recovered.filter((run) => run.thread_id === threadId).map((run) => run.id),
     });
   } catch (error) {
