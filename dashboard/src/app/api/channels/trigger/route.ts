@@ -597,8 +597,8 @@ async function writePlan(threadId: string, items: string[]) {
   const now = new Date().toISOString();
   for (let i = 0; i < items.length; i++) {
     await pool.query(
-      `INSERT INTO thread_plans (id, thread_id, title, status, sort_order, stage_id, created_at, updated_at)
-       VALUES ($1, $2, $3, 'todo', $4, (SELECT state FROM thread_meta WHERE thread_id = $2), $5, $5)
+      `INSERT INTO thread_plans (id, thread_id, title, status, sort_order, created_at, updated_at)
+       VALUES ($1, $2, $3, 'todo', $4, $5, $5)
        ON CONFLICT (id) DO NOTHING`,
       [randomUUID(), threadId, items[i], i, now],
     );
@@ -612,8 +612,8 @@ async function writeArtifact(threadId: string, artifact: { title: string; kind: 
   );
   const nextVersion = (Number(existing.rows[0]?.v) || 0) + 1;
   await pool.query(
-    `INSERT INTO thread_artifacts (id, thread_id, title, kind, content, version, stage_id, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, (SELECT state FROM thread_meta WHERE thread_id = $2), $7)`,
+    `INSERT INTO thread_artifacts (id, thread_id, title, kind, content, version, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
     [randomUUID(), threadId, artifact.title, artifact.kind, artifact.content, nextVersion, new Date().toISOString()],
   );
 }
@@ -1116,36 +1116,28 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
 
     // Handle nextState via shared helper (command workflows + gates).
     // Transition always announces itself (success / gated failure / system message).
-    // Guard: skip transitions to states that don't exist in this lifecycle —
-    // agents sometimes emit colloquial words ("implementation") that aren't real states.
     if (parsed.nextState && lc) {
-      if (!lc.states[parsed.nextState]) {
-        console.warn(
-          `[channels/trigger] ignoring invalid nextState "${parsed.nextState}" for lifecycle "${lc.label}" (valid: ${Object.keys(lc.states).join(", ")})`,
-        );
-      } else {
-        const tr = await transitionThreadState({
-          threadId: opts.threadId,
-          channelId: opts.channelId,
-          toState: parsed.nextState,
-          actor: author,
-          announce: true,
+      const tr = await transitionThreadState({
+        threadId: opts.threadId,
+        channelId: opts.channelId,
+        toState: parsed.nextState,
+        actor: author,
+        announce: true,
+      });
+      if (!tr.ok) {
+        // Surface rejection reasons the helper couldn't announce (illegal, unknown lifecycle, etc.)
+        const reason =
+          tr.error === "illegal transition"
+            ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
+            : tr.error;
+        await insertMessage({
+          id: randomUUID(),
+          channel_id: opts.channelId,
+          thread_id: opts.threadId,
+          author: "system",
+          body: `⚠️ Could not advance state: ${reason}`,
+          created_at: new Date().toISOString(),
         });
-        if (!tr.ok) {
-          // Surface rejection reasons the helper couldn't announce (illegal, unknown lifecycle, etc.)
-          const reason =
-            tr.error === "illegal transition"
-              ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
-              : tr.error;
-          await insertMessage({
-            id: randomUUID(),
-            channel_id: opts.channelId,
-            thread_id: opts.threadId,
-            author: "system",
-            body: `⚠️ Could not advance state: ${reason}`,
-            created_at: new Date().toISOString(),
-          });
-        }
       }
     }
 
