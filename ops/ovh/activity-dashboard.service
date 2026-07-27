@@ -25,6 +25,8 @@ Environment=HOME=/home/ubuntu
 Environment=CHANNEL_AGENT_CWD=/home/ubuntu/activity-feed
 Environment=CHANNEL_PI_BIN=/home/ubuntu/.local/bin/pi
 Environment=CHANNEL_LIVE_ACTIVITY=1
+Environment=CHANNEL_GRAPH=1
+Environment=CHANNEL_GRAPH_CHANNELS=
 Environment=CHANNEL_AIWG_BIN=/home/ubuntu/.local/bin/aiwg
 Environment=CHANNEL_AIWG_ROOT=/home/ubuntu/.local/lib/node_modules/aiwg
 ExecStart=/usr/bin/npm run start

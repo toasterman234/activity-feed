@@ -2,9 +2,7 @@ import type { Collection } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ShapeMaterialization } from "@electric-circuits/client";
-import {
-  client, ACTIVITY_LOG_SHAPE, CHANNELS_SHAPE, CHANNEL_MEMBERS_SHAPE, MESSAGES_SHAPE,
-} from "../electric";
+import { ACTIVITY_LOG_SHAPE, CHANNEL_MEMBERS_SHAPE, CHANNELS_SHAPE, MESSAGES_SHAPE, client } from "../electric";
 import { acquireShape, releaseShape } from "../shape-registry";
 import { startMeasure } from "@/lib/perf";
 
@@ -16,22 +14,7 @@ import { startMeasure } from "@/lib/perf";
 // below instead of holding three more long-poll streams.
 
 export function getActShape(): Promise<ShapeMaterialization> {
-  return acquireShape("activity-log", () =>
-    fetch("/api/activity-log-cutoff")
-      .then((r) => r.json())
-      .then(({ cutoff }) =>
-        client.shape({
-          ...ACTIVITY_LOG_SHAPE,
-          where: {
-            or: [
-              { col: "id", op: "gt", value: cutoff },
-              { col: "source", op: "eq", value: "claude-code" },
-              { col: "source", op: "eq", value: "pi" },
-            ],
-          },
-        }),
-      ),
-  );
+  return acquireShape("activity-log", () => client.shape(ACTIVITY_LOG_SHAPE));
 }
 export function releaseActShape(): void {
   releaseShape("activity-log");
@@ -69,6 +52,21 @@ export interface ThreadArtifactRow { id: string; thread_id: string; title: strin
 export interface ThreadMetaRow { thread_id: string; channel_id: string; lifecycle: string; state: string; enabled_workflows: string; research_mode: string | null; priority: string | null; assignee: string | null; repo_id: string | null; labels: string | null; promoted_to: string | null; archived_at: string | null; updated_at: string }
 export interface ThreadPromotionRow { id: string; thread_id: string; repo_path: string | null; status: string; error_detail: string | null; agent_provider: string | null; agent_model: string | null; progress: string | null; created_at: string; completed_at: string | null }
 export interface ActivityEventRow { id: string; thread_id: string; run_id: string; seq: number; kind: string; label: string; detail: string; status: string; created_at: string; updated_at: string }
+export interface GraphEventRow { id: string; thread_id: string; kind: string; actor: string; payload: string; caused_by: string | null; created_at: string }
+export interface GraphDecisionRow { id: string; thread_id: string; statement: string; rationale: string | null; evidence: string; status: string; supersedes: string | null; supersedes_statement?: string | null; resolved_by: string | null; resolution_rationale: string | null; created_at: string; resolved_at: string | null }
+export interface GraphObservationRow { id: string; thread_id: string; source_id: string | null; category: string; text: string; confidence: number | null; created_at: string }
+export interface GraphProposalRow { id: string; thread_id: string; hypothesis: string; capability_ids: string; changes: string; evidence: string; status: string; resolved_by: string | null; resolution_rationale: string | null; created_at: string; resolved_at: string | null }
+export interface GraphMemoryCandidateRow { id: string; thread_id: string | null; text: string; category: string; confidence: number | null; status: string; created_at: string }
+export interface GraphMemoryItemRow { id: string; thread_id: string | null; candidate_id: string | null; text: string; category: string; created_at: string }
+export interface GraphCheckpointRow { text: string; created_at: string }
+export interface ContinuitySummary {
+  checkpoint: GraphCheckpointRow | null;
+  activeDecisions: GraphDecisionRow[];
+  acceptedMemory: GraphMemoryItemRow[];
+  pendingDecisionCount: number;
+  pendingProposalCount: number;
+  pendingMemoryCount: number;
+}
 export interface RepoRow { id: string; name: string; path: string; git_remote: string | null; created_at: string }
 
 export function useChannelRows(m: ShapeMaterialization): ChannelRow[] {
@@ -121,15 +119,31 @@ export interface ThreadExtras {
   /** Live agent activity trace (thinking/tool/status), ordered oldest→newest.
    *  Rides this existing poll — NOT a held Electric shape (ADR-003). */
   activity: ActivityEventRow[];
+  /** Graph Continuity: events + decisions + observations + proposals for this thread. */
+  graphEvents: GraphEventRow[];
+  graphDecisions: GraphDecisionRow[];
+  graphObservations: GraphObservationRow[];
+  graphProposals: GraphProposalRow[];
+  continuity: ContinuitySummary;
   /** Force an immediate refetch (call after a local write, e.g. plan toggle). */
   refresh: () => Promise<void>;
 }
 
 const THREAD_EXTRAS_POLL_MS = 3000;
 
+const EMPTY_CONTINUITY: ContinuitySummary = {
+  checkpoint: null,
+  activeDecisions: [],
+  acceptedMemory: [],
+  pendingDecisionCount: 0,
+  pendingProposalCount: 0,
+  pendingMemoryCount: 0,
+};
+
 export function useThreadExtras(threadId: string): ThreadExtras {
   const [data, setData] = useState<Omit<ThreadExtras, "refresh">>({
     plans: [], steps: [], artifacts: [], meta: null, promotion: null, activity: [],
+    graphEvents: [], graphDecisions: [], graphObservations: [], graphProposals: [], continuity: EMPTY_CONTINUITY,
   });
 
   const refresh = useCallback(async () => {
@@ -150,6 +164,11 @@ export function useThreadExtras(threadId: string): ThreadExtras {
         meta: (next.meta as ThreadMetaRow | null) || null,
         promotion: promoRows.sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null,
         activity: (next.activity || []) as ActivityEventRow[],
+        graphEvents: (next.graphEvents || []) as GraphEventRow[],
+        graphDecisions: (next.graphDecisions || []) as GraphDecisionRow[],
+        graphObservations: (next.graphObservations || []) as GraphObservationRow[],
+        graphProposals: (next.graphProposals || []) as GraphProposalRow[],
+        continuity: (next.continuity as ContinuitySummary | undefined) || EMPTY_CONTINUITY,
       });
     } catch {
       /* transient poll failure — keep last data, next tick retries */

@@ -6,21 +6,22 @@ import { useRouter } from "next/navigation";
 import {
   getChannelShape, getMessageShape, getMemberShape,
   releaseChannelShape, releaseMessageShape, releaseMemberShape,
-  useChannelRows, useMessageRows, useMemberRows, relativeTime,
+  useChannelRows, useMessageRows, useMemberRows,
   useThreadExtras,
   type ThreadMetaRow, type ThreadPromotionRow, type RepoRow, type ActivityEventRow,
 } from "../../shapes";
 import { writeChannelRow, markChannelRead } from "../../../writeChannelRow";
-import { MentionInput, MessageBody, type MentionOption } from "../../MentionInput";
+import { type MentionOption } from "../../MentionInput";
 import { parseMentions } from "../../../../lib/mentions";
 import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows } from "../../lifecycles";
 import { RESEARCH_MODES, DEFAULT_RESEARCH_MODE } from "../../researchModes";
-import { StateFlow } from "../../StateFlow";
-import { AdvanceStateButtons } from "../../AdvanceStateButtons";
 import { GuideBar } from "../../GuideBar";
-import { nextStepSummary } from "../../lifecycles";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
-import { PromoteStatusPanel } from "../../PromoteStatusPanel";
+import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
+import { ThreadConversationTab } from "../../ThreadConversationTab";
+import { ThreadOverviewTab } from "../../ThreadOverviewTab";
+import { ThreadTabs, type ThreadTabId } from "../../ThreadTabs";
+import { ThreadWorkTab } from "../../ThreadWorkTab";
 
 function uuid(): string {
   return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
@@ -103,6 +104,7 @@ function ThreadContent({
   const [dismissedPromotionId, setDismissedPromotionId] = useState<string | null>(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [advancing, setAdvancing] = useState(false);
+  const [activeTab, setActiveTab] = useState<ThreadTabId>("conversation");
   const router = useRouter();
 
   useEffect(() => {
@@ -226,6 +228,11 @@ function ThreadContent({
     ? extras.activity.filter((e) => e.run_id === currentRunId)
     : [];
   const latestEvent = runEvents.length ? runEvents[runEvents.length - 1] : null;
+  const workCount =
+    (plans.length > 0 ? 1 : 0) +
+    (steps.length > 0 ? 1 : 0) +
+    (latestEvent ? 1 : 0);
+  const artifactCount = latestArtifacts.length;
   // A run is "active" while any event is still running AND it started recently
   // (guards against a wedged row keeping the burst loop alive forever).
   const activityRunning = runEvents.some((e) => {
@@ -247,7 +254,7 @@ function ThreadContent({
     .replace(/^-+|-+$/g, "")
     .toLowerCase()
     .slice(0, 64) || `promoted-${threadId.slice(0, 8)}`;
-
+  const defaultPromoteDestination = `~/Projects/${sanitizedName}`;
   // Picking a lifecycle for the first time is always allowed; changing it later is
   // only allowed while state is still "drafted".
   const handleLifecycleChange = async (newLc: string) => {
@@ -339,6 +346,39 @@ function ThreadContent({
       setPromoting(false);
     }
   };
+  const handleAdvanceDone = async () => {
+    setAdvancing(true);
+    try {
+      await extras.refresh();
+    } finally {
+      setAdvancing(false);
+    }
+  };
+
+  const openPromoteDialog = (destination = defaultPromoteDestination) => {
+    setPromoteDestination(destination);
+    setPromoteError(null);
+    setShowPromoteDialog(true);
+  };
+
+  const handleRetryPromote = () => {
+    const destination = promoteDestination.trim() || defaultPromoteDestination;
+    setPromoteDestination(destination);
+    setPromoteError(null);
+    void handlePromote(destination);
+  };
+
+  const handleEditPromotePath = () => {
+    openPromoteDialog(promoteDestination.trim() || defaultPromoteDestination);
+  };
+
+  const dismissPromotion = () => {
+    if (rawPromotion?.id) setDismissedPromotionId(rawPromotion.id);
+  };
+
+  const issueHeader = lifecyclePicked && lifecycleKey === "issue" && meta
+    ? <IssueHeader threadId={threadId} meta={meta} />
+    : null;
 
   // After a move, messages are filtered by URL channelId so threadMsg vanishes
   // until redirect; meta (polled by threadId) still tells us the canonical home.
@@ -386,8 +426,8 @@ function ThreadContent({
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
-      <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-zinc-200 bg-white/95 px-3 py-2 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[env(safe-area-inset-top,0px)]">
+    <div className="min-h-screen bg-zinc-50 pb-16 dark:bg-zinc-950">
+      <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-zinc-200 bg-white/95 px-3 py-2 pt-[env(safe-area-inset-top,0px)] backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
         <Link
           href={`/channels/${channelId}`}
           className="-ml-1 shrink-0 rounded-md px-2 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
@@ -412,7 +452,6 @@ function ThreadContent({
 
       <div className="flex-1 overflow-y-auto px-3 py-3">
         <div className="mx-auto max-w-3xl space-y-3">
-          {/* Archived banner */}
           {isArchived && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-950">
               <p className="text-xs text-amber-700 dark:text-amber-300">
@@ -426,8 +465,6 @@ function ThreadContent({
               </Link>
             </div>
           )}
-
-          {/* No lifecycle picked — auto-suggest based on channel default or keyword heuristic */}
           {!lifecyclePicked && (
             <div className="flex items-center gap-2 rounded-lg border border-dashed border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800 dark:bg-blue-950">
               <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Suggestion</span>
@@ -455,7 +492,7 @@ function ThreadContent({
             </div>
           )}
 
-          {/* GuideBar — pinned top-of-thread guided lifecycle experience */}
+
           {lifecyclePicked && lc && !isArchived && (
             <GuideBar
               lifecycleKey={lifecycleKey}
@@ -465,144 +502,90 @@ function ThreadContent({
               threadId={threadId}
               onDone={async () => { await extras.refresh(); }}
               onPromote={() => {
-                setPromoteDestination(`~/Projects/${sanitizedName}`);
-                setPromoteError(null);
-                setShowPromoteDialog(true);
+                openPromoteDialog();
               }}
             />
           )}
+          {issueHeader}
 
-          {/* Lifecycle details (picker, workflows, state diagram, advance) — collapsed behind a single disclosure */}
-          {lifecyclePicked && lc && (
-            <details className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <summary className="cursor-pointer text-xs text-zinc-600 dark:text-zinc-300 [&::-webkit-details-marker]:hidden">
-                <span className="text-[10px] font-medium uppercase tracking-wide text-zinc-400 mr-1.5">Details</span>
-                {lc.label} · {lc.states[currentState]?.label || currentState}
-                <span className="ml-1.5 text-[10px] text-zinc-400">
-                  · {enabledWorkflows.length} workflow{enabledWorkflows.length === 1 ? "" : "s"}
-                </span>
-              </summary>
-              <div className="mt-2.5 border-t border-zinc-100 pt-2.5 dark:border-zinc-800 space-y-2.5">
-                {/* Lifecycle picker */}
-                <div className="flex items-center gap-2">
-                  <select
-                    value={lifecycleKey}
-                    disabled={meta ? meta.state !== "drafted" : false}
-                    onChange={(e) => { void handleLifecycleChange(e.target.value); }}
-                    className="text-xs rounded border border-zinc-200 bg-white px-2 py-0.5 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                  >
-                    {Object.entries(LIFECYCLES).map(([key, lcDef]) => (
-                      <option key={key} value={key}>{lcDef.label}</option>
-                    ))}
-                  </select>
-                  {meta && meta.state !== "drafted" && (
-                    <span className="text-[10px] text-zinc-400">(locked — state is {currentState})</span>
-                  )}
-                </div>
-                {/* Research style */}
-                {lifecycleKey === "research" && (
-                  <div>
-                    <p className="mb-1 text-[10px] font-medium uppercase tracking-wide text-zinc-400">Research style</p>
-                    <select
-                      value={researchMode}
-                      onChange={(e) => { void handleResearchModeChange(e.target.value); }}
-                      className="text-xs rounded border border-zinc-200 bg-white px-2 py-0.5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                    >
-                      {Object.values(RESEARCH_MODES).map((m) => (
-                        <option key={m.id} value={m.id}>{m.label}</option>
-                      ))}
-                    </select>
-                    <p className="mt-1 text-[10px] text-zinc-400">
-                      {RESEARCH_MODES[researchMode]?.description}
-                    </p>
-                  </div>
-                )}
-                {/* Workflow checklist */}
-                {Object.keys(lc.workflows).length > 0 && (
-                  <div>
-                    <p className="mb-1 text-[10px] font-medium uppercase tracking-wide text-zinc-400">Workflows</p>
-                    <div className="space-y-0.5">
-                      {Object.entries(lc.workflows).map(([wfId, wf]) => (
-                        <label key={wfId} className="flex items-center gap-1.5 text-xs cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={enabledWorkflows.includes(wfId)}
-                            onChange={() => { void toggleWorkflow(wfId); }}
-                            className="h-3 w-3 rounded border-zinc-300"
-                          />
-                          <span className="text-zinc-600 dark:text-zinc-300">{wf.label}</span>
-                          <span className="text-[10px] text-zinc-400">
-                            @ {wf.runsAt}
-                            {wf.gates && " · gates"}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {/* State flow diagram */}
-                <StateFlow lifecycleKey={lifecycleKey} currentState={currentState} />
-                {/* Advance buttons (fallback manual control) */}
-                {!isArchived && (
-                  <AdvanceStateButtons
-                    lifecycleKey={lifecycleKey}
-                    currentState={currentState}
-                    channelId={channelId}
-                    threadId={threadId}
-                    disabled={advancing}
-                    onDone={async () => {
-                      setAdvancing(true);
-                      try { await extras.refresh(); }
-                      finally { setAdvancing(false); }
-                    }}
-                  />
-                )}
-              </div>
-            </details>
+
+          <ThreadTabs
+            active={activeTab}
+            onChange={setActiveTab}
+            counts={{ work: workCount, artifacts: artifactCount }}
+          />
+
+          {activeTab === "conversation" && (
+            <ThreadConversationTab
+              threadMsg={threadMsg}
+              replies={replies}
+              graphEvents={extras.graphEvents}
+              graphDecisions={extras.graphDecisions}
+              graphObservations={extras.graphObservations}
+              graphProposals={extras.graphProposals}
+              continuity={extras.continuity}
+              replyBody={replyBody}
+              onReplyBodyChange={setReplyBody}
+              onSubmitReply={() => { void postReply(replyBody); }}
+              mentionOptions={mentionOptions}
+              sending={sending}
+              isArchived={isArchived}
+            />
           )}
 
-          {/* Promotion status & button — only when lifecycle is picked */}
-          {lifecyclePicked && !showPromoteDialog && (!isArchived || isPromoted) && (
-              <PromoteStatusPanel
-                promotion={promotion}
-                promotedTo={meta?.promoted_to || null}
-                repoId={meta?.repo_id || null}
-                retrying={promoting}
-                onRetry={() => {
-                  const dest = promoteDestination.trim() || `~/Projects/${sanitizedName}`;
-                  setPromoteDestination(dest);
-                  setPromoteError(null);
-                  void handlePromote(dest);
-                }}
-                onEditPath={() => {
-                  setPromoteDestination(promoteDestination.trim() || `~/Projects/${sanitizedName}`);
-                  setPromoteError(null);
-                  setShowPromoteDialog(true);
-                }}
-                onDismiss={() => {
-                  if (rawPromotion?.id) setDismissedPromotionId(rawPromotion.id);
-                }}
-                onPromoteClick={() => {
-                  setPromoteDestination(`~/Projects/${sanitizedName}`);
-                  setPromoteError(null);
-                  setShowPromoteDialog(true);
-                }}
-                showPromoteButton={!isPromoting && !promotionFailed && !isPromoted && (isTerminal || promoteAnyway)}
-                promoteAnywayHint={
-                  !isPromoting && !promotionFailed && !isPromoted && !isTerminal && !promoteAnyway ? (
-                    <button
-                      type="button"
-                      onClick={() => { setPromoteAnyway(true); }}
-                      className="text-[10px] text-zinc-400 underline hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
-                    >
-                      Thread not in a terminal state (currently: {lc?.states[currentState]?.label || currentState}). Promote anyway?
-                    </button>
-                  ) : null
-                }
-              />
+          {activeTab === "overview" && (
+            <ThreadOverviewTab
+              lifecyclePicked={lifecyclePicked}
+              lifecycleKey={lifecycleKey}
+              currentState={currentState}
+              meta={meta}
+              suggestedLifecycle={suggestedLifecycle}
+              enabledWorkflows={enabledWorkflows}
+              researchMode={researchMode}
+              isArchived={isArchived}
+              isPromoted={isPromoted}
+              isPromoting={isPromoting}
+              promotion={promotion}
+              promoteAnyway={promoteAnyway}
+              promotedTo={meta?.promoted_to || null}
+              repoId={meta?.repo_id || null}
+              channelId={channelId}
+              threadId={threadId}
+              disabledAdvance={advancing}
+              promotionFailed={promotionFailed}
+              showPromoteDialog={showPromoteDialog}
+              onAcceptSuggestedLifecycle={() => { void handleLifecycleChange(suggestedLifecycle); }}
+              onLifecycleChange={(nextLifecycle) => { void handleLifecycleChange(nextLifecycle); }}
+              onResearchModeChange={(modeId) => { void handleResearchModeChange(modeId); }}
+              onToggleWorkflow={(wfId) => { void toggleWorkflow(wfId); }}
+              onAdvanceDone={handleAdvanceDone}
+              onPromoteClick={() => {
+                openPromoteDialog();
+              }}
+              onRetryPromote={handleRetryPromote}
+              onEditPromotePath={handleEditPromotePath}
+              onDismissPromotion={dismissPromotion}
+              onForcePromoteAnyway={() => { setPromoteAnyway(true); }}
+              issueHeader={null}
+            />
           )}
 
-          {/* Promote dialog */}
+          {activeTab === "work" && (
+            <ThreadWorkTab
+              plans={plans}
+              steps={steps}
+              runEvents={runEvents}
+              latestEvent={latestEvent}
+              activityRunning={activityRunning}
+              currentStateLabel={lc?.states[currentState]?.label || currentState}
+              onTogglePlanStatus={(plan) => { void togglePlanStatus(plan); }}
+            />
+          )}
+
+          {activeTab === "artifacts" && (
+            <ThreadArtifactsTab artifacts={latestArtifacts} />
+          )}
+
           {showPromoteDialog && (
             <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
               <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
@@ -642,158 +625,8 @@ function ThreadContent({
               </div>
             </div>
           )}
-
-          {/* Issue header — shows issue-specific metadata when lifecycle is "issue" */}
-          {lifecyclePicked && lifecycleKey === "issue" && (
-            <IssueHeader threadId={threadId} meta={meta} />
-          )}
-
-          {plans.length > 0 && (
-            <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">Plan</p>
-              <ul className="space-y-1">
-                {plans.map((p) => (
-                  <li key={p.id}>
-                    <button
-                      onClick={() => { void togglePlanStatus(p); }}
-                      className="flex w-full items-start gap-2 text-left text-xs"
-                    >
-                      <span className={`mt-0.5 shrink-0 rounded border px-1 text-[10px] ${p.status === "done" ? "border-emerald-300 bg-emerald-50 text-emerald-600 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-400" : "border-zinc-300 text-zinc-400 dark:border-zinc-700"}`}>
-                        {p.status === "done" ? "✓" : " "}
-                      </span>
-                      <span className={p.status === "done" ? "text-zinc-400 line-through" : "text-zinc-600 dark:text-zinc-300"}>{p.title}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Live agent activity — collapsed strip, expandable to full trace.
-              Only renders when CHANNEL_LIVE_ACTIVITY produced rows for a run. */}
-          {latestEvent && (
-            <details className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900" open={activityRunning}>
-              <summary className="flex cursor-pointer items-center gap-2 text-xs">
-                <span className={
-                  activityRunning ? "animate-pulse text-amber-500"
-                    : latestEvent.status === "error" ? "text-red-500" : "text-emerald-500"
-                }>
-                  {activityRunning ? "●" : latestEvent.status === "error" ? "✕" : "✓"}
-                </span>
-                <span className="min-w-0 flex-1 truncate text-zinc-600 dark:text-zinc-300">
-                  {latestEvent.label}
-                </span>
-                <span className="shrink-0 text-[10px] uppercase tracking-wide text-zinc-400">
-                  {relativeTime(latestEvent.updated_at || latestEvent.created_at)}
-                </span>
-              </summary>
-              <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 dark:border-zinc-800">
-                {runEvents.map((e) => (
-                  <li key={e.id} className="flex items-start gap-2 text-xs">
-                    <span className={
-                      e.status === "done" ? "text-emerald-500"
-                        : e.status === "error" ? "text-red-500"
-                          : e.status === "running" ? "animate-pulse text-amber-500" : "text-zinc-400"
-                    }>
-                      {e.kind === "thinking" ? "✎" : e.kind === "tool" ? "⚙" : e.status === "error" ? "✕" : "●"}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-zinc-600 dark:text-zinc-300">{e.label}</span>
-                      {e.detail && (
-                        <p className="mt-0.5 whitespace-pre-wrap break-words text-[10px] text-zinc-400">
-                          {e.detail.length > 400 ? e.detail.slice(0, 400) + "…" : e.detail}
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-
-          {lifecyclePicked && steps.length > 0 && (
-            <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <div className="mb-1.5 flex items-center justify-between">
-                <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">Workflow</p>
-                <span className="text-[10px] text-zinc-400">
-                  currently: <span className="font-medium text-zinc-600 dark:text-zinc-300">{lc?.states[currentState]?.label || currentState}</span>
-                </span>
-              </div>
-              <ul className="space-y-1">
-                {steps.map((s) => (
-                  <li key={s.id} className="flex items-center gap-2 text-xs">
-                    <span className={
-                      s.status === "done" ? "text-emerald-500"
-                        : s.status === "error" ? "text-red-500"
-                          : s.status === "running" ? "animate-pulse text-amber-500" : "text-zinc-400"
-                    }>
-                      {s.status === "done" ? "✓" : s.status === "error" ? "✕" : s.status === "running" ? "●" : "○"}
-                    </span>
-                    <span className="text-zinc-600 dark:text-zinc-300">{s.step_label}</span>
-                    {s.detail && <span className="truncate text-[10px] text-zinc-400">— {s.detail}</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {latestArtifacts.length > 0 && (
-            <div className="space-y-2">
-              {latestArtifacts.map((a) => (
-                <details key={a.id} className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900" open>
-                  <summary className="cursor-pointer text-[10px] font-medium uppercase tracking-wide text-zinc-400">
-                    Artifact — {a.title} <span className="normal-case text-zinc-300 dark:text-zinc-600">({a.kind}{a.version > 1 ? `, v${a.version}` : ""})</span>
-                  </summary>
-                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap rounded-md bg-zinc-50 p-2 text-[11px] text-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">{a.content}</pre>
-                </details>
-              ))}
-            </div>
-          )}
-
-          <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{threadMsg.author}</span>
-              <span className="text-[10px] text-zinc-400">{relativeTime(threadMsg.created_at)}</span>
-            </div>
-            <MessageBody body={threadMsg.body} className="whitespace-pre-wrap text-sm text-zinc-700 dark:text-zinc-300" />
-          </div>
-
-          <div className="space-y-2 pl-3">
-            {replies.map((r) => (
-              <div key={r.id} className="rounded-lg border border-zinc-100 bg-white p-2.5 dark:border-zinc-800 dark:bg-zinc-900/60">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{r.author}</span>
-                  <span className="text-[10px] text-zinc-400">{relativeTime(r.created_at)}</span>
-                </div>
-                <MessageBody body={r.body} className="whitespace-pre-wrap text-xs text-zinc-600 dark:text-zinc-400" />
-              </div>
-            ))}
-            {replies.length === 0 && (
-              <p className="py-4 text-center text-xs text-zinc-400">No replies yet</p>
-            )}
-          </div>
         </div>
       </div>
-
-      <div className="sticky bottom-0 flex gap-1 border-t border-zinc-200 bg-white p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mx-auto flex w-full max-w-3xl gap-1">
-          <MentionInput
-            value={replyBody}
-            onChange={setReplyBody}
-            onSubmit={() => { void postReply(replyBody); }}
-            placeholder={isArchived ? "Thread is archived — replies disabled" : "Reply… use @agent to trigger"}
-            options={mentionOptions}
-            disabled={sending || isArchived}
-            className="min-w-0 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 disabled:opacity-50"
-          />
-          <button
-            onClick={() => { void postReply(replyBody); }}
-            disabled={!replyBody.trim() || sending || isArchived}
-            className="shrink-0 rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
-          >
-            {sending ? "…" : "Reply"}
-          </button>
-        </div>
 
       <MoveThreadDialog
         open={showMoveDialog}
@@ -806,7 +639,6 @@ function ThreadContent({
           router.push(`/channels/${toChannelId}/${threadId}`);
         }}
       />
-      </div>
     </div>
   );
 }

@@ -1,0 +1,102 @@
+{
+  "type": "object",
+  "properties": {
+    "message": { "type": "string", "description": "The chat message to post in the thread" },
+    "nextState": { "type": "string", "description": "Optional: the lifecycle state to advance to after this run" },
+    "plan": {
+      "type": "array",
+      "description": "Optional: a short task checklist for this thread, if the request needed multiple steps",
+      "items": { "type": "string" }
+    },
+    "artifact": {
+      "type": "object",
+      "description": "Optional: a generated file/output worth showing separately from the chat reply (code, doc, diagram)",
+      "properties": {
+        "title": { "type": "string" },
+        "kind": { "type": "string", "enum": ["code", "markdown", "html", "mermaid"] },
+        "content": { "type": "string" }
+      },
+      "required": ["title", "kind", "content"],
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "description": "Optional: a concise summary of where we are — read by the NEXT agent to resume context",
+      "properties": {
+        "where_we_are": { "type": "string", "description": "One-sentence status snapshot" },
+        "open_items": {
+          "type": "array",
+          "description": "What still needs doing",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["where_we_are"],
+      "additionalProperties": false
+    },
+    "observations": {
+      "type": "array",
+      "description": "Optional: facts, decisions, preferences extracted from this turn",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string" },
+          "category": { "type": "string", "enum": ["fact", "decision", "preference", "action_item", "issue", "checkpoint"] },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "required": ["text", "category"],
+        "additionalProperties": false
+      }
+    },
+    "memory_candidates": {
+      "type": "array",
+      "description": "Optional: observations that should become admitted memory",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string" },
+          "category": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "required": ["text", "category"],
+        "additionalProperties": false
+      }
+    },
+    "decision": {
+      "type": "object",
+      "description": "Optional: a decision the agent proposes for human review",
+      "properties": {
+        "statement": { "type": "string" },
+        "rationale": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["statement"],
+      "additionalProperties": false
+    },
+    "proposal": {
+      "type": "object",
+      "description": "Optional: a grounded self-improvement proposal",
+      "properties": {
+        "hypothesis": { "type": "string" },
+        "capability_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "changes": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["hypothesis"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["message"],
+  "additionalProperties": false
+}
