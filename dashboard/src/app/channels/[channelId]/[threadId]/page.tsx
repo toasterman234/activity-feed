@@ -572,12 +572,14 @@ function ThreadContent({
 
           {activeTab === "work" && (
             <ThreadWorkTab
+              threadId={threadId}
               plans={plans}
               steps={steps}
               runEvents={runEvents}
               latestEvent={latestEvent}
               activityRunning={activityRunning}
               currentStateLabel={lc?.states[currentState]?.label || currentState}
+              planningStage={lifecycleKey === "planning" && (currentState === "drafting" || currentState === "review")}
               onTogglePlanStatus={(plan) => { void togglePlanStatus(plan); }}
             />
           )}
