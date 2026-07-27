@@ -20,6 +20,14 @@ import { researchHintForState } from "@/app/channels/researchModes";
 import { transitionThreadState } from "@/app/channels/transitionThread";
 import { ensureThreadWorkspace, buildResearchInvocation } from "@/lib/channelAgentRuntime";
 import { execFileNoStdin } from "@/lib/execFileNoStdin";
+import { registryAgentIdForHandle } from "@/lib/work-run-contract";
+import {
+  finishWorkRun,
+  heartbeatWorkRun,
+  queueWorkRun,
+  startWorkRun,
+  type WorkRunRow,
+} from "@/lib/work-runs";
 
 export const dynamic = "force-dynamic";
 
@@ -589,8 +597,8 @@ async function writePlan(threadId: string, items: string[]) {
   const now = new Date().toISOString();
   for (let i = 0; i < items.length; i++) {
     await pool.query(
-      `INSERT INTO thread_plans (id, thread_id, title, status, sort_order, created_at, updated_at)
-       VALUES ($1, $2, $3, 'todo', $4, $5, $5)
+      `INSERT INTO thread_plans (id, thread_id, title, status, sort_order, stage_id, created_at, updated_at)
+       VALUES ($1, $2, $3, 'todo', $4, (SELECT state FROM thread_meta WHERE thread_id = $2), $5, $5)
        ON CONFLICT (id) DO NOTHING`,
       [randomUUID(), threadId, items[i], i, now],
     );
@@ -604,8 +612,8 @@ async function writeArtifact(threadId: string, artifact: { title: string; kind: 
   );
   const nextVersion = (Number(existing.rows[0]?.v) || 0) + 1;
   await pool.query(
-    `INSERT INTO thread_artifacts (id, thread_id, title, kind, content, version, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    `INSERT INTO thread_artifacts (id, thread_id, title, kind, content, version, stage_id, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, (SELECT state FROM thread_meta WHERE thread_id = $2), $7)`,
     [randomUUID(), threadId, artifact.title, artifact.kind, artifact.content, nextVersion, new Date().toISOString()],
   );
 }
@@ -716,10 +724,16 @@ async function runMentionJob(opts: {
   recent: { author: string; body: string }[];
   cwd: string;
   graphEnabled: boolean;
+  invocationKey: string;
+  sourceMessageId: string;
 }) {
   const author = `@${opts.handle}`;
   const thinkingId = randomUUID();
   const stepId = randomUUID();
+  const workerId = `activity-dashboard:${process.pid}`;
+  const workerHost = process.env.HOSTNAME || "activity-dashboard";
+  let durableRun: WorkRunRow | null = null;
+  let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   await insertMessage({
     id: thinkingId,
     channel_id: opts.channelId,
@@ -744,12 +758,15 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
   try {
     // Load lifecycle meta and gather workflow instructions for the current state
     const metaRes = await pool.query(
-      `SELECT lifecycle, state, enabled_workflows, research_mode FROM thread_meta WHERE thread_id = $1`,
+      `SELECT lifecycle, state, enabled_workflows, research_mode, repo_id, template_version
+         FROM thread_meta WHERE thread_id = $1`,
       [opts.threadId],
     );
     const lifecycleKey = (metaRes.rows[0]?.lifecycle as string) || "coding";
     const currentState = (metaRes.rows[0]?.state as string) || "drafted";
     const researchMode = (metaRes.rows[0]?.research_mode as string) || "";
+    const repoId = (metaRes.rows[0]?.repo_id as string) || null;
+    const templateVersion = Number(metaRes.rows[0]?.template_version) || 1;
     let enabledWorkflows: string[] = [];
     try { enabledWorkflows = metaRes.rows[0]?.enabled_workflows ? JSON.parse(metaRes.rows[0].enabled_workflows as string) : []; } catch {}
     enabledWorkflows = await applyWorkflowOverrides(opts.channelId, lifecycleKey, enabledWorkflows);
@@ -835,9 +852,60 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
       runEnv = process.env;
     }
 
+    durableRun = await queueWorkRun(pool, {
+      idempotencyKey: opts.invocationKey,
+      requestId: opts.sourceMessageId,
+      threadId: opts.threadId,
+      channelId: opts.channelId,
+      stageId: currentState,
+      repoId,
+      agent: {
+        agentRegistryId: registryAgentIdForHandle(opts.handle),
+        agentVersion: "channel-runtime-v1",
+        model,
+        workflowTemplateId: lifecycleKey,
+        workflowTemplateVersion: templateVersion,
+      },
+      cwd,
+      requestPayload: {
+        sourceMessageId: opts.sourceMessageId,
+        handle: opts.handle,
+        provider,
+        graphEnabled: opts.graphEnabled,
+      },
+    });
+    const startedRun = await startWorkRun(pool, {
+      runId: durableRun.id,
+      workerId,
+      workerHost,
+      leaseMs: 90_000,
+    });
+    if (!startedRun) {
+      await pool.query(`DELETE FROM messages WHERE id = $1`, [thinkingId]).catch(() => {});
+      await upsertWorkflowStep({
+        id: stepId,
+        threadId: opts.threadId,
+        label: `${author} responding`,
+        status: "done",
+        detail: "duplicate trigger suppressed",
+      });
+      return;
+    }
+    durableRun = startedRun;
+    heartbeatTimer = setInterval(() => {
+      void heartbeatWorkRun(pool, {
+        runId: startedRun.id,
+        workerId,
+        leaseMs: 90_000,
+      }).catch((error) => {
+        console.error("[channels/trigger] work-run heartbeat failed:", (error as Error).message);
+      });
+    }, 30_000);
+    heartbeatTimer.unref?.();
+
     // A run_id groups this invocation's activity rows. Prune old runs up front so
     // the UI's "current run" filter and the table stay bounded.
-    const runId = randomUUID();
+    const runId = durableRun.id;
     if (streamable) await pruneThreadActivity(opts.threadId);
 
     // Producer: stream `pi --mode json` into activity rows when enabled, else run
@@ -929,8 +997,9 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
     }
 
     await pool.query(`DELETE FROM messages WHERE id = $1`, [thinkingId]);
+    const replyMessageId = randomUUID();
     await insertMessage({
-      id: randomUUID(),
+      id: replyMessageId,
       channel_id: opts.channelId,
       thread_id: opts.threadId,
       author,
@@ -1047,32 +1116,53 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
 
     // Handle nextState via shared helper (command workflows + gates).
     // Transition always announces itself (success / gated failure / system message).
+    // Guard: skip transitions to states that don't exist in this lifecycle —
+    // agents sometimes emit colloquial words ("implementation") that aren't real states.
     if (parsed.nextState && lc) {
-      const tr = await transitionThreadState({
-        threadId: opts.threadId,
-        channelId: opts.channelId,
-        toState: parsed.nextState,
-        actor: author,
-        announce: true,
-      });
-      if (!tr.ok) {
-        // Surface rejection reasons the helper couldn't announce (illegal, unknown lifecycle, etc.)
-        const reason =
-          tr.error === "illegal transition"
-            ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
-            : tr.error;
-        await insertMessage({
-          id: randomUUID(),
-          channel_id: opts.channelId,
-          thread_id: opts.threadId,
-          author: "system",
-          body: `⚠️ Could not advance state: ${reason}`,
-          created_at: new Date().toISOString(),
+      if (!lc.states[parsed.nextState]) {
+        console.warn(
+          `[channels/trigger] ignoring invalid nextState "${parsed.nextState}" for lifecycle "${lc.label}" (valid: ${Object.keys(lc.states).join(", ")})`,
+        );
+      } else {
+        const tr = await transitionThreadState({
+          threadId: opts.threadId,
+          channelId: opts.channelId,
+          toState: parsed.nextState,
+          actor: author,
+          announce: true,
         });
+        if (!tr.ok) {
+          // Surface rejection reasons the helper couldn't announce (illegal, unknown lifecycle, etc.)
+          const reason =
+            tr.error === "illegal transition"
+              ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
+              : tr.error;
+          await insertMessage({
+            id: randomUUID(),
+            channel_id: opts.channelId,
+            thread_id: opts.threadId,
+            author: "system",
+            body: `⚠️ Could not advance state: ${reason}`,
+            created_at: new Date().toISOString(),
+          });
+        }
       }
     }
 
     await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: `${author} responding`, status: "done" });
+    await finishWorkRun(pool, {
+      runId: durableRun.id,
+      workerId,
+      status: "succeeded",
+      rawRef: `thread:${opts.threadId}:work-run:${durableRun.id}`,
+      resultPayload: {
+        replyMessageId,
+        workflowStepId: stepId,
+        hasPlan: Boolean(parsed.plan?.length),
+        artifactTitle: parsed.artifact?.title || null,
+        proposedState: parsed.nextState || null,
+      },
+    });
   } catch (err) {
     console.error("[channels/trigger] job failed for", opts.handle, err);
     const e = err as Error & { signal?: string | null; killed?: boolean; stderr?: string; code?: number | null };
@@ -1107,6 +1197,17 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
         WHERE thread_id = $1 AND status = 'running'`,
       [opts.threadId, new Date().toISOString()],
     ).catch(() => {});
+    if (durableRun) {
+      await finishWorkRun(pool, {
+        runId: durableRun.id,
+        workerId,
+        status: "failed",
+        errorDetail: detail.slice(0, 4000),
+        resultPayload: { workflowStepId: stepId },
+      }).catch(() => {});
+    }
+  } finally {
+    if (heartbeatTimer) clearInterval(heartbeatTimer);
   }
 }
 
@@ -1165,6 +1266,19 @@ export async function POST(req: NextRequest) {
     .reverse()
     .map((r) => ({ author: String(r.author), body: String(r.body) }));
 
+  const sourceMessageRes = await pool.query(
+    `SELECT id
+       FROM messages
+      WHERE channel_id = $1
+        AND author = 'you'
+        AND body = $2
+        AND (id = $3 OR thread_id = $3)
+      ORDER BY created_at DESC
+      LIMIT 1`,
+    [channelId, text, rootId],
+  );
+  const sourceMessageId = String(sourceMessageRes.rows[0]?.id || randomUUID());
+
   const cwd = await resolveCwd(channelId);
 
   const graphEnabled = await isGraphEnabledForChannel(channelId, channelName);
@@ -1194,6 +1308,8 @@ export async function POST(req: NextRequest) {
       recent,
       cwd,
       graphEnabled,
+      sourceMessageId,
+      invocationKey: `channel-message:${sourceMessageId}:${handle.toLowerCase()}`,
     });
   }
 
