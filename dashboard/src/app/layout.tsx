@@ -1,10 +1,34 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+// ReactScan must be the top-most import (react-scan before React). See ADR-002.
+import ReactScan from "./react-scan";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import BottomNav from "./bottom-nav";
+import SWUpdatePrompt from "./sw-update-prompt";
+import InstallPrompt from "./install-prompt";
+import PerfMonitors from "./perf-monitors";
 
 export const metadata: Metadata = {
   title: "Finance Dashboard",
   description: "Real-time portfolio with Electric Circuits sync + Market Lake",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Finance",
+  },
+  icons: {
+    icon: "/icon-192.png",
+    // TODO: replace with a proper 180×180 PNG when source art is available
+    apple: "/icon-192.png",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
@@ -17,50 +41,13 @@ export default function RootLayout({
       lang="en"
       className="h-full antialiased"
     >
-      <body className="flex min-h-full flex-col bg-zinc-50 dark:bg-zinc-950">
-        <nav className="sticky top-0 z-10 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
-          <div className="mx-auto max-w-6xl px-6 py-3">
-            <div className="flex items-center gap-6 overflow-x-auto">
-              <Link
-                href="/"
-                className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Activity
-              </Link>
-              <Link
-                href="/portfolio"
-                className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Portfolio
-              </Link>
-              <Link
-                href="/watchlist"
-                className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Watchlist
-              </Link>
-              <Link
-                href="/trades"
-                className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Trades
-              </Link>
-              <Link
-                href="/research"
-                className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Research
-              </Link>
-              <Link
-                href="/screener"
-                className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-              >
-                Screener
-              </Link>
-            </div>
-          </div>
-        </nav>
-        <main className="mx-auto w-full max-w-6xl px-6 py-6">{children}</main>
+      <body className="min-h-full bg-zinc-50 dark:bg-zinc-950 pb-[calc(4rem+env(safe-area-inset-bottom))]">
+        <ReactScan />
+        <PerfMonitors />
+        <main>{children}</main>
+        <BottomNav />
+        <SWUpdatePrompt />
+        <InstallPrompt />
       </body>
     </html>
   );

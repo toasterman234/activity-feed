@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010 -H 127.0.0.1",
-    "build": "npm run check:shapes && next build --webpack",
+    "build": "npm run check:shapes && npm run check:shell && next build --webpack",
     "start": "next start",
     "check:shapes": "node scripts/check-shape-budget.mjs",
+    "check:shell": "node scripts/check-mobile-shell.mjs",
     "init:workflow": "node scripts/init-workflow-cockpit.mjs",
     "init:perf": "node scripts/init-perf-metrics.mjs",
     "dev:unsafe-3000": "next dev -p 3000",
