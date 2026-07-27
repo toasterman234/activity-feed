@@ -23,6 +23,7 @@ import { execFileNoStdin } from "@/lib/execFileNoStdin";
 import { registryAgentIdForHandle } from "@/lib/work-run-contract";
 import {
   finishWorkRun,
+  getWorkRun,
   heartbeatWorkRun,
   queueWorkRun,
   startWorkRun,
@@ -726,6 +727,7 @@ async function runMentionJob(opts: {
   graphEnabled: boolean;
   invocationKey: string;
   sourceMessageId: string;
+  existingRunId?: string;
 }) {
   const author = `@${opts.handle}`;
   const thinkingId = randomUUID();
@@ -868,30 +870,41 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
       runEnv = process.env;
     }
 
-    durableRun = await queueWorkRun(pool, {
-      idempotencyKey: opts.invocationKey,
-      requestId: opts.sourceMessageId,
-      threadId: opts.threadId,
-      channelId: opts.channelId,
-      stageId: currentState,
-      repoId,
-      agent: {
-        agentRegistryId: registryAgentIdForHandle(opts.handle),
-        agentVersion: "channel-runtime-v1",
-        model,
-        workflowTemplateId: lifecycleKey,
-        workflowTemplateVersion: templateVersion,
-      },
-      cwd,
-      requestPayload: {
-        sourceMessageId: opts.sourceMessageId,
-        handle: opts.handle,
-        provider,
-        graphEnabled: opts.graphEnabled,
-        text: opts.userBody,
-        rootId: opts.threadId,
-      },
-    });
+    if (opts.existingRunId) {
+      durableRun = await getWorkRun(pool, opts.existingRunId);
+      if (
+        !durableRun ||
+        durableRun.thread_id !== opts.threadId ||
+        durableRun.channel_id !== opts.channelId
+      ) {
+        throw new Error("Retry work run does not belong to this thread.");
+      }
+    } else {
+      durableRun = await queueWorkRun(pool, {
+        idempotencyKey: opts.invocationKey,
+        requestId: opts.sourceMessageId,
+        threadId: opts.threadId,
+        channelId: opts.channelId,
+        stageId: currentState,
+        repoId,
+        agent: {
+          agentRegistryId: registryAgentIdForHandle(opts.handle),
+          agentVersion: "channel-runtime-v1",
+          model,
+          workflowTemplateId: lifecycleKey,
+          workflowTemplateVersion: templateVersion,
+        },
+        cwd,
+        requestPayload: {
+          sourceMessageId: opts.sourceMessageId,
+          handle: opts.handle,
+          provider,
+          graphEnabled: opts.graphEnabled,
+          text: opts.userBody,
+          rootId: opts.threadId,
+        },
+      });
+    }
     const startedRun = await startWorkRun(pool, {
       runId: durableRun.id,
       workerId,
@@ -1239,11 +1252,13 @@ export async function POST(req: NextRequest) {
     threadId,
     text,
     mentions: mentionsIn,
+    workRunId,
   } = body as {
     channelId?: string;
     threadId?: string | null;
     text?: string;
     mentions?: string[];
+    workRunId?: string;
   };
 
   if (!channelId || !text?.trim()) {
@@ -1255,6 +1270,9 @@ export async function POST(req: NextRequest) {
   );
   if (mentions.length === 0) {
     return NextResponse.json({ ok: true, mentions: [], triggered: 0 });
+  }
+  if (workRunId && mentions.length !== 1) {
+    return NextResponse.json({ error: "A retry must target exactly one agent" }, { status: 400 });
   }
 
   // Root of a new thread: threadId may be the just-created top-level message id.
@@ -1330,6 +1348,7 @@ export async function POST(req: NextRequest) {
       graphEnabled,
       sourceMessageId,
       invocationKey: `channel-message:${sourceMessageId}:${handle.toLowerCase()}`,
+      existingRunId: workRunId || undefined,
     });
   }
 
