@@ -7,7 +7,7 @@ RELEASE_ROOT="${OVH_RELEASE_ROOT:-/home/ubuntu/activity-dashboard}"
 TARGET="${1:-}"
 
 if [[ -z "$TARGET" ]]; then
-  ssh "$HOST" "printf 'current -> '; readlink -f '${RELEASE_ROOT}/current' || true; find '${RELEASE_ROOT}/releases' -mindepth 2 -maxdepth 2 -type f -path '*/dashboard/.next/BUILD_ID' -printf '%h\n' 2>/dev/null | sed 's#/.next\$##' | sort -r"
+  ssh "$HOST" "printf 'current -> '; readlink -f '${RELEASE_ROOT}/current' || true; find '${RELEASE_ROOT}/releases' -mindepth 4 -maxdepth 4 -type f -path '*/dashboard/.next/BUILD_ID' -printf '%h\n' 2>/dev/null | sed 's#/.next\$##' | sort -r"
   exit 0
 fi
 
@@ -23,13 +23,15 @@ ssh "$HOST" "flock -n /tmp/activity-dashboard-deploy.lock bash -lc '
   ln -sfn \"\$target\" \"${RELEASE_ROOT}/current.next\"
   mv -Tf \"${RELEASE_ROOT}/current.next\" \"${RELEASE_ROOT}/current\"
   sudo systemctl restart activity-dashboard
+  healthy=0
   for attempt in \$(seq 1 20); do
-    systemctl is-active --quiet activity-dashboard &&
-      curl -fsS --max-time 3 http://127.0.0.1:3000/channels >/dev/null &&
-      exit 0
+    if systemctl is-active --quiet activity-dashboard &&
+      curl -fsS --max-time 3 http://127.0.0.1:3000/channels >/dev/null 2>&1; then
+      healthy=1
+      break
+    fi
     sleep 1
   done
-  exit 1
+  test \"\$healthy\" = 1
 '"
 printf 'rolled back to %s\n' "$TARGET"
-

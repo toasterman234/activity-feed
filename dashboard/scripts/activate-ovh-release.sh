@@ -39,7 +39,7 @@ ACTIVATED=1
 sudo systemctl restart activity-dashboard
 for _attempt in $(seq 1 20); do
   if systemctl is-active --quiet activity-dashboard &&
-    curl -fsS --max-time 3 "$HEALTH_URL" >/dev/null; then
+    curl -fsS --max-time 3 "$HEALTH_URL" >/dev/null 2>&1; then
     trap - ERR
     printf 'activated %s\n' "$RELEASE"
     exit 0
