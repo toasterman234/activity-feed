@@ -785,6 +785,22 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
         }
       }
     }
+    if (lifecycleKey === "issue" && currentState === "in_progress") {
+      const feedback = await pool.query<{ cycle: number; summary: string }>(
+        `SELECT cycle, summary
+           FROM issue_feedback_cycles
+          WHERE thread_id = $1
+            AND verdict = 'action_required'
+          ORDER BY created_at DESC
+          LIMIT 1`,
+        [opts.threadId],
+      ).catch(() => ({ rows: [] as { cycle: number; summary: string }[] }));
+      if (feedback.rows[0]) {
+        workflowInstructions.unshift(
+          `Verification feedback cycle ${feedback.rows[0].cycle} must be resolved before proposing the issue as resolved:\n${feedback.rows[0].summary}`,
+        );
+      }
+    }
 
     const promptBase = buildPrompt({ ...opts, workflowInstructions: workflowInstructions.length ? workflowInstructions : undefined });
     const { provider, model } = piInvocationForHandle(opts.handle);
@@ -872,6 +888,8 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
         handle: opts.handle,
         provider,
         graphEnabled: opts.graphEnabled,
+        text: opts.userBody,
+        rootId: opts.threadId,
       },
     });
     const startedRun = await startWorkRun(pool, {
@@ -1116,6 +1134,7 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
 
     // Handle nextState via shared helper (command workflows + gates).
     // Transition always announces itself (success / gated failure / system message).
+    let verificationError: string | null = null;
     if (parsed.nextState && lc) {
       const tr = await transitionThreadState({
         threadId: opts.threadId,
@@ -1130,6 +1149,7 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
           tr.error === "illegal transition"
             ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
             : tr.error;
+        if (tr.detail?.startsWith("verification:")) verificationError = reason;
         await insertMessage({
           id: randomUUID(),
           channel_id: opts.channelId,
@@ -1141,11 +1161,18 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
       }
     }
 
-    await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: `${author} responding`, status: "done" });
+    await upsertWorkflowStep({
+      id: stepId,
+      threadId: opts.threadId,
+      label: `${author} responding`,
+      status: verificationError ? "error" : "done",
+      detail: verificationError || undefined,
+    });
     await finishWorkRun(pool, {
       runId: durableRun.id,
       workerId,
-      status: "succeeded",
+      status: verificationError ? "failed" : "succeeded",
+      errorDetail: verificationError,
       rawRef: `thread:${opts.threadId}:work-run:${durableRun.id}`,
       resultPayload: {
         replyMessageId,
@@ -1153,6 +1180,7 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
         hasPlan: Boolean(parsed.plan?.length),
         artifactTitle: parsed.artifact?.title || null,
         proposedState: parsed.nextState || null,
+        verificationPassed: !verificationError,
       },
     });
   } catch (err) {
