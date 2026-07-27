@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import {
+  canRetryWorkRun,
   canonicalJson,
   hashWorkRunConfig,
   leaseExpiry,
@@ -274,8 +275,11 @@ export async function interruptExpiredWorkRuns(
 ): Promise<WorkRunRow[]> {
   const result = await db.query<WorkRunRow>(
     `UPDATE work_runs
-        SET status = 'interrupted',
-            error_detail = COALESCE(error_detail, 'worker lease expired'),
+        SET status = CASE WHEN cancel_requested_at IS NULL THEN 'interrupted' ELSE 'cancelled' END,
+            error_detail = COALESCE(
+              error_detail,
+              CASE WHEN cancel_requested_at IS NULL THEN 'worker lease expired' ELSE 'cancelled after worker lease expired' END
+            ),
             completed_at = $1::timestamptz,
             lease_expires_at = NULL,
             updated_at = $1::timestamptz
@@ -285,4 +289,76 @@ export async function interruptExpiredWorkRuns(
     [now.toISOString()],
   );
   return result.rows;
+}
+
+export async function requestWorkRunCancellation(
+  db: Queryable,
+  runId: string,
+  now = new Date(),
+): Promise<WorkRunRow | null> {
+  const result = await db.query<WorkRunRow>(
+    `UPDATE work_runs
+        SET status = CASE WHEN status = 'queued' THEN 'cancelled' ELSE status END,
+            cancel_requested_at = $2::timestamptz,
+            completed_at = CASE WHEN status = 'queued' THEN $2::timestamptz ELSE completed_at END,
+            lease_expires_at = CASE WHEN status = 'queued' THEN NULL ELSE lease_expires_at END,
+            updated_at = $2::timestamptz
+      WHERE id = $1
+        AND status IN ('queued', 'running')
+      RETURNING *`,
+    [runId, now.toISOString()],
+  );
+  return result.rows[0] || null;
+}
+
+export async function retryWorkRun(
+  db: Queryable,
+  runId: string,
+  now = new Date(),
+): Promise<WorkRunRow | null> {
+  const source = await getWorkRun(db, runId);
+  if (!source || !canRetryWorkRun(source.status, source.attempt, source.max_attempts)) {
+    return null;
+  }
+  const attempt = source.attempt + 1;
+  const result = await db.query<WorkRunRow>(
+    `INSERT INTO work_runs (
+         id, request_id, idempotency_key, attempt, max_attempts, parent_run_id,
+         thread_id, channel_id, stage_id, repo_id, kind, status,
+         agent_registry_id, agent_version, model, config_snapshot, config_hash,
+         cwd, branch, base_commit, request_payload, created_at, updated_at
+       )
+       VALUES (
+         $1, $2, $3, $4, $5, $6,
+         $7, $8, $9, $10, $11, 'queued',
+         $12, $13, $14, $15::jsonb, $16,
+         $17, $18, $19, $20::jsonb, $21::timestamptz, $21::timestamptz
+       )
+       ON CONFLICT (request_id, attempt) DO NOTHING
+       RETURNING *`,
+    [
+        randomUUID(),
+        source.request_id,
+        `${source.request_id}:attempt:${attempt}`,
+        attempt,
+        source.max_attempts,
+        source.id,
+        source.thread_id,
+        source.channel_id,
+        source.stage_id,
+        source.repo_id,
+        source.kind,
+        source.agent_registry_id,
+        source.agent_version,
+        source.model,
+        canonicalJson(source.config_snapshot),
+        source.config_hash,
+        source.cwd,
+        source.branch,
+        source.base_commit,
+        canonicalJson(source.request_payload),
+        now.toISOString(),
+    ],
+  );
+  return result.rows[0] || null;
 }

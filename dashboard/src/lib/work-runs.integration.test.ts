@@ -9,6 +9,8 @@ import {
   interruptExpiredWorkRuns,
   listThreadWorkRuns,
   queueWorkRun,
+  requestWorkRunCancellation,
+  retryWorkRun,
   startWorkRun,
 } from "./work-runs.ts";
 
@@ -143,6 +145,61 @@ test("workers claim, renew, finish, and interrupt expired attempts", { skip: !co
     );
     assert.equal(interrupted.some((run) => run.id === stale.id), true);
     assert.equal((await getWorkRun(client, stale.id))?.status, "interrupted");
+  } finally {
+    await client.query("ROLLBACK");
+    await client.end();
+  }
+});
+
+test("operators can cancel queued work and retry failed attempts within the cap", { skip: !connectionString }, async () => {
+  const client = new pg.Client({ connectionString });
+  await client.connect();
+  await client.query("BEGIN");
+  try {
+    const queued = await queueWorkRun(client, {
+      idempotencyKey: `test:${crypto.randomUUID()}`,
+      threadId: crypto.randomUUID(),
+      channelId: crypto.randomUUID(),
+      stageId: "in_progress",
+      maxAttempts: 2,
+      agent: { agentRegistryId: "agent:codex", model: "test-model" },
+      requestPayload: { text: "retry me" },
+    });
+    const cancelled = await requestWorkRunCancellation(
+      client,
+      queued.id,
+      new Date("2026-07-27T01:00:00.000Z"),
+    );
+    assert.equal(cancelled?.status, "cancelled");
+    assert.ok(cancelled?.completed_at);
+
+    const failing = await queueWorkRun(client, {
+      idempotencyKey: `test:${crypto.randomUUID()}`,
+      threadId: crypto.randomUUID(),
+      channelId: crypto.randomUUID(),
+      stageId: "in_progress",
+      maxAttempts: 2,
+      agent: { agentRegistryId: "agent:codex", model: "test-model" },
+      requestPayload: { text: "retry me" },
+    });
+    const running = await startWorkRun(client, {
+      runId: failing.id,
+      workerId: "dashboard:test",
+      workerHost: "test-host",
+    });
+    assert.ok(running);
+    await finishWorkRun(client, {
+      runId: failing.id,
+      workerId: "dashboard:test",
+      status: "failed",
+      errorDetail: "test failure",
+    });
+
+    const retry = await retryWorkRun(client, failing.id);
+    assert.equal(retry?.attempt, 2);
+    assert.equal(retry?.parent_run_id, failing.id);
+    assert.equal(retry?.status, "queued");
+    assert.equal(await retryWorkRun(client, failing.id), null);
   } finally {
     await client.query("ROLLBACK");
     await client.end();
