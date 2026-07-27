@@ -58,8 +58,8 @@ When you change anything under `dashboard/` that should show up on the phone
 2. Apply any new Postgres DDL on **OVH**, not only locally:
    `ssh ovhvps 'sudo docker exec activity-log-db psql -U activity -d activity_log -c "…"'`
 3. Deploy: from `dashboard/`, run **`npm run deploy:ovh`**
-   (`scripts/deploy-ovh.sh` → rsync + `npm ci` + `npm run build` + restart
-   `activity-dashboard`).
+   (versioned candidate → `npm ci` + build → atomic activation → health check;
+   failures restore the prior release).
 4. Verify: `curl` the new route on the VPS and/or hard-refresh the phone PWA
    (Serwist may cache the old shell).
 
@@ -72,6 +72,15 @@ Graph Continuity rollout note:
 **Do not** start production on the Mini for day-to-day phone use.
 **Do not** point the user at `http://100.x:3000` — HTTP/1.1 starves Electric
 long-polls ([ADR-001](docs/decisions/ADR-001-shape-stream-lifecycle.md)).
+**Do not** reintroduce in-place `rsync --delete` against the live directory.
+
+Rollback and Pi readiness:
+
+```bash
+npm run rollback:ovh                 # list current/available releases
+npm run rollback:ovh -- <release-id>
+ssh ovhvps '~/activity-feed/dashboard/scripts/pi-execution-doctor.sh --smoke --worktree-smoke /home/ubuntu/activity-feed'
+```
 
 Local ports (Mini, for optional desktop dev only):
 

@@ -5,6 +5,7 @@ import type { Collection } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import type { ShapeMaterialization } from "@electric-circuits/client";
 import { client, POSITIONS_SHAPE, NET_WORTH_SHAPE, ALLOCATION_SHAPE } from "../electric";
+import { acquireShape, releaseShape } from "../shape-registry";
 
 interface Position {
   id: string;
@@ -45,15 +46,6 @@ const ASSET_COLORS: Record<string, string> = {
   real_estate: "bg-purple-500",
 };
 
-// Shape caches to prevent duplicate engine registrations across HMR/renders.
-let nwCache: Promise<ShapeMaterialization> | null = null;
-let allocCache: Promise<ShapeMaterialization> | null = null;
-let posCache: Promise<ShapeMaterialization> | null = null;
-function getShape(def: typeof NET_WORTH_SHAPE, cache: { current: Promise<ShapeMaterialization> | null }): Promise<ShapeMaterialization> {
-  if (!cache.current) cache.current = client.shape(def);
-  return cache.current;
-}
-
 function useRows<T>(mat: ShapeMaterialization): T[] {
   const coll = mat.collection as Collection<Record<string, unknown>, string>;
   const { data } = useLiveQuery(
@@ -79,9 +71,23 @@ export default function PortfolioPage() {
   const [posShape, setPosShape] = useState<ShapeMaterialization | null>(null);
 
   useEffect(() => {
-    getShape(NET_WORTH_SHAPE, { get current() { return nwCache; }, set current(v) { nwCache = v; } }).then(setNwShape);
-    getShape(ALLOCATION_SHAPE, { get current() { return allocCache; }, set current(v) { allocCache = v; } }).then(setAllocShape);
-    getShape(POSITIONS_SHAPE, { get current() { return posCache; }, set current(v) { posCache = v; } }).then(setPosShape);
+    let alive = true;
+    void Promise.all([
+      acquireShape("legacy-net-worth", () => client.shape(NET_WORTH_SHAPE)),
+      acquireShape("legacy-allocation", () => client.shape(ALLOCATION_SHAPE)),
+      acquireShape("legacy-positions", () => client.shape(POSITIONS_SHAPE)),
+    ]).then(([netWorth, allocation, positions]) => {
+      if (!alive) return;
+      setNwShape(netWorth);
+      setAllocShape(allocation);
+      setPosShape(positions);
+    });
+    return () => {
+      alive = false;
+      releaseShape("legacy-net-worth");
+      releaseShape("legacy-allocation");
+      releaseShape("legacy-positions");
+    };
   }, []);
 
   if (!nwShape || !allocShape || !posShape) {

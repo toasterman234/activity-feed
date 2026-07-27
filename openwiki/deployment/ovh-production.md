@@ -23,8 +23,10 @@ Tailnet-only (Tailscale Serve). Re-add the PWA on the phone from this URL. If th
 | PG tailnet access :5433 | ovh-vps | `tailscale serve --bg --tcp=5433 tcp://127.0.0.1:5433` (tailnet only) |
 | Feeders (file/pi/claude/vault/git) | Mac Mini | launchd, `ACTIVITY_DB_URL=postgres://…@ovh-vps.taila1553c.ts.net:5433/activity_log`; shell hooks use `docker run postgres:16 psql` against `100.101.106.60:5433`. They pause when the Mini sleeps — accepted. |
 
-Code lives at `/home/ubuntu/activity-feed` on the VPS (rsync'd from the Mini,
-no node_modules/.next). Node 22 + pnpm 10.15.1 installed on the VPS host.
+Production source lives at `/home/ubuntu/activity-feed` on the VPS. The running
+dashboard is selected through `/home/ubuntu/activity-dashboard/current`;
+versioned candidates live under `/home/ubuntu/activity-dashboard/releases`.
+Node 22 + pnpm 10.15.1 are installed on the VPS host.
 
 ## Security
 
@@ -54,18 +56,23 @@ sudo docker exec activity-log-db pg_isready -U activity -d activity_log
 
 Deploying new dashboard code (from the Mini / any agent):
 
-**Preferred:** from `dashboard/`, run `npm run deploy:ovh` (wraps the rsync +
-build + restart). Agents making phone-visible changes must do this before
+**Preferred:** from `dashboard/`, run `npm run deploy:ovh` (stages and builds a
+versioned release before atomic activation). Agents making phone-visible changes must do this before
 claiming the work is live — see `dashboard/AGENTS.md`.
 
 ```bash
 cd ~/activity-feed/dashboard && npm run deploy:ovh
 
-# equivalent manual steps:
-rsync -az --delete --exclude node_modules --exclude .next --exclude .git \
-  ~/activity-feed/dashboard/ ovhvps:~/activity-feed/dashboard/
-ssh ovhvps 'cd ~/activity-feed/dashboard && npm ci && npm run build && sudo systemctl restart activity-dashboard'
+# list the current target and built rollback releases
+npm run rollback:ovh
+
+# restore an earlier built release
+npm run rollback:ovh -- <release-id>
 ```
+
+Never run `rsync --delete` against the live directory. Failed uploads/builds
+leave `current` untouched; failed post-activation health checks restore its
+previous target automatically.
 
 After a phone-visible deploy, verify the fresh shell — not just the backend:
 
@@ -95,7 +102,9 @@ See `openwiki/web-ui/pages-and-components.md` for full react-rewrite usage.
 Channel `@pi` / `@claude` / `@codex` replies run **directly via the `pi` CLI on
 the VPS** (no Paseo). Provider/model comes from `piInvocationForHandle` in
 `dashboard/src/lib/mentions.ts` (default: Command Code `deepseek/deepseek-v4-pro`).
-Tools are disabled (`--no-tools`) so replies stay chat-shaped JSON.
+Tools are disabled (`--no-tools`) for normal chat replies. An issue in
+`in_progress` or coding task in `running` with a registered repository gets
+the approved coding toolset in an isolated Git worktree.
 
 **Spawn rule:** the dashboard must call `pi` via
 `dashboard/src/lib/execFileNoStdin.ts` (`stdio` stdin = `ignore`), **not**
@@ -123,6 +132,13 @@ sudo systemctl restart activity-dashboard
 `CHANNEL_AGENT_CWD` / `CHANNEL_PI_BIN` are set in
 `ops/ovh/activity-dashboard.service`. Missing cwd on Linux previously caused
 `spawn … ENOENT` even when `pi` existed.
+
+Readiness check:
+
+```bash
+~/activity-feed/dashboard/scripts/pi-execution-doctor.sh --smoke \
+  --worktree-smoke /home/ubuntu/activity-feed
+```
 
 
 ## Rollback (window: keep through ~2026-08-01)

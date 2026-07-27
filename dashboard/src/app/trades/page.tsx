@@ -5,6 +5,7 @@ import type { Collection } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
 import type { ShapeMaterialization } from "@electric-circuits/client";
 import { client, TRADES_SHAPE } from "../electric";
+import { acquireShape, releaseShape } from "../shape-registry";
 
 interface Trade {
   trade_id: string;
@@ -24,10 +25,8 @@ interface Trade {
 
 const PAGE_SIZE = 50;
 
-let tradeCache: Promise<ShapeMaterialization> | null = null;
 function getTradeShape(): Promise<ShapeMaterialization> {
-  if (!tradeCache) tradeCache = client.shape(TRADES_SHAPE);
-  return tradeCache;
+  return acquireShape("legacy-trades", () => client.shape(TRADES_SHAPE));
 }
 
 function useRows<T>(mat: ShapeMaterialization): T[] {
@@ -47,7 +46,14 @@ function fmt(n: number | null | undefined): string {
 export default function TradesPage() {
   const [shape, setShape] = useState<ShapeMaterialization | null>(null);
 
-  useEffect(() => { getTradeShape().then(setShape); }, []);
+  useEffect(() => {
+    let alive = true;
+    getTradeShape().then((next) => { if (alive) setShape(next); });
+    return () => {
+      alive = false;
+      releaseShape("legacy-trades");
+    };
+  }, []);
 
   if (!shape) {
     return (

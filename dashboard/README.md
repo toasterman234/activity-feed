@@ -56,9 +56,24 @@ npm run deploy:ovh
 Equivalent manual flow:
 
 ```bash
-rsync -az --delete --exclude node_modules --exclude .next --exclude .git \
-  ~/activity-feed/dashboard/ ovhvps:~/activity-feed/dashboard/
-ssh ovhvps 'cd ~/activity-feed/dashboard && npm ci && npm run build && sudo systemctl restart activity-dashboard'
+# Inspect current and available rollback releases
+npm run rollback:ovh
+
+# Restore a prior built release
+npm run rollback:ovh -- <release-id>
+```
+
+Deploys stage into a new versioned directory, build before activation, switch
+the `current` symlink atomically, and automatically restore the prior release
+if health does not pass. The script refuses a dirty dashboard tree by default;
+`OVH_ALLOW_DIRTY=1` is an explicit emergency override.
+
+Verify Pi execution prerequisites on OVH:
+
+```bash
+ssh ovhvps \
+  '~/activity-feed/dashboard/scripts/pi-execution-doctor.sh --smoke \
+  --worktree-smoke /home/ubuntu/activity-feed'
 ```
 
 ## PWA cache gotcha

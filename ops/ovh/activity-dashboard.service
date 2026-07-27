@@ -11,11 +11,13 @@
 Description=Activity Feed dashboard (Next.js production)
 After=network-online.target docker.service
 Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/activity-feed/dashboard
+WorkingDirectory=/home/ubuntu/activity-dashboard/current
 Environment=NODE_ENV=production
 Environment=PORT=3000
 Environment=HOSTNAME=127.0.0.1
@@ -29,9 +31,10 @@ Environment=CHANNEL_GRAPH=1
 Environment=CHANNEL_GRAPH_CHANNELS=
 Environment=CHANNEL_AIWG_BIN=/home/ubuntu/.local/bin/aiwg
 Environment=CHANNEL_AIWG_ROOT=/home/ubuntu/.local/lib/node_modules/aiwg
+ExecCondition=/usr/bin/test -s /home/ubuntu/activity-dashboard/current/.next/BUILD_ID
 ExecStart=/usr/bin/npm run start
-Restart=always
-RestartSec=3
+Restart=on-failure
+RestartSec=10
 MemoryMax=3G
 
 [Install]

@@ -3,9 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "next dev -p 3010 -H 127.0.0.1",
+    "build": "npm run check:shapes && next build --webpack",
+    "start": "next start",
+    "check:shapes": "node scripts/check-shape-budget.mjs",
+    "init:workflow": "node scripts/init-workflow-cockpit.mjs",
+    "init:perf": "node scripts/init-perf-metrics.mjs",
+    "dev:unsafe-3000": "next dev -p 3000",
+    "deploy:ovh": "bash scripts/deploy-ovh.sh",
+    "rollback:ovh": "bash scripts/rollback-ovh.sh",
+    "doctor:pi": "bash scripts/pi-execution-doctor.sh"
   },
   "dependencies": {
     "@durable-streams/client": "^0.2.6",
@@ -14,13 +21,18 @@
     "@electric-circuits/client": "file:../electric-circuits/packages/client",
     "@electric-circuits/protocol": "file:../electric-circuits/packages/protocol",
     "@electric-sql/client": "^1.5.24",
+    "@serwist/next": "^9.5.12",
     "@tanstack/db": "file:../electric-circuits/node_modules/.pnpm/@tanstack+db@0.6.12_typescript@5.9.3/node_modules/@tanstack/db",
     "@tanstack/react-db": "file:../electric-circuits/node_modules/.pnpm/@tanstack+react-db@0.1.90_react@18.3.1_typescript@5.9.3/node_modules/@tanstack/react-db",
     "@trpc/client": "^11.18.0",
     "@trpc/server": "^11.18.0",
+    "@types/pg": "^8.20.0",
     "next": "16.2.11",
+    "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "serwist": "^9.5.12",
+    "virtua": "^0.49.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -28,6 +40,9 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "playwright": "^1.62.0",
+    "react-rewrite-cli": "^0.1.1",
+    "react-scan": "^0.5.7",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
