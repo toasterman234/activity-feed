@@ -41,6 +41,24 @@ export function hashWorkRunConfig(snapshot: WorkRunConfigSnapshot): string {
   return createHash("sha256").update(canonicalJson(snapshot)).digest("hex");
 }
 
+export function registryAgentIdForHandle(handle: string): string {
+  const normalized = handle.toLowerCase();
+  if (
+    normalized === "claude" ||
+    normalized === "claude-code" ||
+    normalized.startsWith("claude/") ||
+    normalized.includes("sonnet") ||
+    normalized.includes("opus")
+  ) return "agent:claude";
+  if (
+    normalized === "codex" ||
+    normalized.startsWith("codex/") ||
+    normalized.includes("gpt-5")
+  ) return "agent:codex";
+  if (normalized === "cursor" || normalized.includes("grok")) return "agent:cursor";
+  return "agent:pi";
+}
+
 export function isTerminalWorkRunStatus(status: WorkRunStatus): boolean {
   return status === "succeeded" || status === "cancelled";
 }
@@ -55,4 +73,3 @@ export function leaseExpiry(now: Date, leaseMs: number): string {
   }
   return new Date(now.getTime() + leaseMs).toISOString();
 }
-
