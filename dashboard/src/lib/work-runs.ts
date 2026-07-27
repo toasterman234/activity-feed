@@ -3,6 +3,7 @@ import type { Pool, PoolClient } from "pg";
 import {
   canonicalJson,
   hashWorkRunConfig,
+  leaseExpiry,
   type WorkRunConfigSnapshot,
   type WorkRunStatus,
 } from "./work-run-contract.ts";
@@ -134,6 +135,119 @@ export async function listThreadWorkRuns(
       ORDER BY created_at DESC
       LIMIT $2`,
     [threadId, boundedLimit],
+  );
+  return result.rows;
+}
+
+export async function claimNextWorkRun(
+  db: Queryable,
+  input: {
+    workerId: string;
+    workerHost: string;
+    leaseMs?: number;
+    now?: Date;
+  },
+): Promise<WorkRunRow | null> {
+  const now = input.now || new Date();
+  const result = await db.query<WorkRunRow>(
+    `WITH candidate AS (
+       SELECT id
+         FROM work_runs
+        WHERE status = 'queued'
+          AND cancel_requested_at IS NULL
+        ORDER BY created_at ASC
+        FOR UPDATE SKIP LOCKED
+        LIMIT 1
+     )
+     UPDATE work_runs AS run
+        SET status = 'running',
+            worker_id = $1,
+            worker_host = $2,
+            started_at = COALESCE(started_at, $3::timestamptz),
+            heartbeat_at = $3::timestamptz,
+            lease_expires_at = $4::timestamptz,
+            updated_at = $3::timestamptz
+       FROM candidate
+      WHERE run.id = candidate.id
+      RETURNING run.*`,
+    [input.workerId, input.workerHost, now.toISOString(), leaseExpiry(now, input.leaseMs || 120_000)],
+  );
+  return result.rows[0] || null;
+}
+
+export async function heartbeatWorkRun(
+  db: Queryable,
+  input: { runId: string; workerId: string; leaseMs?: number; now?: Date },
+): Promise<WorkRunRow | null> {
+  const now = input.now || new Date();
+  const result = await db.query<WorkRunRow>(
+    `UPDATE work_runs
+        SET heartbeat_at = $3::timestamptz,
+            lease_expires_at = $4::timestamptz,
+            updated_at = $3::timestamptz
+      WHERE id = $1
+        AND worker_id = $2
+        AND status = 'running'
+      RETURNING *`,
+    [input.runId, input.workerId, now.toISOString(), leaseExpiry(now, input.leaseMs || 120_000)],
+  );
+  return result.rows[0] || null;
+}
+
+export async function finishWorkRun(
+  db: Queryable,
+  input: {
+    runId: string;
+    workerId: string;
+    status: "succeeded" | "failed";
+    resultPayload?: Record<string, unknown>;
+    errorDetail?: string | null;
+    rawRef?: string | null;
+    now?: Date;
+  },
+): Promise<WorkRunRow | null> {
+  const now = input.now || new Date();
+  const result = await db.query<WorkRunRow>(
+    `UPDATE work_runs
+        SET status = $3,
+            result_payload = $4::jsonb,
+            error_detail = $5,
+            raw_ref = COALESCE($6, raw_ref),
+            completed_at = $7::timestamptz,
+            lease_expires_at = NULL,
+            updated_at = $7::timestamptz
+      WHERE id = $1
+        AND worker_id = $2
+        AND status = 'running'
+      RETURNING *`,
+    [
+      input.runId,
+      input.workerId,
+      input.status,
+      canonicalJson(input.resultPayload || {}),
+      input.errorDetail || null,
+      input.rawRef || null,
+      now.toISOString(),
+    ],
+  );
+  return result.rows[0] || null;
+}
+
+export async function interruptExpiredWorkRuns(
+  db: Queryable,
+  now = new Date(),
+): Promise<WorkRunRow[]> {
+  const result = await db.query<WorkRunRow>(
+    `UPDATE work_runs
+        SET status = 'interrupted',
+            error_detail = COALESCE(error_detail, 'worker lease expired'),
+            completed_at = $1::timestamptz,
+            lease_expires_at = NULL,
+            updated_at = $1::timestamptz
+      WHERE status = 'running'
+        AND lease_expires_at < $1::timestamptz
+      RETURNING *`,
+    [now.toISOString()],
   );
   return result.rows;
 }
