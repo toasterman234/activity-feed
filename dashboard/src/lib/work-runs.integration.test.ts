@@ -112,7 +112,8 @@ test("workers claim, renew, finish, and interrupt expired attempts", { skip: !co
       leaseMs: 120_000,
       now: new Date("2026-07-27T00:00:30.000Z"),
     });
-    assert.equal(renewed?.lease_expires_at.toISOString(), "2026-07-27T00:02:30.000Z");
+    assert.ok(renewed?.lease_expires_at);
+    assert.equal(renewed.lease_expires_at.toISOString(), "2026-07-27T00:02:30.000Z");
 
     const finished = await finishWorkRun(client, {
       runId: queued.id,
