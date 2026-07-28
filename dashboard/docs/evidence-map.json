@@ -159,15 +159,13 @@
     },
     {
       "id": "agent-eval",
-      "plan": "../AGENT-EVAL-PLAN.md",
+      "plan": "docs/AGENT-EVAL-PLAN.md",
       "title": "Agent eval measure / improve loop",
       "expectedStatus": "mostly_shipped",
       "requireAll": [
         "src/app/api/agent-runs/overview/route.ts",
         "src/app/api/agent-runs/list/route.ts",
-        "src/app/runs/page.tsx",
-        "../feeders/timeline-to-agentruns.js",
-        "../feeders/auto-judge.js"
+        "src/app/runs/page.tsx"
       ],
       "forbidAll": [
         "src/app/improvements/page.tsx"
@@ -175,46 +173,52 @@
       "openItems": [
         {
           "id": "eval-phase-3",
-          "plan": "../AGENT-EVAL-PLAN.md",
+          "plan": "docs/AGENT-EVAL-PLAN.md",
           "title": "Phase 3 \u2014 Automatic grading acceptance",
           "marker": "## Phase 3 \u2014 Automatic grading"
         },
         {
           "id": "eval-phase-4-improvements",
-          "plan": "../AGENT-EVAL-PLAN.md",
+          "plan": "docs/AGENT-EVAL-PLAN.md",
           "title": "Phase 4 \u2014 /improvements propose-fixes loop",
           "marker": "## Phase 4 \u2014 Improve loop"
         },
         {
           "id": "eval-phase-5",
-          "plan": "../AGENT-EVAL-PLAN.md",
+          "plan": "docs/AGENT-EVAL-PLAN.md",
           "title": "Phase 5 \u2014 Regression suite",
           "marker": "## Phase 5 \u2014 Regression suite"
         },
         {
           "id": "improvements-page-missing",
           "title": "/improvements page not built yet",
-          "path": "../AGENT-EVAL-PLAN.md",
+          "path": "docs/AGENT-EVAL-PLAN.md",
           "includes": "`/improvements` review page"
+        },
+        {
+          "id": "feeders-local-only",
+          "title": "timeline/auto-judge feeders live on Mac (not in OVH dashboard package)",
+          "path": "docs/AGENT-EVAL-PLAN.md",
+          "includes": "Phase 1 \u2014 Bridge timeline.db"
         }
       ]
     },
     {
       "id": "coding-worker-transport",
-      "plan": ".planning/issue-resolution-pipeline/task_plan.md",
+      "plan": "docs/open-initiatives.md",
       "title": "Autonomous coding-worker transport",
       "expectedStatus": "not_built",
       "requireAll": [],
       "requirePathContains": [
         {
-          "path": ".planning/issue-resolution-pipeline/task_plan.md",
+          "path": "docs/open-initiatives.md",
           "includes": "autonomous code-worker transport remains intentionally deferred"
         }
       ],
       "openItems": [
         {
           "id": "coding-worker-deferred",
-          "plan": ".planning/issue-resolution-pipeline/task_plan.md",
+          "plan": "docs/open-initiatives.md",
           "title": "Local coding-worker transport before autonomous repo mutation",
           "marker": "callable local coding-worker transport"
         }
