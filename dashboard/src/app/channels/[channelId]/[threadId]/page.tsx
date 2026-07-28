@@ -193,7 +193,13 @@ function ThreadContent({
   const meta: ThreadMetaRow | null = extras.meta;
   useEffect(() => {
     if (!meta) return;
-    if (meta.lifecycle === "planning" && meta.state === "accepted") {
+    // Show the Work tab by default where it has the most value:
+    // - Approved plans → execution handoff workspace
+    // - Drafted coding threads → copied task list ready to run
+    if (
+      (meta.lifecycle === "planning" && meta.state === "accepted") ||
+      (meta.lifecycle === "coding" && meta.state === "drafted")
+    ) {
       setActiveTab("work");
     }
   }, [meta?.thread_id, meta?.lifecycle, meta?.state]);
