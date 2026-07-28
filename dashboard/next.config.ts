@@ -50,12 +50,19 @@ const nextConfig: NextConfig = {
     return config;
   },
   async rewrites() {
-    return [
-      { source: "/api/:path*", destination: "http://127.0.0.1:8795/:path*" },
-      // /ds is handled by src/app/ds/[...path]/route.ts, not a rewrite — Next's
-      // dev-server rewrite proxy resets long-lived long-poll connections.
-      { source: "/market-lake/:path*", destination: "http://127.0.0.1:9077/:path*" },
-    ];
+    // Use `fallback` (not the default afterFiles array): afterFiles runs
+    // *before* dynamic App Router routes, so `/api/:path*` was stealing
+    // handlers like `/api/ops/initiatives/[id]/promote` and
+    // `/api/projects/[repoId]` and proxying them to electric-circuits tRPC.
+    // fallback only applies when no Next page/route (including dynamic) matched.
+    return {
+      fallback: [
+        { source: "/api/:path*", destination: "http://127.0.0.1:8795/:path*" },
+        // /ds is handled by src/app/ds/[...path]/route.ts, not a rewrite — Next's
+        // dev-server rewrite proxy resets long-lived long-poll connections.
+        { source: "/market-lake/:path*", destination: "http://127.0.0.1:9077/:path*" },
+      ],
+    };
   },
 };
 
