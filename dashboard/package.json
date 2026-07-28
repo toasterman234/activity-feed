@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010 -H 127.0.0.1",
-    "build": "npm run check:shapes && npm run check:shell && npm run check:routes && next build --webpack",
+    "build": "npm run check:shapes && npm run check:shell && npm run check:routes && npm run check:plans && next build --webpack",
     "start": "next start",
     "check:shapes": "node scripts/check-shape-budget.mjs",
     "check:shell": "node scripts/check-mobile-shell.mjs",
@@ -14,7 +14,8 @@
     "dev:unsafe-3000": "next dev -p 3000",
     "deploy:ovh": "bash scripts/deploy-ovh.sh",
     "rollback:ovh": "bash scripts/rollback-ovh.sh",
-    "doctor:pi": "bash scripts/pi-execution-doctor.sh"
+    "doctor:pi": "bash scripts/pi-execution-doctor.sh",
+    "check:plans": "node scripts/check-plan-status.mjs"
   },
   "dependencies": {
     "@durable-streams/client": "^0.2.6",

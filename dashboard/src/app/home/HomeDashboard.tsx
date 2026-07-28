@@ -275,12 +275,70 @@ export default function HomeDashboard() {
           <ActiveWorkPanel data={data} />
           <ThreadsPanel data={data} />
           <SystemPanel data={data} />
+          <ContinuityEvidenceCard />
           <AgentHealthCard />
         </div>
       </div>
     </div>
   );
 }
+
+function ContinuityEvidenceCard() {
+  const [summary, setSummary] = useState<{
+    failing: number;
+    warnings: number;
+    pendingInbox: number;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/ops/evidence", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        setSummary({
+          failing: Number(data.summary?.failing || 0),
+          warnings: Number(data.summary?.warnings || 0),
+          pendingInbox: Number(data.summary?.pendingInbox || 0),
+        });
+      } catch {
+        /* non-critical */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!summary) return null;
+  const attention = summary.failing + summary.warnings + summary.pendingInbox;
+  if (attention === 0) {
+    return (
+      <Card
+        title="Continuity"
+        action={<Link href="/settings/evidence" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Evidence</Link>}
+      >
+        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">PLAN evidence clean. Graph inbox empty.</p>
+      </Card>
+    );
+  }
+
+  return (
+    <Card
+      title="Continuity"
+      action={<Link href="/settings/evidence" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Evidence</Link>}
+    >
+      <div className="flex gap-2">
+        <CountPill label="Fails" value={summary.failing} href="/settings/evidence" tone={summary.failing ? "danger" : "good"} />
+        <CountPill label="Warns" value={summary.warnings} href="/settings/evidence" tone={summary.warnings ? "warn" : "good"} />
+        <CountPill label="Inbox" value={summary.pendingInbox} href="/channels/inbox" tone={summary.pendingInbox ? "warn" : "good"} />
+      </div>
+    </Card>
+  );
+}
+
 
 function AgentHealthCard() {
   const [health, setHealth] = useState<{ successRate: string; driftRate: string; total: number } | null>(null);

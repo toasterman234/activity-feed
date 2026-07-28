@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "scope": "v1-channel-plus-plan-evidence",
+  "notes": [
+    "Hard evidence may auto-observe. Only inbox-accepted decisions may flip PLAN Status.",
+    "Graph continuity covers channel work; this map covers PLAN/contract honesty for shipped claims.",
+    "Surfaces without writers (Fleet/Models/Activity/etc.) are out of scope until instrumented."
+  ],
+  "initiatives": [
+    {
+      "id": "graph-continuity",
+      "plan": "PLAN-graph-continuity.md",
+      "title": "Graph Continuity",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/channels/capabilities.ts",
+        "src/app/channels/inbox/page.tsx",
+        "src/app/api/channels/graph-inbox/route.ts",
+        "src/app/api/channels/trigger/route.ts"
+      ]
+    },
+    {
+      "id": "lifecycles",
+      "plan": "PLAN-lifecycles.md",
+      "title": "Thread lifecycles + GuideBar",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/channels/lifecycles.ts",
+        "src/app/channels/GuideBar.tsx",
+        "src/app/api/channels/advance/route.ts"
+      ],
+      "openItems": [
+        {
+          "id": "guidebar-phase-6",
+          "plan": "task_plan.md",
+          "title": "GuideBar Phase 6 OVH browser QA",
+          "marker": "Phase 6: Browser-check on OVH",
+          "expectUnchecked": true
+        }
+      ]
+    },
+    {
+      "id": "project-promotion",
+      "plan": "PLAN-project-promotion.md",
+      "title": "Promote thread to AIWG project",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/api/channels/promote/route.ts",
+        "src/app/channels/PromoteStatusPanel.tsx"
+      ]
+    },
+    {
+      "id": "project-detail-aiwg",
+      "plan": "PLAN-project-detail-aiwg.md",
+      "title": "AIWG-aware Project Detail",
+      "expectedStatus": "not_built",
+      "forbidAll": [
+        "src/app/projects/[repoId]/aiwg/page.tsx"
+      ],
+      "requireAll": []
+    },
+    {
+      "id": "thread-move-advance",
+      "plan": "PLAN-thread-move-and-advance-state.md",
+      "title": "Move threads + advance state",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/api/channels/move-thread/route.ts",
+        "src/app/channels/MoveThreadDialog.tsx",
+        "src/app/channels/AdvanceStateButtons.tsx"
+      ]
+    },
+    {
+      "id": "issues-channel",
+      "plan": "PLAN-issues-channel.md",
+      "title": "Issues channel",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/channels/lifecycles.ts",
+        "src/app/channels/[channelId]/page.tsx"
+      ],
+      "requirePathContains": [
+        { "path": "src/app/channels/lifecycles.ts", "includes": "\"issue\"" },
+        { "path": "src/app/channels/[channelId]/page.tsx", "includes": "useIssuesMeta" }
+      ]
+    },
+    {
+      "id": "annotations",
+      "plan": "PLAN-annotations.md",
+      "title": "Annotate / judge sessions",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/collections/CollectionsContent.tsx",
+        "src/app/api/judgments/write/route.ts",
+        "src/app/api/run-eval/route.ts"
+      ]
+    },
+    {
+      "id": "mobile-pwa",
+      "plan": "PLAN-mobile-pwa.md",
+      "title": "Mobile PWA hardening",
+      "expectedStatus": "mostly_shipped",
+      "requireAll": [
+        "src/app/sw.ts",
+        "src/app/install-prompt.tsx",
+        "src/app/sw-update-prompt.tsx",
+        "src/app/channels/[channelId]/[threadId]/page.tsx"
+      ],
+      "openItems": [
+        {
+          "id": "apple-touch-icon",
+          "title": "Proper 180×180 Apple touch icon",
+          "path": "src/app/layout.tsx",
+          "includes": "TODO: replace with a proper 180×180 PNG"
+        }
+      ]
+    },
+    {
+      "id": "live-activity-feed",
+      "plan": "PLAN-live-activity-feed.md",
+      "title": "Live agent activity feed",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/api/channels/trigger/route.ts"
+      ],
+      "requirePathContains": [
+        { "path": "src/app/api/channels/trigger/route.ts", "includes": "CHANNEL_LIVE_ACTIVITY" }
+      ]
+    },
+    {
+      "id": "fleet-bottom-nav",
+      "plan": null,
+      "title": "Fleet primary bottom nav",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/app/bottom-nav.tsx",
+        "src/app/fleet/page.tsx",
+        "src/app/settings/layout.tsx"
+      ],
+      "requirePathContains": [
+        { "path": "src/app/bottom-nav.tsx", "includes": "href: \"/fleet\"" },
+        { "path": "src/app/settings/layout.tsx", "includes": "href: \"/models\"" }
+      ]
+    }
+  ]
+}

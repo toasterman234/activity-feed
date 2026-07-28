@@ -77,4 +77,7 @@ ssh "$HOST" \
 
 printf '==> external health\n'
 curl -fsS --max-time 15 "https://ovh-vps.taila1553c.ts.net:8446/channels" >/dev/null
+mkdir -p data
+printf '{"release":"%s","git_sha":"%s","dirty":%s,"deployed_at":"%s"}\n' \
+  "$release_id" "$git_sha" "$dirty" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > data/last-deploy.json
 printf 'deployed %s\n' "$release_id"
