@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Finding = { severity: string; message: string };
@@ -63,6 +64,20 @@ export default function EvidenceSettingsPage() {
   const [promoteDetail, setPromoteDetail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const initialFilter = (() => {
+    const raw = searchParams.get("filter");
+    if (raw === "ready" || raw === "shipped" || raw === "all" || raw === "attention") return raw;
+    return "attention";
+  })();
+  const [filter, setFilter] = useState<"attention" | "ready" | "shipped" | "all">(initialFilter);
+
+  useEffect(() => {
+    const raw = searchParams.get("filter");
+    if (raw === "ready" || raw === "shipped" || raw === "all" || raw === "attention") {
+      setFilter(raw);
+    }
+  }, [searchParams]);
 
   const refresh = useCallback(async (sync = false) => {
     setLoading(true);
@@ -138,6 +153,42 @@ export default function EvidenceSettingsPage() {
     return joined;
   }, [data]);
 
+
+  type RowKind = "fail" | "open" | "ready" | "shipped" | "clean";
+
+  const classified = useMemo(() => {
+    return rows.map((row) => {
+      const { init, map } = row;
+      const gateOk = map ? map.ok : true;
+      const openFindings = (map?.findings || []).filter(
+        (f) => f.severity === "fail" || f.severity === "warn" || f.severity === "open",
+      );
+      const hasFail = openFindings.some((f) => f.severity === "fail") || (map ? !map.ok : false);
+      const hasOpen = openFindings.some((f) => f.severity === "open" || f.severity === "warn");
+      const canPromote = Boolean(init && init.status !== "shipped" && gateOk);
+      const shipped = init?.status === "shipped";
+      let kind: RowKind = "clean";
+      if (shipped) kind = "shipped";
+      else if (hasFail) kind = "fail";
+      else if (canPromote) kind = "ready";
+      else if (hasOpen || !init) kind = "open";
+      return { ...row, gateOk, openFindings, canPromote, kind };
+    });
+  }, [rows]);
+
+  const filteredRows = useMemo(() => {
+    if (filter === "all") return classified;
+    if (filter === "shipped") return classified.filter((r) => r.kind === "shipped");
+    if (filter === "ready") return classified.filter((r) => r.kind === "ready");
+    // attention: anything unfinished that needs eyes
+    return classified.filter((r) => r.kind === "fail" || r.kind === "open" || r.kind === "ready");
+  }, [classified, filter]);
+
+  const attentionCount = useMemo(
+    () => classified.filter((r) => r.kind === "fail" || r.kind === "open" || r.kind === "ready").length,
+    [classified],
+  );
+
   const mapCount = data?.summary.mapInitiatives ?? data?.summary.initiatives ?? data?.evidence.results.length ?? 0;
 
   const readyCount = useMemo(() => {
@@ -207,22 +258,52 @@ export default function EvidenceSettingsPage() {
             </Link>
           </div>
 
+          <div className="flex flex-wrap gap-1">
+            {([
+              ["attention", `Needs attention (${attentionCount})`],
+              ["ready", `Ready (${readyCount})`],
+              ["shipped", `Shipped (${data.summary.shipped || 0})`],
+              ["all", `All (${classified.length})`],
+            ] as const).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setFilter(id)}
+                className={`rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+                  filter === id
+                    ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900"
+                    : "border-zinc-200 text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
           <section className="space-y-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Initiatives</h3>
-            {rows.length === 0 ? (
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              {filter === "attention"
+                ? "Needs attention"
+                : filter === "ready"
+                  ? "Ready to promote"
+                  : filter === "shipped"
+                    ? "Shipped"
+                    : "All initiatives"}
+            </h3>
+            {classified.length === 0 ? (
               <p className="text-[11px] text-zinc-400">
                 None yet — tap Sync + refresh to seed from the evidence map.
               </p>
+            ) : filteredRows.length === 0 ? (
+              <p className="text-[11px] text-zinc-400">
+                Nothing in this filter.
+                {filter === "attention" ? " All clear — try Ready or All." : null}
+              </p>
             ) : (
               <ul className="space-y-2">
-                {rows.map(({ init, map }) => {
+                {filteredRows.map(({ init, map, gateOk, openFindings, canPromote, kind }) => {
                   const title = init?.title || map?.title || "Untitled";
                   const key = init?.id || map?.id || title;
-                  const gateOk = map ? map.ok : true;
-                  const openFindings = (map?.findings || []).filter(
-                    (f) => f.severity === "fail" || f.severity === "warn" || f.severity === "open",
-                  );
-                  const canPromote = Boolean(init && init.status !== "shipped" && gateOk);
                   const blockedReason = !init
                     ? "Not in graph yet — Sync + refresh"
                     : init.status === "shipped"
