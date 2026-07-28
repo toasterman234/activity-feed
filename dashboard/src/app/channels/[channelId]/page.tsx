@@ -284,7 +284,8 @@ function ThreadList({
   router: ReturnType<typeof useRouter>;
 }) {
   const [showArchived, setShowArchived] = useState(false);
-  const threadMeta = useChannelThreadMeta(channelId, 4000, showArchived);
+  // Always fetch all threads so we can count & suggest the toggle; hide client-side.
+  const threadMeta = useChannelThreadMeta(channelId, 4000, true);
   const metaByThread = useMemo(() => {
     const m: Record<string, ThreadMetaRow> = {};
     for (const row of threadMeta) m[row.thread_id] = row;
