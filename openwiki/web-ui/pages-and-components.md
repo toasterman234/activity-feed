@@ -21,7 +21,9 @@ The dashboard is a Next.js 16 App Router PWA. It is designed for phone use first
 | `/projects` | **Projects** — promoted/registered repos and work entry points | `GET /api/repos`, `POST /api/projects/work` |
 | `/projects/[repoId]` | **Project detail** — repo-specific thread/work views | project APIs |
 | `/finance` | **Finance** — portfolio, banking, watchlist, trades, screener, personal views | electric-circuits + Market Lake |
-| `/models` | **Models** — proxy/model status, swaps, subscriptions | model APIs |
+| `/fleet` | **Fleet** — registry, agent profiles, runs entry | registry + fleet APIs |
+| `/workflows` | **Workflows** — versioned workflow template registry (also via Settings) | workflow APIs |
+| `/models` | **Models** — proxy/model status, swaps, subscriptions (Settings tab) | model APIs |
 | `/settings/perf` | **Perf** — web vitals and app measures | perf APIs |
 
 ## Home page contract
@@ -83,16 +85,20 @@ Bottom nav is the primary mobile entry point:
 - **Home**
 - **Activity**
 - **Channels**
+- **Fleet**
 - **Finance**
-- **Models**
 - **Settings**
+
+Settings secondary tabs: Performance · Models · Workflows.
 
 Rule of thumb:
 
 - Home = summary / routing
 - Activity = raw stream
 - Channels = thread workspace
-- Models = operational/debug model state
+- Fleet = registry / agent fleet hub (Registry lives here)
+- Finance = portfolio / watchlist / screener / trades
+- Settings = perf, models, workflow registry editor
 
 ## PWA behavior
 

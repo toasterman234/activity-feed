@@ -20,4 +20,4 @@ Session-by-session log of what was done.
 - `npx next build`: succeeded, zero build errors
 
 ### Next Steps
-- Phase 6: Browser-check on OVH (click through happy path + edge cases)
+- Phase 6: Browser-check on OVH (click through happy path + edge cases) — **still pending** as of 2026-07-27
