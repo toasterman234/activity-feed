@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [plans, steps, artifacts, meta, promotions, activity, graphEvents, graphDecisions, graphObservations, graphProposals] = await Promise.all([
+    const [plans, steps, artifacts, meta, promotions, activity, interactions, graphEvents, graphDecisions, graphObservations, graphProposals] = await Promise.all([
       pool.query(
         `SELECT id, thread_id, title, status, sort_order, created_at, updated_at
            FROM thread_plans
@@ -54,6 +54,13 @@ export async function GET(req: NextRequest) {
            FROM thread_activity_events
           WHERE thread_id = $1
           ORDER BY created_at ASC, seq ASC`,
+        [threadId],
+      ).catch(() => ({ rows: [] })),
+      pool.query(
+        `SELECT id, thread_id, stage_id, role, kind, content, payload, status, created_at
+           FROM thread_stage_interactions
+          WHERE thread_id = $1
+          ORDER BY created_at ASC`,
         [threadId],
       ).catch(() => ({ rows: [] })),
       pool.query(
@@ -179,6 +186,7 @@ export async function GET(req: NextRequest) {
       meta: meta.rows[0] || null,
       promotions: promotions.rows,
       activity: activity.rows,
+      interactions: interactions.rows,
       graphEvents: graphEvents.rows,
       graphDecisions: graphDecisions.rows,
       graphObservations: graphObservations.rows,

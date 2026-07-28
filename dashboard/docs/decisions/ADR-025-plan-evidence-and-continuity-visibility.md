@@ -18,7 +18,7 @@ pretending the graph automatically documents the whole product.
    (`scripts/check-plan-status.mjs`) that validates shipped claims against paths
    and content markers.
 3. Fail production builds on hard evidence mismatches (`npm run check:plans`).
-4. Expose results at `GET /api/ops/evidence`, **Settings → Evidence**, and a Home
+4. Expose results at `GET /api/ops/evidence`, **Channels → Continuity**, and a Home
    **Continuity** card. Do **not** add a bottom-nav tab.
 5. Deployments write `data/last-deploy.json` as hard release evidence. Graph
    observations from deploy remain optional follow-up (DB write from CI/host).

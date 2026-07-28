@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import type { Collection } from "@tanstack/db";
 import { useLiveQuery } from "@tanstack/react-db";
@@ -9,7 +10,7 @@ import { client, ACTIVITY_LOG_SHAPE, COLLECTIONS_SHAPE, JUDGMENTS_SHAPE } from "
 import { acquireShape, releaseShape } from "../shape-registry";
 import { writeRow } from "../writeRow";
 import { CollectionsContent } from "../collections/CollectionsContent";
-import { RunsTab } from "../runs/page";
+import { RunsTab } from "../runs/RunsPage";
 import { measure } from "@/lib/perf";
 
 const VERDICTS = [
@@ -216,7 +217,15 @@ export default function Home() {
 
 function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; collShape: ShapeMaterialization | null; jdgShape: ShapeMaterialization | null }) {
   const rows = useActivityRows(shape);
-  const [tab, setTab] = useState<TabId>("activity");
+  const searchParams = useSearchParams();
+  const initialTab = (() => {
+    const raw = (searchParams.get("tab") || "").toLowerCase();
+    if (raw === "projects" || raw === "memory" || raw === "collections" || raw === "runs" || raw === "activity") {
+      return raw as TabId;
+    }
+    return "activity" as TabId;
+  })();
+  const [tab, setTab] = useState<TabId>(initialTab);
   // Lazily acquire collections/judgments only when that tab is opened so Activity
   // boot holds a single live shape (ADR-003 budget).
   const [lazyColl, setLazyColl] = useState<ShapeMaterialization | null>(collShape);

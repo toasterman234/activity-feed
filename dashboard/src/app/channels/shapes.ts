@@ -51,6 +51,18 @@ export interface WorkflowStepRow { id: string; thread_id: string; step_label: st
 export interface ThreadArtifactRow { id: string; thread_id: string; title: string; kind: string; content: string; version: number; created_at: string }
 export interface ThreadMetaRow { thread_id: string; channel_id: string; lifecycle: string; state: string; enabled_workflows: string; research_mode: string | null; priority: string | null; assignee: string | null; repo_id: string | null; labels: string | null; promoted_to: string | null; archived_at: string | null; updated_at: string }
 export interface ThreadPromotionRow { id: string; thread_id: string; repo_path: string | null; status: string; error_detail: string | null; agent_provider: string | null; agent_model: string | null; progress: string | null; created_at: string; completed_at: string | null }
+export interface StageInteractionRow {
+  id: string;
+  thread_id: string;
+  stage_id: string;
+  role: string;
+  kind: string;
+  content: string;
+  payload: string;
+  status: string;
+  created_at: string;
+}
+
 export interface ActivityEventRow { id: string; thread_id: string; run_id: string; seq: number; kind: string; label: string; detail: string; status: string; created_at: string; updated_at: string }
 export interface GraphEventRow { id: string; thread_id: string; kind: string; actor: string; payload: string; caused_by: string | null; created_at: string }
 export interface GraphDecisionRow { id: string; thread_id: string; statement: string; rationale: string | null; evidence: string; status: string; supersedes: string | null; supersedes_statement?: string | null; resolved_by: string | null; resolution_rationale: string | null; created_at: string; resolved_at: string | null }
@@ -116,6 +128,8 @@ export interface ThreadExtras {
   artifacts: ThreadArtifactRow[];
   meta: ThreadMetaRow | null;
   promotion: ThreadPromotionRow | null;
+  /** Stage module interactions (guided review proposals, approvals, errors). */
+  interactions: StageInteractionRow[];
   /** Live agent activity trace (thinking/tool/status), ordered oldest→newest.
    *  Rides this existing poll — NOT a held Electric shape (ADR-003). */
   activity: ActivityEventRow[];
@@ -142,7 +156,7 @@ const EMPTY_CONTINUITY: ContinuitySummary = {
 
 export function useThreadExtras(threadId: string): ThreadExtras {
   const [data, setData] = useState<Omit<ThreadExtras, "refresh">>({
-    plans: [], steps: [], artifacts: [], meta: null, promotion: null, activity: [],
+    plans: [], steps: [], artifacts: [], meta: null, promotion: null, interactions: [], activity: [],
     graphEvents: [], graphDecisions: [], graphObservations: [], graphProposals: [], continuity: EMPTY_CONTINUITY,
   });
 
@@ -163,6 +177,7 @@ export function useThreadExtras(threadId: string): ThreadExtras {
         artifacts: (next.artifacts || []) as ThreadArtifactRow[],
         meta: (next.meta as ThreadMetaRow | null) || null,
         promotion: promoRows.sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null,
+        interactions: (next.interactions || []) as StageInteractionRow[],
         activity: (next.activity || []) as ActivityEventRow[],
         graphEvents: (next.graphEvents || []) as GraphEventRow[],
         graphDecisions: (next.graphDecisions || []) as GraphDecisionRow[],

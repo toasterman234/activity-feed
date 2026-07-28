@@ -407,7 +407,7 @@ function StatusStrip({
       <CountPill
         label="Agents"
         value={counts.agentsDown ? "down" : "up"}
-        href="/models"
+        href="/ops/config?tab=models"
         tone={counts.agentsDown ? "warn" : "good"}
       />
     </div>
@@ -610,7 +610,7 @@ function SystemPanel({ data }: { data: HomeOverview }) {
     <Card
       title="System"
       action={
-        <Link href="/models" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
+        <Link href="/ops/config?tab=models" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
           Models
         </Link>
       }
@@ -733,20 +733,20 @@ function AgentHealthCard() {
     <Card
       title="Agent health"
       action={
-        <Link href="/runs" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
+        <Link href="/ops/runs" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
           Runs
         </Link>
       }
     >
       <div className="flex gap-2">
-        <CountPill label="Success" value={health.successRate} href="/runs" tone={successTone} />
+        <CountPill label="Success" value={health.successRate} href="/ops/runs" tone={successTone} />
         <CountPill
           label="Drift"
           value={health.driftRate}
-          href="/runs?tab=Runs&outcome=drifted"
+          href="/ops/runs?tab=Runs&outcome=drifted"
           tone={driftTone}
         />
-        <CountPill label="Runs" value={health.total} href="/runs" tone="neutral" />
+        <CountPill label="Runs" value={health.total} href="/ops/runs" tone="neutral" />
       </div>
     </Card>
   );

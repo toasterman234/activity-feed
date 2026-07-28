@@ -155,6 +155,7 @@ function threadAttentionGuide(row: {
   reason: ApprovalReason;
   assignee: string | null;
   repoId?: string | null;
+  hasActiveReviewProposal?: boolean;
 }): { nextStep: string; why: string } {
   const guide = deriveThreadAttention({
     lifecycle: row.lifecycle,
@@ -162,6 +163,7 @@ function threadAttentionGuide(row: {
     assignee: row.assignee,
     repoId: row.repoId || null,
     promotionStatus: row.reason === "failed_required_gate" ? "failed_required_gate" : null,
+    hasActiveReviewProposal: row.hasActiveReviewProposal,
   });
   if (guide) return { nextStep: guide.nextStep, why: guide.why };
   if (row.reason === "issue_needs_triage") {
@@ -192,6 +194,7 @@ export async function GET() {
         repo_id: string | null;
         updated_at: string;
         reason: ApprovalReason;
+        has_active_review_proposal: boolean;
       }>(
         `WITH latest_promotion AS (
            SELECT DISTINCT ON (thread_id)
@@ -215,7 +218,14 @@ export async function GET() {
                   WHEN tm.state = 'blocked' THEN 'blocked'
                   WHEN tm.lifecycle = 'issue' AND tm.state = 'resolved' THEN 'review'
                   ELSE 'issue_needs_triage'
-                END AS reason
+                END AS reason,
+                EXISTS (
+                  SELECT 1 FROM thread_stage_interactions si
+                   WHERE si.thread_id = tm.thread_id
+                     AND si.stage_id = tm.state
+                     AND si.kind = 'review.proposal'
+                     AND si.status = 'active'
+                ) AS has_active_review_proposal
            FROM thread_meta tm
            JOIN channels c ON c.id = tm.channel_id
            JOIN messages root ON root.id = tm.thread_id AND root.thread_id IS NULL
@@ -392,6 +402,7 @@ export async function GET() {
         reason: row.reason,
         assignee: row.assignee,
         repoId: row.repo_id,
+        hasActiveReviewProposal: Boolean(row.has_active_review_proposal),
       });
       return {
         threadId: row.thread_id,
@@ -411,6 +422,7 @@ export async function GET() {
           assignee: row.assignee,
           repoId: row.repo_id,
           promotionStatus: row.reason === "failed_required_gate" ? "failed_required_gate" : null,
+          hasActiveReviewProposal: Boolean(row.has_active_review_proposal),
         })?.need || null,
       };
     });

@@ -19,7 +19,10 @@ DETAIL=$(jq -n \
   --argjson files "$FILES_CHANGED" \
   '{repo: $repo, branch: $branch, hash: $hash, message: $msg, files: $files}')
 
-docker exec -i -e PGPASSWORD=activity -e PG_SUMMARY="$SUMMARY" -e PG_DETAIL="$DETAIL" activity-log-db psql -U activity -d activity_log -q <<'SQL' >/dev/null 2>&1
+# DB moved to OVH (ops/OVH-MIGRATION-PLAN.md). No native psql on the Mac, so run
+# it in a throwaway container; tailnet IP because MagicDNS doesn't resolve in-container.
+ACTIVITY_DB_URL="${ACTIVITY_DB_URL:-postgres://activity:activity@100.101.106.60:5433/activity_log}"
+docker run --rm -i -e PG_SUMMARY="$SUMMARY" -e PG_DETAIL="$DETAIL" postgres:16 psql "$ACTIVITY_DB_URL" -q <<'SQL' >/dev/null 2>&1
 \getenv summary PG_SUMMARY
 \getenv detail PG_DETAIL
 INSERT INTO activity_log (source, type, summary, detail) VALUES ('git', 'git.commit', :'summary', :'detail'::jsonb);

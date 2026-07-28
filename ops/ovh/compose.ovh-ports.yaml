@@ -1,0 +1,20 @@
+# OVH override: bind every electric-circuits port to loopback only.
+# The Mini sat on a home LAN; this VPS has a public IP and Docker's published
+# ports bypass ufw, so anything on 0.0.0.0 here is internet-exposed.
+# The dashboard reaches these via 127.0.0.1 (Next rewrites/route handlers),
+# and browsers only ever talk to the dashboard origin — nothing needs LAN/WAN.
+#
+#   sudo docker compose -f compose.yaml -f compose.activity-feed.yaml \
+#     -f ~/activity-feed/ops/ovh/compose.ovh-ports.yaml up -d --no-deps ds engine api
+name: electric-circuits
+
+services:
+  ds:
+    ports: !override
+      - "127.0.0.1:8791:8791"
+  engine:
+    ports: !override
+      - "127.0.0.1:7011:7010"
+  api:
+    ports: !override
+      - "127.0.0.1:8795:8790"

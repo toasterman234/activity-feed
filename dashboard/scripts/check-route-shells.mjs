@@ -3,23 +3,35 @@
 import { readFile } from "node:fs/promises";
 
 const root = new URL("../src/app/", import.meta.url);
-const [modelsPage, bottomNav, settingsLayout] = await Promise.all([
-  readFile(new URL("models/page.tsx", root), "utf8"),
+const [bottomNav, opsLayout, opsConfig, modelsPage, workflowsPage] = await Promise.all([
   readFile(new URL("bottom-nav.tsx", root), "utf8"),
-  readFile(new URL("settings/layout.tsx", root), "utf8"),
+  readFile(new URL("ops/layout.tsx", root), "utf8"),
+  readFile(new URL("ops/config/page.tsx", root), "utf8"),
+  readFile(new URL("models/page.tsx", root), "utf8"),
+  readFile(new URL("workflows/page.tsx", root), "utf8"),
 ]);
 const failures = [];
 
-if (!/import\s+\{\s*ModelsPanel\s*\}/.test(modelsPage) || !/<ModelsPanel\s*\/>/.test(modelsPage)) {
-  failures.push("/models must render ModelsPanel directly");
+if (!/href:\s*["']\/ops["']/.test(bottomNav) || !/href:\s*["']\/personal["']/.test(bottomNav)) {
+  failures.push("Bottom nav must expose Ops and Personal primary tabs");
 }
-if (/redirect\(["']\/activity/.test(modelsPage)) {
-  failures.push("/models must not redirect to /activity");
+if (/href:\s*["']\/(activity|fleet|finance|settings|models)["']/.test(bottomNav)) {
+  failures.push("Bottom nav must not keep Activity/Fleet/Finance/Settings/Models as primary tabs");
 }
 
-const navigationShell = `${bottomNav}\n${settingsLayout}`;
-if (!/href:\s*["']\/workflows["']/.test(navigationShell)) {
-  failures.push("Workflow registry must be reachable from a visible navigation shell");
+if (!/href:\s*["']\/ops\/fleet["']/.test(opsLayout) || !/href:\s*["']\/ops\/config["']/.test(opsLayout)) {
+  failures.push("Ops shell must expose Fleet and Config tabs");
+}
+
+if (!/ModelsPanel/.test(opsConfig) || !/WorkflowsPage/.test(opsConfig)) {
+  failures.push("Ops → Config must host ModelsPanel and Workflows");
+}
+
+if (!/redirect\(["']\/ops\/config\?tab=models["']\)/.test(modelsPage)) {
+  failures.push("/models must redirect into Ops → Config (Models)");
+}
+if (!/redirect\(["']\/ops\/config\?tab=workflows["']\)/.test(workflowsPage)) {
+  failures.push("/workflows must redirect into Ops → Config (Workflows)");
 }
 
 if (failures.length) {
@@ -28,4 +40,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("✓ route-shell check passed (distinct Models page; Workflows discoverable)");
+console.log("✓ route-shell check passed (Ops/Personal shell; Models+Workflows under Config)");

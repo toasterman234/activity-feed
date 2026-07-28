@@ -26,9 +26,11 @@ import {
   getWorkRun,
   heartbeatWorkRun,
   queueWorkRun,
+  setWorkRunWorkspace,
   startWorkRun,
   type WorkRunRow,
 } from "@/lib/work-runs";
+import { prepareRunWorktree } from "@/lib/worktree-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -598,8 +600,8 @@ async function writePlan(threadId: string, items: string[]) {
   const now = new Date().toISOString();
   for (let i = 0; i < items.length; i++) {
     await pool.query(
-      `INSERT INTO thread_plans (id, thread_id, title, status, sort_order, created_at, updated_at)
-       VALUES ($1, $2, $3, 'todo', $4, $5, $5)
+      `INSERT INTO thread_plans (id, thread_id, title, status, sort_order, stage_id, created_at, updated_at)
+       VALUES ($1, $2, $3, 'todo', $4, (SELECT state FROM thread_meta WHERE thread_id = $2), $5, $5)
        ON CONFLICT (id) DO NOTHING`,
       [randomUUID(), threadId, items[i], i, now],
     );
@@ -613,8 +615,8 @@ async function writeArtifact(threadId: string, artifact: { title: string; kind: 
   );
   const nextVersion = (Number(existing.rows[0]?.v) || 0) + 1;
   await pool.query(
-    `INSERT INTO thread_artifacts (id, thread_id, title, kind, content, version, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    `INSERT INTO thread_artifacts (id, thread_id, title, kind, content, version, stage_id, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, (SELECT state FROM thread_meta WHERE thread_id = $2), $7)`,
     [randomUUID(), threadId, artifact.title, artifact.kind, artifact.content, nextVersion, new Date().toISOString()],
   );
 }
@@ -755,7 +757,8 @@ async function runMentionJob(opts: {
     process.env.CHANNEL_REPLY_SYSTEM_PROMPT ||
     `You are a channel teammate. Respond with ONLY a JSON object (no markdown fences, no prose).
 Schema: {"message": string (required — the chat reply), "plan"?: string[], "nextState"?: string, "artifact"?: {"title": string, "kind": "code"|"markdown"|"html"|"mermaid", "content": string}, "checkpoint"?: {"where_we_are": string, "open_items"?: string[]}, "observations"?: {"text": string, "category": "fact"|"decision"|"preference"|"action_item"|"issue"|"checkpoint", "confidence"?: number}[], "memory_candidates"?: {"text": string, "category": string, "confidence"?: number}[], "decision"?: {"statement": string, "rationale"?: string, "evidence_refs"?: string[], "supersedes"?: string}, "proposal"?: {"hypothesis": string, "capability_ids"?: string[], "changes"?: object[], "evidence_refs"?: string[]}}
-Write "message" as a normal teammate reply — not meta-commentary about the task.`;
+Write "message" as a normal teammate reply — not meta-commentary about the task.
+When coding tools are available, do the repository work before replying. Follow repository instructions, keep changes scoped, and obey the authority stated in the thread. Never commit or deploy unless that authority explicitly allows it.`;
 
   try {
     // Load lifecycle meta and gather workflow instructions for the current state
@@ -769,6 +772,11 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
     const researchMode = (metaRes.rows[0]?.research_mode as string) || "";
     const repoId = (metaRes.rows[0]?.repo_id as string) || null;
     const templateVersion = Number(metaRes.rows[0]?.template_version) || 1;
+    const executionStage = Boolean(
+      repoId &&
+      ((lifecycleKey === "issue" && currentState === "in_progress") ||
+        (lifecycleKey === "coding" && currentState === "running")),
+    );
     let enabledWorkflows: string[] = [];
     try { enabledWorkflows = metaRes.rows[0]?.enabled_workflows ? JSON.parse(metaRes.rows[0].enabled_workflows as string) : []; } catch {}
     enabledWorkflows = await applyWorkflowOverrides(opts.channelId, lifecycleKey, enabledWorkflows);
@@ -819,6 +827,7 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
     let runArgs: string[];
     let runEnv: NodeJS.ProcessEnv;
     let cwd: string;
+    let executionSetupError: string | null = null;
     // Gated: research agents only get real tools + sandbox when explicitly
     // enabled. Off by default so nothing changes in the live channels until the
     // exa/registry-over-network piece is finished and browser-verified.
@@ -849,21 +858,26 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
           body: `⚠️ Target repo path not found: ${repoCwd}. Falling back to channel cwd.`,
           created_at: new Date().toISOString(),
         });
+        if (executionStage) executionSetupError = `Target repository is unavailable on this host: ${repoCwd}`;
         cwd = opts.cwd;
       } else {
+        if (executionStage) executionSetupError = "Execution requires a registered target repository.";
         cwd = opts.cwd;
       }
       runBin = piBin;
+      const toolArgs = executionStage
+        ? ["--tools", "read,bash,edit,write,grep,find,ls", "--approve"]
+        : ["--no-tools"];
       if (liveActivity) {
         // JSON event stream, thinking on so there is a live trace to show.
         runArgs = [
-          "-p", "--mode", "json", "--no-session", "--no-tools", "--thinking", "low",
+          "-p", "--mode", "json", "--no-session", ...toolArgs, "--thinking", "low",
           "--provider", provider, "--model", model, "--system-prompt", systemPrompt, prompt,
         ];
         streamable = true;
       } else {
         runArgs = [
-          "-p", "--mode", "text", "--no-session", "--no-tools", "--thinking", "off",
+          "-p", "--mode", "text", "--no-session", ...toolArgs, "--thinking", executionStage ? "high" : "off",
           "--provider", provider, "--model", model, "--system-prompt", systemPrompt, prompt,
         ];
       }
@@ -889,8 +903,9 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
         repoId,
         agent: {
           agentRegistryId: registryAgentIdForHandle(opts.handle),
-          agentVersion: "channel-runtime-v1",
+          agentVersion: "channel-runtime-v2",
           model,
+          toolsets: executionStage ? ["pi:builtin:read,bash,edit,write,grep,find,ls"] : [],
           workflowTemplateId: lifecycleKey,
           workflowTemplateVersion: templateVersion,
         },
@@ -923,6 +938,22 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
       return;
     }
     durableRun = startedRun;
+    if (executionStage) {
+      if (executionSetupError) throw new Error(executionSetupError);
+      const workspace = await prepareRunWorktree({
+        repoPath: cwd,
+        runId: startedRun.id,
+      });
+      cwd = workspace.cwd;
+      durableRun =
+        (await setWorkRunWorkspace(pool, {
+          runId: startedRun.id,
+          workerId,
+          cwd: workspace.cwd,
+          branch: workspace.branch,
+          baseCommit: workspace.baseCommit,
+        })) || startedRun;
+    }
     heartbeatTimer = setInterval(() => {
       void heartbeatWorkRun(pool, {
         runId: startedRun.id,
@@ -1147,30 +1178,38 @@ Write "message" as a normal teammate reply — not meta-commentary about the tas
 
     // Handle nextState via shared helper (command workflows + gates).
     // Transition always announces itself (success / gated failure / system message).
+    // Guard: skip transitions to states that don't exist in this lifecycle —
+    // agents sometimes emit colloquial words ("implementation") that aren't real states.
     let verificationError: string | null = null;
     if (parsed.nextState && lc) {
-      const tr = await transitionThreadState({
-        threadId: opts.threadId,
-        channelId: opts.channelId,
-        toState: parsed.nextState,
-        actor: author,
-        announce: true,
-      });
-      if (!tr.ok) {
-        // Surface rejection reasons the helper couldn't announce (illegal, unknown lifecycle, etc.)
-        const reason =
-          tr.error === "illegal transition"
-            ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
-            : tr.error;
-        if (tr.detail?.startsWith("verification:")) verificationError = reason;
-        await insertMessage({
-          id: randomUUID(),
-          channel_id: opts.channelId,
-          thread_id: opts.threadId,
-          author: "system",
-          body: `⚠️ Could not advance state: ${reason}`,
-          created_at: new Date().toISOString(),
+      if (!lc.states[parsed.nextState]) {
+        console.warn(
+          `[channels/trigger] ignoring invalid nextState "${parsed.nextState}" for lifecycle "${lc.label}" (valid: ${Object.keys(lc.states).join(", ")})`,
+        );
+      } else {
+        const tr = await transitionThreadState({
+          threadId: opts.threadId,
+          channelId: opts.channelId,
+          toState: parsed.nextState,
+          actor: author,
+          announce: true,
         });
+        if (!tr.ok) {
+          // Surface rejection reasons the helper couldn't announce (illegal, unknown lifecycle, etc.)
+          const reason =
+            tr.error === "illegal transition"
+              ? `Agent proposed transition ${tr.from || "?"}→${tr.to || tr.error}, which is not allowed.`
+              : tr.error;
+          if (tr.detail?.startsWith("verification:")) verificationError = reason;
+          await insertMessage({
+            id: randomUUID(),
+            channel_id: opts.channelId,
+            thread_id: opts.threadId,
+            author: "system",
+            body: `⚠️ Could not advance state: ${reason}`,
+            created_at: new Date().toISOString(),
+          });
+        }
       }
     }
 

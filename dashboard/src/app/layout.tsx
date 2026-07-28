@@ -41,7 +41,7 @@ export default function RootLayout({
       lang="en"
       className="h-full antialiased"
     >
-      <body className="min-h-full bg-zinc-50 dark:bg-zinc-950 pb-[calc(4rem+env(safe-area-inset-bottom))]">
+      <body className="min-h-full bg-background text-foreground font-sans pb-[calc(var(--bottom-nav-height)+1rem+env(safe-area-inset-bottom))]">
         <ReactScan />
         <PerfMonitors />
         <main>{children}</main>

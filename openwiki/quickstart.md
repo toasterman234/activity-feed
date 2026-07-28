@@ -27,7 +27,7 @@ The production server listens at `http://0.0.0.0:3000` and is exposed via `tails
 
 ## What's Inside
 
-- **Activity feed** (`/`) — live streaming activity log from file-watcher, pi-watcher, and git hooks feeding into Postgres → electric-circuits
+- **Activity feed** (`/`) — live streaming activity log from Claude Code, pi, and git hooks feeding into Postgres → electric-circuits
 - **Portfolio dashboard** (`/portfolio`) — net worth, asset allocation bar, positions table with live sync
 - **Live watchlist** (`/watchlist`) — add/remove stock symbols, real-time quotes from Market Lake API
 - **Trade history** (`/trades`) — 5,400+ trades including options, paginated with subset queries

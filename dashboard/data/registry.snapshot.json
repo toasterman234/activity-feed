@@ -1,0 +1,5929 @@
+{
+  "apiVersion": "registry.bencharney.dev/v1alpha1",
+  "generatedAt": "2026-07-28T03:57:12.487Z",
+  "records": [
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Algorithm",
+        "name": "Algorithm",
+        "status": "active",
+        "description": "Expert in creating and evolving Ideal State Criteria (ISC) as part of the PAI Algorithm's core principles. Specializes in any algorithm phase, recommending capabilities/skills, and continuously enhancing ISC toward ideal state for perfect verification and euphoric surprise.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Algorithm.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Anvil",
+        "name": "Anvil",
+        "status": "active",
+        "description": "Moonshot-family code producer. Runs Kimi K2.6 (`kimi-k2.6`) via Moonshot's direct API with temperature 1 (reasoning-model default) and 256K context. Specialization — deliberate, context-wide code generation where the whole project matters. Invoked when {{PRINCIPAL_NAME}} names \"Anvil\", or as a Kimi-family alternative to Forge on coding tasks that benefit from long-context reasoning. Writes code; does not just review. Distinct from Forge (OpenAI-family, GPT-5.4), Cato (auditor), Engineer (Marcus Webb, Claude-family).",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Anvil.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Architect",
+        "name": "Architect",
+        "status": "active",
+        "description": "Elite system design specialist with PhD-level distributed systems knowledge and Fortune 10 architecture experience. Creates constitutional principles, feature specs, and implementation plans using strategic analysis.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Architect.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Arthur",
+        "name": "Arthur",
+        "status": "active",
+        "description": "Credential Custodian. PAI Authorization Officer. Answers status queries about credential policies and audit trail, announces decisions in-voice. Never decides release itself — that is deterministic TypeScript in PAI/TOOLS/Arthur.ts. Arthur the agent only NARRATES decisions the policy engine already made, in his voice.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Arthur.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/haiku"
+          }
+        ],
+        "config": {
+          "model": "haiku",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Artist",
+        "name": "Artist",
+        "status": "active",
+        "description": "Visual content creator. Called BY Media skill workflows only. Expert at prompt engineering, model selection (Flux 1.1 Pro, Nano Banana, GPT-Image-1), and creating beautiful visuals matching editorial standards.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Artist.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          },
+          {
+            "type": "uses",
+            "target": "skill:media"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:BrowserAgent",
+        "name": "BrowserAgent",
+        "status": "superseded",
+        "description": "DEPRECATED — legacy built-in agent. Do not invoke for new work. Use the Interceptor skill for all browser automation, web scraping, form filling, data extraction, page interaction, and screenshots. Retained only for reference; its internals cannot be modified.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/BrowserAgent.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/sonnet"
+          }
+        ],
+        "config": {
+          "model": "sonnet",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "superseded",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Cato",
+        "name": "Cato",
+        "status": "active",
+        "description": "Cross-vendor ISA auditor. Invoked at the end of VERIFY on E4/E5 ISAs only. Uses GPT-5.4 via codex CLI to surface Anthropic-family blind spots the executor and Advisor would share. Read-only. Returns structured JSON.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Cato.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:claude",
+        "name": "Claude",
+        "status": "live",
+        "description": "Primary Claude Code agent with its shared skill catalog, governed MCP toolset, and specialist subagents.",
+        "owner": "ben",
+        "tags": [
+          "primary",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "agent-system",
+          "locator": "~/.claude/settings.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "agent.code",
+          "agent.delegate",
+          "agent.research"
+        ],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Algorithm"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Anvil"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Architect"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Arthur"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Artist"
+          },
+          {
+            "type": "contains",
+            "target": "agent:BrowserAgent"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Cato"
+          },
+          {
+            "type": "contains",
+            "target": "agent:ClaudeResearcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:CodexResearcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Designer"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Engineer"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Forge"
+          },
+          {
+            "type": "contains",
+            "target": "agent:GeminiResearcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:GrokResearcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:PerplexityResearcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:QATester"
+          },
+          {
+            "type": "contains",
+            "target": "agent:Silas"
+          },
+          {
+            "type": "contains",
+            "target": "agent:UIReviewer"
+          }
+        ],
+        "config": {
+          "settings": "~/.claude/settings.json",
+          "agents": "~/.claude/agents/"
+        }
+      },
+      "observed": {
+        "status": "live",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:ClaudeResearcher",
+        "name": "ClaudeResearcher",
+        "status": "active",
+        "description": "Academic researcher using Claude's WebSearch. Called BY Research skill workflows only. Excels at multi-query decomposition, parallel search execution, and synthesizing scholarly sources.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/ClaudeResearcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          },
+          {
+            "type": "uses",
+            "target": "skill:research"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:CodexResearcher",
+        "name": "CodexResearcher",
+        "status": "active",
+        "description": "Remy - Eccentric, curiosity-driven technical archaeologist who treats research like treasure hunting. Consults multiple AI models (O3, GPT-5-Codex, GPT-4) like expert colleagues. Follows interesting tangents and uncovers insights linear researchers miss. TypeScript-focused with live web search.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/CodexResearcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Designer",
+        "name": "Designer",
+        "status": "active",
+        "description": "Elite UX/UI design specialist with design school pedigree and exacting standards. Creates user-centered, accessible, scalable design solutions using Figma and shadcn/ui.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Designer.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:electra",
+        "name": "electra",
+        "status": "active",
+        "description": "Conversational chat agent (Electra) Ben talks to from his phone via the PWA bridge. Full READ access to his machine + direct WRITE to his GitHub-managed project repos (git = safety net; governed ben-workspace and the vault excluded); delegates the rest to AgentField. No shell. Concise; never blocks on permissions.",
+        "owner": "ben",
+        "tags": [
+          "opencode",
+          "opencode"
+        ],
+        "source": {
+          "adapter": "opencode",
+          "locator": "~/.config/opencode/agent/electra.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:opencode"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Engineer",
+        "name": "Engineer",
+        "status": "active",
+        "description": "Elite principal engineer with Fortune 10 and premier Bay Area company experience. Uses TDD, strategic planning, and constitutional principles for implementation work.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Engineer.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Forge",
+        "name": "Forge",
+        "status": "active",
+        "description": "OpenAI-family code producer. Runs GPT-5.4 via `codex exec` with reasoning_effort=high. Specialization — code quality and completeness. Invoked when {{PRINCIPAL_NAME}} names \"Forge\", or automatically on any coding task (implement, refactor, debug, build) at effort E3, E4, or E5. Writes code; does not just review. Distinct from Cato (auditor, read-only) and Engineer (Marcus Webb, Claude-family).",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Forge.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:GeminiResearcher",
+        "name": "GeminiResearcher",
+        "status": "active",
+        "description": "Multi-perspective researcher using Google Gemini. Called BY Research skill workflows only. Breaks complex queries into 3-10 variations, launches parallel investigations for comprehensive coverage.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/GeminiResearcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          },
+          {
+            "type": "uses",
+            "target": "skill:research"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:github",
+        "name": "github",
+        "status": "active",
+        "description": "Search and scope anything on GitHub via the ben-agents3-registry MCP",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/pi/agent/agents/github.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:memory-only"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "memory-only"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:GrokResearcher",
+        "name": "GrokResearcher",
+        "status": "active",
+        "description": "Johannes - Contrarian, fact-based researcher using xAI Grok API. Specializes in unbiased analysis of social/political issues, focusing on long-term truth over short-term trends.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/GrokResearcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:lead-gen",
+        "name": "lead-gen",
+        "status": "active",
+        "description": "Standalone lead-generation agent (Hunter.io / Apollo.io / GetProspect) for ICP/outbound prospecting and CSV export — no AxPlane dependency",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/pi/agent/agents/lead-gen.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:memory-only"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "memory-only"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:life-os-analyst",
+        "name": "life-os-analyst",
+        "status": "active",
+        "description": "Analytical research agent for the Life OS personal data warehouse — queries DuckDB across health, finance, attention, productivity, and network domains, pulls in external context, and produces structured analytical briefs",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/ben-workspace/projects/personal/life-os-knowledge-graph/.pi/agent/agents/life-os-analyst.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:memory-only"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/commandcode/deepseek/deepseek-v4-pro"
+          }
+        ],
+        "config": {
+          "model": "commandcode/deepseek/deepseek-v4-pro",
+          "toolset": "memory-only"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:PerplexityResearcher",
+        "name": "PerplexityResearcher",
+        "status": "active",
+        "description": "Ava - Investigative analyst using Perplexity API for web research. Called BY Research skill workflows only. Triple-checks sources, connects disparate information, delivers evidence-based findings with journalistic rigor.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/PerplexityResearcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          },
+          {
+            "type": "uses",
+            "target": "skill:research"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:pi",
+        "name": "Pi",
+        "status": "live",
+        "description": "Primary Pi coding agent, model router, extensions, skills, MCP tools, and configured subagents.",
+        "owner": "ben",
+        "tags": [
+          "primary",
+          "pi"
+        ],
+        "source": {
+          "adapter": "agent-system",
+          "locator": "~/.pi/agent/settings.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "agent.code",
+          "agent.delegate",
+          "agent.route-models"
+        ],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "model:deepseek/deepseek-v4-pro"
+          },
+          {
+            "type": "calls",
+            "target": "tool:ben_agents3_registry"
+          },
+          {
+            "type": "calls",
+            "target": "tool:agentmemory"
+          },
+          {
+            "type": "calls",
+            "target": "tool:agent_browser"
+          },
+          {
+            "type": "calls",
+            "target": "tool:chorus"
+          },
+          {
+            "type": "calls",
+            "target": "tool:miyami_websearch"
+          },
+          {
+            "type": "calls",
+            "target": "tool:xactions"
+          },
+          {
+            "type": "calls",
+            "target": "tool:cartograph"
+          },
+          {
+            "type": "contains",
+            "target": "agent:github"
+          },
+          {
+            "type": "contains",
+            "target": "agent:lead-gen"
+          },
+          {
+            "type": "contains",
+            "target": "agent:life-os-analyst"
+          },
+          {
+            "type": "contains",
+            "target": "agent:quant-researcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:researcher"
+          },
+          {
+            "type": "contains",
+            "target": "agent:security-reviewer"
+          },
+          {
+            "type": "contains",
+            "target": "agent:session-analyzer"
+          }
+        ],
+        "config": {
+          "defaultModel": "deepseek/deepseek-v4-pro",
+          "settings": "~/.pi/agent/settings.json",
+          "mcp": "~/.pi/agent/mcp.json"
+        }
+      },
+      "observed": {
+        "status": "live",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:QATester",
+        "name": "QATester",
+        "status": "superseded",
+        "description": "DEPRECATED — legacy built-in agent. Do not invoke for new work. Use the Interceptor skill for Gate 4 browser-based QA validation, screenshots, console checks, and user-flow testing. Retained only for reference; its internals cannot be modified.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/QATester.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "superseded",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:quant-researcher",
+        "name": "quant-researcher",
+        "status": "active",
+        "description": "Research + portfolio partner — investigates theses, structures trades, sizes positions, checks portfolio fit (fundamentals, technicals, options/vol, macro, Kelly sizing, factor exposure)",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/pi/agent/agents/quant-researcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:quant-research"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "quant-research"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:researcher",
+        "name": "researcher",
+        "status": "active",
+        "description": "Research specialist — searches GitHub for repos, evaluates projects, and synthesizes findings into a structured brief",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/pi/agent/agents/researcher.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:memory-only"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "memory-only"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:security-reviewer",
+        "name": "security-reviewer",
+        "status": "active",
+        "description": "Security-focused read-only review of code changes",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/pi/agent/agents/security-reviewer.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:memory-only"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "memory-only"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:session-analyzer",
+        "name": "session-analyzer",
+        "status": "active",
+        "description": "Mines agent session logs (agentmemory) to discover patterns in Ben's asks, clusters similar requests, and recommends signatures/evals/playbooks for optimization. Use when analyzing session history, finding common ask patterns, or generating eval training data.",
+        "owner": "ben",
+        "tags": [
+          "pi",
+          "pi-live"
+        ],
+        "source": {
+          "adapter": "pi-live",
+          "locator": "~/pi/agent/agents/session-analyzer.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:pi"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:memory-only"
+          }
+        ],
+        "config": {
+          "model": null,
+          "toolset": "memory-only"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:Silas",
+        "name": "Silas",
+        "status": "active",
+        "description": "Silas Locke — offensive security specialist (\"The Quiet Operator\"). Ex-NSA TAO, methodical, patient, adversarial mindset. Spawned in parallel by security assessment skills (one instance per attack surface) to run specialist sub-assessments, generate attack-chain hypotheses, and write findings to the assessment vault. Performs vulnerability assessments, penetration testing, security audits with professional methodology and ethical boundaries.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/Silas.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/opus"
+          }
+        ],
+        "config": {
+          "model": "opus",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Agent",
+      "metadata": {
+        "id": "agent:UIReviewer",
+        "name": "UIReviewer",
+        "status": "superseded",
+        "description": "DEPRECATED — legacy built-in agent. Do not invoke for new work. Use the Interceptor skill for user-story validation, step execution, screenshots, and structured PASS/FAIL reports. Retained only for reference; its internals cannot be modified.",
+        "owner": "ben",
+        "tags": [
+          "claude-code",
+          "claude-code"
+        ],
+        "source": {
+          "adapter": "claude-code",
+          "locator": "~/.claude/agents/UIReviewer.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [],
+        "relations": [
+          {
+            "type": "runs-on",
+            "target": "runtime:claude-code"
+          },
+          {
+            "type": "uses",
+            "target": "toolset:ops-terminal"
+          },
+          {
+            "type": "uses",
+            "target": "model:claude/sonnet"
+          }
+        ],
+        "config": {
+          "model": "sonnet",
+          "toolset": "ops-terminal"
+        }
+      },
+      "observed": {
+        "status": "superseded",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Lifecycle",
+      "metadata": {
+        "id": "lifecycle:coding",
+        "name": "Coding lifecycle",
+        "status": "active",
+        "description": "",
+        "version": "1",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "activity-dashboard",
+          "locator": "src/app/channels/lifecycles.ts",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "code.define",
+          "code.implement",
+          "code.verify",
+          "code.ship"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Lifecycle",
+      "metadata": {
+        "id": "lifecycle:issue",
+        "name": "Issue lifecycle",
+        "status": "active",
+        "description": "",
+        "version": "1",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "activity-dashboard",
+          "locator": "src/app/channels/lifecycles.ts",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "issue.capture",
+          "issue.triage",
+          "issue.resolve",
+          "issue.close"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Lifecycle",
+      "metadata": {
+        "id": "lifecycle:planning",
+        "name": "Planning lifecycle",
+        "status": "active",
+        "description": "",
+        "version": "1",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "activity-dashboard",
+          "locator": "src/app/channels/lifecycles.ts",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "plan.frame",
+          "plan.decompose",
+          "plan.challenge",
+          "plan.approve"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Lifecycle",
+      "metadata": {
+        "id": "lifecycle:research",
+        "name": "Research lifecycle",
+        "status": "active",
+        "description": "",
+        "version": "1",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "activity-dashboard",
+          "locator": "src/app/channels/lifecycles.ts",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "research.frame",
+          "research.gather",
+          "research.synthesize",
+          "research.publish"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:claude/commandcode/deepseek/deepseek-v4-pro",
+        "name": "claude · commandcode/deepseek/deepseek-v4-pro",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "claude",
+          "commandcode",
+          "deepseek",
+          "deepseek-v4-pro"
+        ],
+        "source": {
+          "adapter": "agent-frontmatter",
+          "locator": "~/ben-workspace/projects/personal/life-os-knowledge-graph/.pi/agent/agents/life-os-analyst.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.claude.commandcode.deepseek.deepseek-v4-pro"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:claude/haiku",
+        "name": "claude · haiku",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "claude",
+          "haiku"
+        ],
+        "source": {
+          "adapter": "agent-frontmatter",
+          "locator": "~/.claude/agents/Arthur.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.claude.haiku"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:claude/opus",
+        "name": "claude · opus",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "claude",
+          "opus"
+        ],
+        "source": {
+          "adapter": "agent-frontmatter",
+          "locator": "~/.claude/agents/Algorithm.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.claude.opus"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:claude/sonnet",
+        "name": "claude · sonnet",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "claude",
+          "sonnet"
+        ],
+        "source": {
+          "adapter": "agent-frontmatter",
+          "locator": "~/.claude/agents/BrowserAgent.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.claude.sonnet"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/composer-2.5",
+        "name": "Composer 2.5 (via Cursor)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "composer-2.5"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.composer.2.5",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "composer-2.5"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/composer-2.5-fast",
+        "name": "Composer 2.5 Fast (via Cursor)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "composer-2.5-fast"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.composer.2.5.fast",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "composer-2.5-fast"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/auto",
+        "name": "Cursor Auto (subscription)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "auto"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.auto",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "auto"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:deepseek/deepseek-v4-pro",
+        "name": "deepseek · deepseek-v4-pro",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "deepseek",
+          "deepseek-v4-pro"
+        ],
+        "source": {
+          "adapter": "agent-frontmatter",
+          "locator": "~/.pi/agent/settings.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.deepseek.deepseek-v4-pro"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:zima-litellm/gemini-2.5-flash",
+        "name": "Gemini 2.5 Flash (direct)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "zima-litellm",
+          "gemini-2.5-flash"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.gemini.2.5.flash",
+          "provider.zima.litellm"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "zima-litellm",
+          "modelId": "gemini-2.5-flash"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:commandcode/gemini-2.5-flash",
+        "name": "Gemini 2.5 Flash (via CommandCode)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "commandcode",
+          "gemini-2.5-flash"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.gemini.2.5.flash",
+          "provider.commandcode"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "commandcode",
+          "modelId": "gemini-2.5-flash"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:zima-litellm/balanced-chat",
+        "name": "Gemini Flash → Llama 3.3 70B → Qwen3-Next",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "zima-litellm",
+          "balanced-chat"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.balanced.chat",
+          "provider.zima.litellm"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "zima-litellm",
+          "modelId": "balanced-chat"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/gpt-5.4-high",
+        "name": "GPT-5.4 High (via Cursor)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "gpt-5.4-high"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.gpt.5.4.high",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "gpt-5.4-high"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/gpt-5.5-high",
+        "name": "GPT-5.5 High (via Cursor)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "gpt-5.5-high"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.gpt.5.5.high",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "gpt-5.5-high"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/cursor-grok-4.5-high-fast",
+        "name": "Grok 4.5 High Fast (via Cursor)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "cursor-grok-4.5-high-fast"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.cursor.grok.4.5.high.fast",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "cursor-grok-4.5-high-fast"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:zima-litellm/fast-chat",
+        "name": "Llama 3.3 70B → Gemini Flash → GPT-OSS",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "zima-litellm",
+          "fast-chat"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.fast.chat",
+          "provider.zima.litellm"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "zima-litellm",
+          "modelId": "fast-chat"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:cursor/claude-opus-4-8-thinking-high",
+        "name": "Opus 4.8 Thinking (via Cursor)",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "cursor",
+          "claude-opus-4-8-thinking-high"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.claude.opus.4.8.thinking.high",
+          "provider.cursor"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "cursor",
+          "modelId": "claude-opus-4-8-thinking-high"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:zima-litellm/ax-agent-ben",
+        "name": "Sonnet 5 → GPT-5.4 → Auto → Kimi K2.5",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "zima-litellm",
+          "ax-agent-ben"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.ax.agent.ben",
+          "provider.zima.litellm"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "zima-litellm",
+          "modelId": "ax-agent-ben"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Model",
+      "metadata": {
+        "id": "model:zima-litellm/default-agent",
+        "name": "Sonnet 5 → GPT-5.4 → Llama 3.3 70B",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [
+          "zima-litellm",
+          "default-agent"
+        ],
+        "source": {
+          "adapter": "pi-models",
+          "locator": "~/.pi/agent/models.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "model.default.agent",
+          "provider.zima.litellm"
+        ],
+        "relations": [],
+        "config": {
+          "provider": "zima-litellm",
+          "modelId": "default-agent"
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:agent-rules",
+        "name": "agent rules",
+        "status": "active",
+        "description": "The 6 behavioral rules every gh-aw / LAP agent must follow. Injected as LAP Rules, so the agent literally can't run without them.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "central-repo-ops/docs/agent-rules.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.agent.rules"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:ben-workspace-doctrine",
+        "name": "ben workspace doctrine",
+        "status": "active",
+        "description": "The operator doctrine for working inside ben-workspace — hard rules, commit protocol, gotchas.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/ben-workspace/CLAUDE.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.ben.workspace.doctrine"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:capability-routing",
+        "name": "capability routing",
+        "status": "active",
+        "description": "The intent→door map: where a request should go (research / quant / vault / coding). Passive guide loaded every session; the active dispatcher is on the roadmap.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "central-repo-ops/docs/capability-routing.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.capability.routing"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:experimental-repos",
+        "name": "experimental repos",
+        "status": "active",
+        "description": "The sandbox tier for gh-aw: run a workflow without promoting it to the governed standard/core lane. One tier, three guardrails, one deadline.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "central-repo-ops/docs/experimental-repos.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.experimental.repos"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:fleet-status",
+        "name": "fleet status",
+        "status": "active",
+        "description": "The gh-aw fleet is PAUSED — 38 central-repo-ops workflows disabled since 2026-06-30 (self-generated issue noise). Smithers is the single issue worker; Dagu runs the cron sweeps. Know this before expecting or re-enabling a workflow.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "central-repo-ops/docs/runbooks/fleet-paused-recurring-failures.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.fleet.status"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:operating-contract",
+        "name": "operating contract",
+        "status": "active",
+        "description": "pi's governing contract, injected into every single turn in every directory. The reason pi agents reliably follow rules.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/Projects/pi/agent/policies/operating-contract.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.operating.contract"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:planning-spec",
+        "name": "planning spec",
+        "status": "active",
+        "description": "Spec-first planning: when work crosses into planning, capture a short plan doc (Goal→Approach→Tasks→Open decisions) BEFORE building. Steering, not a wall.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "central-repo-ops/docs/planning-spec.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.planning.spec"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Policy",
+      "metadata": {
+        "id": "policy:routing",
+        "name": "routing",
+        "status": "active",
+        "description": "The 'where does X go / which doc do I read' map for pi work.",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/Projects/pi/docs/ROUTING.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "policy.routing"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Runtime",
+      "metadata": {
+        "id": "runtime:ax",
+        "name": "ax",
+        "status": "active",
+        "description": "ax-llm agents (reasoner code in AgentField)",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/central-ops-dashboard/routing-index.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "runtime.ax"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "skill:accessibility"
+          },
+          {
+            "type": "contains",
+            "target": "skill:agent-scope-and-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-mcp-server"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:dependency-upgrade"
+          },
+          {
+            "type": "contains",
+            "target": "skill:design-an-interface"
+          },
+          {
+            "type": "contains",
+            "target": "skill:diagnosing-bugs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:documentation-and-adrs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:doubt-driven-development"
+          },
+          {
+            "type": "contains",
+            "target": "skill:frontend-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:github-workflows"
+          },
+          {
+            "type": "contains",
+            "target": "skill:incremental-implementation"
+          },
+          {
+            "type": "contains",
+            "target": "skill:interview-me"
+          },
+          {
+            "type": "contains",
+            "target": "skill:lint"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observability"
+          },
+          {
+            "type": "contains",
+            "target": "skill:planning-with-files"
+          },
+          {
+            "type": "contains",
+            "target": "skill:react-best-practices"
+          },
+          {
+            "type": "contains",
+            "target": "skill:review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:security-review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:tdd"
+          },
+          {
+            "type": "contains",
+            "target": "skill:test"
+          },
+          {
+            "type": "contains",
+            "target": "skill:write-docs"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Runtime",
+      "metadata": {
+        "id": "runtime:claude-code",
+        "name": "claude-code",
+        "status": "active",
+        "description": "interactive + AgentField provider",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/central-ops-dashboard/routing-index.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "runtime.claude-code"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "skill:accessibility"
+          },
+          {
+            "type": "contains",
+            "target": "skill:agent-scope-and-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-mcp-server"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:dependency-upgrade"
+          },
+          {
+            "type": "contains",
+            "target": "skill:design-an-interface"
+          },
+          {
+            "type": "contains",
+            "target": "skill:diagnosing-bugs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:documentation-and-adrs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:doubt-driven-development"
+          },
+          {
+            "type": "contains",
+            "target": "skill:frontend-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:github-workflows"
+          },
+          {
+            "type": "contains",
+            "target": "skill:incremental-implementation"
+          },
+          {
+            "type": "contains",
+            "target": "skill:interview-me"
+          },
+          {
+            "type": "contains",
+            "target": "skill:lint"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observability"
+          },
+          {
+            "type": "contains",
+            "target": "skill:planning-with-files"
+          },
+          {
+            "type": "contains",
+            "target": "skill:react-best-practices"
+          },
+          {
+            "type": "contains",
+            "target": "skill:review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:security-review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:tdd"
+          },
+          {
+            "type": "contains",
+            "target": "skill:test"
+          },
+          {
+            "type": "contains",
+            "target": "skill:write-docs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:createskill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:evals"
+          },
+          {
+            "type": "contains",
+            "target": "skill:fabric"
+          },
+          {
+            "type": "contains",
+            "target": "skill:isa"
+          },
+          {
+            "type": "contains",
+            "target": "skill:interceptor"
+          },
+          {
+            "type": "contains",
+            "target": "skill:research"
+          },
+          {
+            "type": "contains",
+            "target": "skill:docs-langfuse"
+          },
+          {
+            "type": "contains",
+            "target": "skill:docs-litellm"
+          },
+          {
+            "type": "contains",
+            "target": "skill:docs-nodered"
+          },
+          {
+            "type": "contains",
+            "target": "skill:docs-otel-collector"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observal"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observal-admin"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observal-advanced"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observal-agents"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observal-ops"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observal-registry"
+          },
+          {
+            "type": "contains",
+            "target": "skill:obsidian-second-brain"
+          },
+          {
+            "type": "contains",
+            "target": "skill:steer"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Runtime",
+      "metadata": {
+        "id": "runtime:codex",
+        "name": "codex",
+        "status": "active",
+        "description": "scripted worker + provider",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/central-ops-dashboard/routing-index.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "runtime.codex"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "skill:claude-to-im"
+          },
+          {
+            "type": "contains",
+            "target": "skill:codex-memory-bridge"
+          },
+          {
+            "type": "contains",
+            "target": "skill:figma"
+          },
+          {
+            "type": "contains",
+            "target": "skill:figma-implement-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:frontend-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:imagegen"
+          },
+          {
+            "type": "contains",
+            "target": "skill:open-knowledge-discovery"
+          },
+          {
+            "type": "contains",
+            "target": "skill:open-knowledge-write-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:paseo"
+          },
+          {
+            "type": "contains",
+            "target": "skill:paseo-advisor"
+          },
+          {
+            "type": "contains",
+            "target": "skill:paseo-committee"
+          },
+          {
+            "type": "contains",
+            "target": "skill:paseo-handoff"
+          },
+          {
+            "type": "contains",
+            "target": "skill:paseo-loop"
+          },
+          {
+            "type": "contains",
+            "target": "skill:playwright-interactive"
+          },
+          {
+            "type": "contains",
+            "target": "skill:quant-viz"
+          },
+          {
+            "type": "contains",
+            "target": "skill:quantconnect-cloud"
+          },
+          {
+            "type": "contains",
+            "target": "skill:screenshot"
+          },
+          {
+            "type": "contains",
+            "target": "skill:smithers"
+          },
+          {
+            "type": "contains",
+            "target": "skill:vault-context"
+          },
+          {
+            "type": "contains",
+            "target": "skill:accessibility"
+          },
+          {
+            "type": "contains",
+            "target": "skill:agent-scope-and-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-mcp-server"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:dependency-upgrade"
+          },
+          {
+            "type": "contains",
+            "target": "skill:design-an-interface"
+          },
+          {
+            "type": "contains",
+            "target": "skill:diagnosing-bugs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:documentation-and-adrs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:doubt-driven-development"
+          },
+          {
+            "type": "contains",
+            "target": "skill:frontend-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:github-workflows"
+          },
+          {
+            "type": "contains",
+            "target": "skill:incremental-implementation"
+          },
+          {
+            "type": "contains",
+            "target": "skill:interview-me"
+          },
+          {
+            "type": "contains",
+            "target": "skill:lint"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observability"
+          },
+          {
+            "type": "contains",
+            "target": "skill:planning-with-files"
+          },
+          {
+            "type": "contains",
+            "target": "skill:react-best-practices"
+          },
+          {
+            "type": "contains",
+            "target": "skill:review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:security-review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:tdd"
+          },
+          {
+            "type": "contains",
+            "target": "skill:test"
+          },
+          {
+            "type": "contains",
+            "target": "skill:write-docs"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Runtime",
+      "metadata": {
+        "id": "runtime:opencode",
+        "name": "opencode",
+        "status": "active",
+        "description": "repo worker (Electra chat paused 2026-07-01 — Paseo trial)",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/central-ops-dashboard/routing-index.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "runtime.opencode"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "skill:accessibility"
+          },
+          {
+            "type": "contains",
+            "target": "skill:agent-scope-and-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-mcp-server"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:dependency-upgrade"
+          },
+          {
+            "type": "contains",
+            "target": "skill:design-an-interface"
+          },
+          {
+            "type": "contains",
+            "target": "skill:diagnosing-bugs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:documentation-and-adrs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:doubt-driven-development"
+          },
+          {
+            "type": "contains",
+            "target": "skill:frontend-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:github-workflows"
+          },
+          {
+            "type": "contains",
+            "target": "skill:incremental-implementation"
+          },
+          {
+            "type": "contains",
+            "target": "skill:interview-me"
+          },
+          {
+            "type": "contains",
+            "target": "skill:lint"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observability"
+          },
+          {
+            "type": "contains",
+            "target": "skill:planning-with-files"
+          },
+          {
+            "type": "contains",
+            "target": "skill:react-best-practices"
+          },
+          {
+            "type": "contains",
+            "target": "skill:review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:security-review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:tdd"
+          },
+          {
+            "type": "contains",
+            "target": "skill:test"
+          },
+          {
+            "type": "contains",
+            "target": "skill:write-docs"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Runtime",
+      "metadata": {
+        "id": "runtime:pi",
+        "name": "pi",
+        "status": "reference",
+        "description": "CLI usable; orchestration retired — reference doctrine, not a delegation target",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "routing-index",
+          "locator": "~/central-ops-dashboard/routing-index.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "runtime.pi"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "skill:accessibility"
+          },
+          {
+            "type": "contains",
+            "target": "skill:agent-scope-and-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-mcp-server"
+          },
+          {
+            "type": "contains",
+            "target": "skill:create-skill"
+          },
+          {
+            "type": "contains",
+            "target": "skill:dependency-upgrade"
+          },
+          {
+            "type": "contains",
+            "target": "skill:design-an-interface"
+          },
+          {
+            "type": "contains",
+            "target": "skill:diagnosing-bugs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:documentation-and-adrs"
+          },
+          {
+            "type": "contains",
+            "target": "skill:doubt-driven-development"
+          },
+          {
+            "type": "contains",
+            "target": "skill:frontend-design"
+          },
+          {
+            "type": "contains",
+            "target": "skill:github-workflows"
+          },
+          {
+            "type": "contains",
+            "target": "skill:incremental-implementation"
+          },
+          {
+            "type": "contains",
+            "target": "skill:interview-me"
+          },
+          {
+            "type": "contains",
+            "target": "skill:lint"
+          },
+          {
+            "type": "contains",
+            "target": "skill:observability"
+          },
+          {
+            "type": "contains",
+            "target": "skill:planning-with-files"
+          },
+          {
+            "type": "contains",
+            "target": "skill:react-best-practices"
+          },
+          {
+            "type": "contains",
+            "target": "skill:review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:security-review"
+          },
+          {
+            "type": "contains",
+            "target": "skill:tdd"
+          },
+          {
+            "type": "contains",
+            "target": "skill:test"
+          },
+          {
+            "type": "contains",
+            "target": "skill:write-docs"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "reference",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:accessibility",
+        "name": "accessibility",
+        "status": "active",
+        "description": "Audit and improve web accessibility following WCAG 2.1 guidelines. Use when asked to \"improve accessibility\", \"a11y audit\", \"WCAG compliance\", \"screen reader support\", \"keyboard navigation\", or \"make accessible\".",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/accessibility/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.accessibility"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:agent-scope-and-design",
+        "name": "agent-scope-and-design",
+        "status": "active",
+        "description": "Scope and design custom subagent personas conversationally, then translate the design into a ready-to-use pi-subagent definition file. Use when someone wants to \"create an agent\", \"design a custom agent\", \"build a subagent for X\", or when scoping what a new agent should do and how it should behave.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/agent-scope-and-design/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.agent.scope.and.design"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:claude-to-im",
+        "name": "claude-to-im",
+        "status": "active",
+        "description": "|",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/claude-to-im/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.claude.to.im"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:codex-memory-bridge",
+        "name": "codex-memory-bridge",
+        "status": "active",
+        "description": "Use the AIOS memory bridge from Codex for shared recall, bounded writeback, promotion, and supersession. Use when working in projects that have the AIOS memory bridge configured in local Codex runtime config.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/codex-memory-bridge/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.codex.memory.bridge"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:create-mcp-server",
+        "name": "create-mcp-server",
+        "status": "active",
+        "description": "Build, iterate, and evaluate Model Context Protocol (MCP) servers that expose external services as tools an LLM can call. Use when asked to \"build an MCP server\", \"create an MCP tool\", \"wrap this API as MCP\", \"expose X to Claude\", or when extending GSD with custom tool integrations. Covers research, schema/tool design, error handling, pagination, testing via MCP Inspector, and producing a 10-question eval set that proves the server actually enables real work.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/create-mcp-server/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.create.mcp.server"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:create-skill",
+        "name": "create-skill",
+        "status": "active",
+        "description": "Expert guidance for creating, writing, building, and refining GSD skills. Use when working with SKILL.md files, authoring new skills, improving existing skills, or understanding skill structure and best practices.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/create-skill/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.create.skill"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:createskill",
+        "name": "CreateSkill",
+        "status": "active",
+        "description": "Complete PAI skill development lifecycle across two tracks. Structure track: scaffold new skills (TitleCase dirs, flat 2-level max, Workflows/ + Tools/ + References/ only), validate against canonical format, canonicalize existing skills. Effectiveness track (Anthropic methodology): TestSkill spawns with-skill vs baseline agents in parallel and compares outputs, ImproveSkill diagnoses root causes and rewrites instructions with reasoning over rigid constraints, OptimizeDescription generates 20 should/shouldn't-trigger test queries and rewrites for accuracy. Guides from Thariq Shihipar (Mar 2026): Gotchas section mandatory, BPE check before finalizing, progressive disclosure (frontmatter → SKILL.md body → reference files), on-demand hooks. USE WHEN create skill, new skill, validate skill, test skill, improve skill, optimize description, skill not triggering, skill overtriggering, canonicalize, scaffold skill, skill quality. NOT FOR TypeScript CLI generation (use CreateCLI).",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/CreateSkill/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.createskill"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:dependency-upgrade",
+        "name": "dependency-upgrade",
+        "status": "active",
+        "description": "Plan, batch, and verify dependency upgrades safely. Triages outdated packages into risk tiers, upgrades in order (dev/minor/patch first, runtime majors last), verifies each batch before moving on, and produces an auditable commit sequence. Use when asked to \"upgrade deps\", \"bump packages\", \"update node_modules\", \"fix vulnerabilities\", \"upgrade React/Node/TypeScript\", or after `/gsd start dep-upgrade`. Complements the dep-upgrade workflow template with execution-level rigor.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/dependency-upgrade/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.dependency.upgrade"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:design-an-interface",
+        "name": "design-an-interface",
+        "status": "active",
+        "description": "Produce 3+ radically different designs for a module, API, or interface, compare them in prose, and synthesize a recommendation. Use when asked to \"design an interface\", \"shape this API\", \"design it twice\", \"explore module boundaries\", or when planning a new deep module and the first idea is unlikely to be the best. Based on \"Design It Twice\" from A Philosophy of Software Design — the value is the contrast, not the first draft.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/design-an-interface/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.design.an.interface"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:diagnosing-bugs",
+        "name": "diagnosing-bugs",
+        "status": "active",
+        "description": "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/diagnosing-bugs/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.diagnosing.bugs"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:docs-langfuse",
+        "name": "docs-langfuse",
+        "status": "active",
+        "description": "Use when working with Langfuse — open-source LLM engineering platform for observability, tracing, prompt management, evaluations, datasets, and the playground. Triggers include integrating with OpenAI SDK / LangChain / LlamaIndex / LiteLLM / OpenTelemetry, instrumenting LLM apps, deploying self-hosted Langfuse, debugging traces, or working with prompt versioning.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/docs-langfuse/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.docs.langfuse"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:docs-litellm",
+        "name": "docs-litellm",
+        "status": "active",
+        "description": "Use when working with LiteLLM — the open source AI Gateway / Python SDK that calls 100+ LLM providers (OpenAI, Anthropic, Gemini, Bedrock, Azure, VertexAI, Cohere, HuggingFace, VLLM, NVIDIA NIM, and more) in OpenAI format, with cost tracking, virtual keys, guardrails, load balancing, retries/fallbacks, MCP gateway, A2A agent gateway, and observability callbacks.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/docs-litellm/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.docs.litellm"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:docs-nodered",
+        "name": "docs-nodered",
+        "status": "active",
+        "description": "Reference and usage guide for Node-RED — low-code, flow-based programming for event-driven applications. Use when installing, configuring, customizing, or debugging Node-RED; when writing/reading flows, custom nodes, subflows, or theme plugins; when migrating between 4.x and 5.x; when looking up changelog entries, recent fixes, release notes, or known issues; when integrating Node-RED into a larger JavaScript/Node.js stack; or when answering \"how does Node-RED handle X\" questions about TCP nodes, debug sidebar, palette, projects feature, i18n, or context stores.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/docs-nodered/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.docs.nodered"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:docs-otel-collector",
+        "name": "docs-otel-collector",
+        "status": "active",
+        "description": "Vendor-agnostic implementation for receiving, processing, and exporting telemetry data (traces, metrics, logs). Use when configuring, debugging, building custom distributions of, or developing components for the OpenTelemetry Collector. Covers pipeline configuration, exporter/processor/receiver semantics, the cmd/builder workflow, OTLP v1.10.0, pdata APIs, confighttp/configgrpc behavior, and v0.150.0–v0.152.0 release semantics.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/docs-otel-collector/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.docs.otel.collector"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:documentation-and-adrs",
+        "name": "documentation-and-adrs",
+        "status": "active",
+        "description": "Records decisions and documentation. Use when making architectural decisions, changing public APIs, shipping features, or when you need to record context that future engineers and agents will need to understand the codebase.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/documentation-and-adrs/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.documentation.and.adrs"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:doubt-driven-development",
+        "name": "doubt-driven-development",
+        "status": "active",
+        "description": "Subjects every non-trivial decision to a fresh-context adversarial review before it stands. Use when correctness matters more than speed, when working in unfamiliar code, when stakes are high (production, security-sensitive logic, irreversible operations), or any time a confident output would be cheaper to verify now than to debug later.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/doubt-driven-development/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.doubt.driven.development"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:evals",
+        "name": "Evals",
+        "status": "active",
+        "description": "Comprehensive AI agent evaluation framework with three grader types (code-based: deterministic/fast; model-based: nuanced/LLM rubric; human: gold standard) and pass@k / pass^k scoring. Evaluates agent transcripts, tool-call sequences, and multi-turn conversations — not just single outputs. Workflows: RunEval, CompareModels, ComparePrompts, CreateJudge, CreateUseCase, RunScenario, CreateScenario, ViewResults. Integrates with THE ALGORITHM ISC rows for automated verification. Code-based graders: string_match, regex_match, binary_tests, static_analysis, state_check, tool_calls. Model-based graders: llm_rubric, natural_language_assert, pairwise_comparison. USE WHEN eval, evaluate, benchmark, regression test, run eval, compare models, compare prompts, create judge, test agent, quality check, pass@k, grader, agent transcript, scenario simulation, capability test, before/after comparison, suite saturation, failure to task, graduate suite. NOT FOR general research (use Research) or scientific method framing (use Science).",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/Evals/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.evals"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:fabric",
+        "name": "Fabric",
+        "status": "active",
+        "description": "Execute any of 240+ specialized prompt patterns natively (no CLI required for most) across categories: Extraction (30+), Summarization (20+), Analysis (35+), Creation (50+), Improvement (10+), Security (15), Rating (8). Common patterns: extract_wisdom, summarize, create_5_sentence_summary, create_threat_model, create_stride_threat_model, analyze_claims, improve_writing, review_code, extract_main_idea, analyze_malware, create_sigma_rules, create_mermaid_visualization, youtube_summary, judge_output, rate_ai_response. Native execution reads Patterns/{name}/system.md and applies directly. Fabric CLI used only for YouTube transcript extraction (-y URL) and fallback URL fetching (-u URL). Patterns auto-synced from upstream Fabric repo via UpdatePatterns workflow. Workflows: ExecutePattern, UpdatePatterns. USE WHEN fabric, fabric pattern, run fabric, sync fabric, update patterns, use extract_wisdom, threat model, summarize, analyze claims, improve writing, review code, create prd, rate content, create diagram, mermaid diagram, STRIDE, sigma rules, analyze malware. NOT FOR comprehensive multi-agent investigation (use Research), content-adaptive dynamic extraction (use ExtractWisdom), or security threat intelligence aggregation (use AnnualReports).",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/Fabric/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.fabric"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:figma",
+        "name": "figma",
+        "status": "active",
+        "description": "Use the Figma MCP server to fetch design context, screenshots, variables, and assets from Figma, and to translate Figma nodes into production code. Trigger when a task involves Figma URLs, node IDs, design-to-code implementation, or Figma MCP setup and troubleshooting.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/figma/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.figma"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:figma-implement-design",
+        "name": "figma-implement-design",
+        "status": "active",
+        "description": "Translate Figma nodes into production-ready code with 1:1 visual fidelity using the Figma MCP workflow (design context, screenshots, assets, and project-convention translation). Trigger when the user provides Figma URLs or node IDs, or asks to implement designs or components that must match Figma specs. Requires a working Figma MCP server connection.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/figma-implement-design/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.figma.implement.design"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:frontend-design",
+        "name": "frontend-design",
+        "status": "active",
+        "description": "Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/frontend-design/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.frontend.design"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:frontend-skill",
+        "name": "frontend-skill",
+        "status": "active",
+        "description": "Use when the task asks for a visually strong landing page, website, app, prototype, demo, or game UI. This skill enforces restrained composition, image-led hierarchy, cohesive content structure, and tasteful motion while avoiding generic cards, weak branding, and UI clutter.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/frontend-skill/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.frontend.skill"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:github-workflows",
+        "name": "github-workflows",
+        "status": "active",
+        "description": "Work with GitHub Actions CI/CD workflows - read live syntax, monitor runs, and debug failures. Use when writing, running, or debugging GitHub Actions workflows.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/github-workflows/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.github.workflows"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:imagegen",
+        "name": "imagegen",
+        "status": "active",
+        "description": "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established icon or logo system, or building the visual directly in HTML/CSS/canvas.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/imagegen/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.imagegen"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:incremental-implementation",
+        "name": "incremental-implementation",
+        "status": "active",
+        "description": "Delivers changes incrementally. Use when implementing any feature or change that touches more than one file. Use when you're about to write a large amount of code at once, or when a task feels too big to land in one step.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/incremental-implementation/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.incremental.implementation"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:interceptor",
+        "name": "Interceptor",
+        "status": "active",
+        "description": "Real Chrome browser automation via Interceptor extension — controls the actual browser from inside (zero CDP fingerprint, passes all major bot detection checks including BrowserScan, Pixelscan, CreepJS, Fingerprint.com). Stays logged in, uses your real sessions. Compound commands (open, read, act, inspect) collapse multi-step flows into single calls. Unique capabilities: monitor/replay system (record user actions → export replayable plan scripts for regression), network log (auto-captures all fetch/XHR), scene graph for rich editors (Google Docs, Canva, Slides). Workflows: VerifyDeploy, Reproduce (open affected page BEFORE code analysis — mandatory per rules), RecordFlow, ReplayFlow, TestForm, Update. MANDATORY for all visual verification — never use agent-browser for deploy confirmation. USE WHEN verify deploy, confirm UI, check page, screenshot verification, interceptor, debug web, troubleshoot, visual check, authenticated page, bot detection bypass, agent-browser failing, reproduce bug, record flow, replay flow, test form, QA test, regression check. NOT FOR batch headless automation (use Browser). NOT FOR multi-page crawling or scraping at scale with residential proxy needs (use BrightData).",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/Interceptor/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.interceptor"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:interview-me",
+        "name": "interview-me",
+        "status": "active",
+        "description": "Extracts what the user actually wants instead of what they think they should want. Achieves this through one-question-at-a-time interview until ~95% confidence about the underlying intent. Use when an ask is underspecified (\"build me X\" without \"for whom\" or \"why now\"), when the user explicitly invokes (\"interview me\", \"grill me\", \"are we sure?\", \"stress-test my thinking\"), or when you catch yourself silently filling in ambiguous requirements before any plan, spec, or code exists.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/interview-me/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.interview.me"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:isa",
+        "name": "ISA",
+        "status": "active",
+        "description": "Owns the Ideal State Artifact (ISA) — a single document articulating a project/task's ideal state, driving the build, verifying it, and recording understanding as it evolves. Five workflows: Scaffold (generate fresh ISA), Interview (Q&A to fill sections), CheckCompleteness (score against tier gate), Reconcile (merge a feature-file excerpt back into master ISA), Seed (bootstrap from an existing repo). Locked 12-section order: Problem, Vision, Out of Scope, Principles, Constraints, Goal, Criteria, Test Strategy, Features, Decisions, Changelog, Verification. Invoked automatically by the Algorithm at OBSERVE, or directly by the user. USE WHEN: ideal state, ISA, ISC, project specification, articulating done, scaffolding/interviewing/checking/reconciling/seeding an ISA. NOT FOR creating new skills (use CreateSkill), running the Algorithm itself, or retrospective write-ups (postmortems, decision logs).",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/ISA/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.isa"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:lint",
+        "name": "lint",
+        "status": "active",
+        "description": "Lint and format code. Auto-detects ESLint, Biome, Prettier, or language-native formatters and runs them with auto-fix. Reports remaining issues with actionable suggestions.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/lint/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.lint"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observability",
+        "name": "observability",
+        "status": "active",
+        "description": "Add agent-first observability to code — structured logs, health endpoints, failure-state persistence, and explicit failure modes — so the next agent hitting a problem at 3am has the signals it needs to diagnose. Use when asked to \"add logging\", \"add observability\", \"add metrics\", \"debug later\", \"make this observable\", or when building/refactoring a subsystem that will run unattended (auto-mode engine, background jobs, servers, watchers). Operationalizes VISION.md's \"agent-first observability\" principle.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/observability/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observability"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observal",
+        "name": "observal",
+        "status": "active",
+        "description": "Core Observal CLI operations: pull agents into your harness, scan installed components, diagnose and patch harness configs, authenticate, manage CLI settings, and discuss agent insights. Use when the user wants to install an agent, check setup, login, configure the CLI, or ask how an agent is doing.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/observal/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observal"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observal-admin",
+        "name": "observal-admin",
+        "status": "active",
+        "description": "Observal admin operations including user management, enterprise settings, submission review queue, security events, audit logs, and SSO configuration. Use when the user needs to manage users, approve or reject submissions, view security events, or configure SAML/SCIM.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/observal-admin/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observal.admin"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observal-advanced",
+        "name": "observal-advanced",
+        "status": "active",
+        "description": "Advanced Observal operations including session reconciliation, CLI upgrades and downgrades, complete uninstallation, and local fallback mode for offline use. Use when the user wants to reconcile sessions, upgrade or downgrade the CLI, uninstall Observal, or write agent configs locally when the server is unreachable.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/observal-advanced/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observal.advanced"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observal-agents",
+        "name": "observal-agents",
+        "status": "active",
+        "description": "Create, update, version, and manage Observal agents. Use when the user wants to create a new agent, update an existing one, release a new version, scaffold a YAML project, add components, build, publish, bulk-create, archive, delete, or restore agents.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/observal-agents/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observal.agents"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observal-ops",
+        "name": "observal-ops",
+        "status": "active",
+        "description": "View traces, spans, metrics, feedback, telemetry health, and agent insight reports. Use when the user wants to see traces, check metrics, view top items, submit ratings, diagnose telemetry, or discuss how an agent is doing.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/observal-ops/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observal.ops"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:observal-registry",
+        "name": "observal-registry",
+        "status": "active",
+        "description": "Submit, browse, install, edit, archive, restore, transfer, and version MCPs, skills, hooks, prompts, and sandboxes in the Observal registry. Use when the user wants to submit a component, install one, edit a draft, publish a new version, or browse the component library.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/observal-registry/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.observal.registry"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:obsidian-second-brain",
+        "name": "obsidian-second-brain",
+        "status": "active",
+        "description": ">",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/obsidian-second-brain/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.obsidian.second.brain"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:open-knowledge-discovery",
+        "name": "open-knowledge-discovery",
+        "status": "active",
+        "description": "Read when the user asks what OpenKnowledge is, wants to install it on a repository, wants to share an OpenKnowledge project with collaborators, or asks how `ok init` / `ok cowork` / OK Desktop set up a project. Do NOT load to perform OpenKnowledge reads/writes — the runtime guidance for editing markdown inside an initialized OK project ships as a separate project-local skill at `.claude/skills/open-knowledge/` whenever `ok init` runs. If the user appears to be editing markdown inside a `.ok/` project and this is the only OK skill loaded, advise them to re-run `ok init` to install the project-local skill.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/open-knowledge-discovery/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.open.knowledge.discovery"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.claude/skills/open-knowledge-discovery/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:open-knowledge-write-skill",
+        "name": "open-knowledge-write-skill",
+        "status": "active",
+        "description": "Use when the user wants to create, author, write, or design a new Agent Skill (a SKILL.md) — for OpenKnowledge or for their editors — including requests like 'help me write a skill', 'make a skill that…', 'turn this workflow into a skill', or improving an existing skill's triggering and discipline. Also use when capturing reusable agent guidance that should live as an installable skill rather than a one-off prompt. Covers choosing scope (project vs global), the SKILL.md frontmatter contract, progressive-disclosure structure, evaluating the skill, and installing it into the user's editors.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/open-knowledge-write-skill/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.open.knowledge.write.skill"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.claude/skills/open-knowledge-write-skill/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:paseo",
+        "name": "paseo",
+        "status": "active",
+        "description": "Paseo reference for managing workspaces, agents, schedules, and heartbeats.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "shared-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/paseo/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.paseo"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.agents/skills/paseo/SKILL.md",
+            "~/.claude/skills/paseo/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:paseo-advisor",
+        "name": "paseo-advisor",
+        "status": "active",
+        "description": "Spin up a single agent as an advisor — second opinion on the current task. Use when the user says \"advisor\", \"second opinion\", \"what does X think\", or wants an outside take without delegating the work itself.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "shared-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/paseo-advisor/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.paseo.advisor"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.agents/skills/paseo-advisor/SKILL.md",
+            "~/.claude/skills/paseo-advisor/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:paseo-committee",
+        "name": "paseo-committee",
+        "status": "active",
+        "description": "Form a committee of two high-reasoning agents to step back, do root cause analysis, and produce a plan. Use when stuck, looping, tunnel-visioning, or facing a hard planning problem.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "shared-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/paseo-committee/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.paseo.committee"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.agents/skills/paseo-committee/SKILL.md",
+            "~/.claude/skills/paseo-committee/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:paseo-handoff",
+        "name": "paseo-handoff",
+        "status": "active",
+        "description": "Hand off the current task to another agent with full context. Use when the user says \"handoff\", \"hand off\", \"hand this to\", or wants to pass work to another agent.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "shared-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/paseo-handoff/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.paseo.handoff"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.agents/skills/paseo-handoff/SKILL.md",
+            "~/.claude/skills/paseo-handoff/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:paseo-loop",
+        "name": "paseo-loop",
+        "status": "active",
+        "description": "Run an agent loop until an exit condition is met. Use when the user says \"loop\", \"babysit\", \"keep trying until\", \"check every X\", \"watch\", or wants iterative autonomous execution.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "shared-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/paseo-loop/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.paseo.loop"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.agents/skills/paseo-loop/SKILL.md",
+            "~/.claude/skills/paseo-loop/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:planning-with-files",
+        "name": "planning-with-files",
+        "status": "active",
+        "description": "Persistent file-based planning that survives context loss. Use for any task requiring 5+ tool calls, multi-step work, research, or building. Creates and maintains task_plan.md, findings.md, and progress.md on disk. Triggers on complex asks that span multiple files or phases.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/planning-with-files/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.planning.with.files"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:playwright-interactive",
+        "name": "playwright-interactive",
+        "status": "active",
+        "description": "Persistent browser and Electron interaction through `js_repl` for fast iterative UI debugging.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/playwright-interactive/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.playwright.interactive"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:quant-viz",
+        "name": "quant-viz",
+        "status": "active",
+        "description": "Use when turning market, portfolio, options, volatility, regime, or opportunity-scoring data into compact decision-oriented charts and tables. Applies to trading cockpit UI, quantitative dashboard layouts, market breadth/correlation visuals, IV/VRP/skew views, and fast prototype-to-production visualization workflows in React or Python.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/quant-viz/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.quant.viz"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:quantconnect-cloud",
+        "name": "quantconnect-cloud",
+        "status": "active",
+        "description": "Use when the task involves QuantConnect Cloud projects, LEAN algorithms, the QuantConnect MCP server, cloud backtests, compile failures, QuantConnect API usage, or safe live-trading operations. Default to Python unless the user explicitly asks for C#, inspect project files before editing, make the smallest valid change, compile before any backtest, prefer QuantConnect-native diagnostics and datasets, and treat live actions as approval-gated.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/quantconnect-cloud/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.quantconnect.cloud"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:react-best-practices",
+        "name": "react-best-practices",
+        "status": "active",
+        "description": "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/react-best-practices/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.react.best.practices"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:research",
+        "name": "Research",
+        "status": "active",
+        "description": "Comprehensive research and content extraction with 4 depth modes: Quick (1 Perplexity agent, ~10-15s), Standard (4 agents — Claude + Gemini + Grok + Perplexity, cross-checked, ~30-60s), Extensive (7 explorers + 2 independent verifiers, ~60-90s), Deep Investigation (progressive iteration with persistent MEMORY/RESEARCH/ vault, loop-compatible, ~3-60min). Every URL verified before delivery — hallucinated links are a catastrophic failure. Verification architecture: per-agent self-verification, cross-check synthesis, and independent verifier agents (Extensive/Deep). Confidence-tagged output: [HIGH] [MED] [LOW] [CONFLICT]. Additional workflows: ExtractAlpha (highest-signal insights), Retrieve (CAPTCHA/bot-blocked content), YoutubeExtraction (fabric -y), WebScraping, InterviewResearch (Tyler Cowen style), AnalyzeAiTrends, Fabric (242+ patterns), Enhance, ExtractKnowledge. USE WHEN research, do research, quick research, extensive research, deep investigation, find information, investigate, extract alpha, analyze content, retrieve content, AI trends, enhance content, extract knowledge, interview research, web scraping, YouTube extraction, map landscape, competitive analysis. NOT FOR people/company/entity deep background (use OSINT), academic paper search (use ArXiv), or structured JSON parsing (use Parser).",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/Research/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.research"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:review",
+        "name": "review",
+        "status": "active",
+        "description": "Review code changes for security, performance, bugs, and quality. Reviews staged changes, unstaged changes, specific commits, or PR-ready diffs.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/review/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.review"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:screenshot",
+        "name": "screenshot",
+        "status": "active",
+        "description": "Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/screenshot/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.screenshot"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:security-review",
+        "name": "security-review",
+        "status": "active",
+        "description": "Threat-model-driven security review of a change, feature, or subsystem. Runs a STRIDE-style pass (Spoofing, Tampering, Repudiation, Info disclosure, Denial of service, Elevation of privilege), examines the actual code, and produces a filing-ready report with severity, exploit scenario, and concrete remediation. Use when asked to \"security review\", \"threat model\", \"check for vulnerabilities\", \"audit this for security\", \"secure this\", or before shipping any change that touches auth, input handling, data access, or external surfaces.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/security-review/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.security.review"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:smithers",
+        "name": "smithers",
+        "status": "active",
+        "description": ">",
+        "owner": "ben",
+        "tags": [
+          "codex-skill",
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/smithers/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.smithers"
+        ],
+        "relations": [],
+        "config": {
+          "additionalSources": [
+            "~/.claude/skills/smithers/SKILL.md"
+          ]
+        }
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:steer",
+        "name": "steer",
+        "status": "active",
+        "description": "Front-door router + guided phase pipeline for substantial work. Read the request, classify it as quick-answer | needs-clarification | structured-pipeline, and for real builds/projects steer Ben through Frame → Research → Reuse-recon → Assess → Relate → Plan → (approval) → Build → Verify, announcing each phase. Use when a request is open-ended, multi-step, a new feature/project/system, or vague enough to need scoping. Do NOT use for simple direct asks — let those pass straight through.",
+        "owner": "ben",
+        "tags": [
+          "claude-skill"
+        ],
+        "source": {
+          "adapter": "claude-skill",
+          "locator": "~/.claude/skills/steer/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.steer"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:tdd",
+        "name": "tdd",
+        "status": "active",
+        "description": "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/tdd/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.tdd"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:test",
+        "name": "test",
+        "status": "active",
+        "description": "Generate or run tests. Auto-detects test framework, generates comprehensive tests for source files, or runs existing test suites with failure analysis.",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/test/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.test"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:vault-context",
+        "name": "vault-context",
+        "status": "active",
+        "description": "Load and apply the shared vault contract before cross-agent or cross-session work.",
+        "owner": "ben",
+        "tags": [
+          "codex-skill"
+        ],
+        "source": {
+          "adapter": "codex-skill",
+          "locator": "~/.codex/skills/vault-context/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.vault.context"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Skill",
+      "metadata": {
+        "id": "skill:write-docs",
+        "name": "write-docs",
+        "status": "active",
+        "description": ">-",
+        "owner": "ben",
+        "tags": [
+          "shared-skill"
+        ],
+        "source": {
+          "adapter": "shared-skill",
+          "locator": "~/.agents/skills/write-docs/SKILL.md",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "skill.write.docs"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:agent_mail",
+        "name": "agent_mail",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/agent_mail.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.agent_mail"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:agent_browser",
+        "name": "agent-browser",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "pi-mcp",
+          "locator": "~/.pi/agent/mcp.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.agent.browser"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:agentmemory",
+        "name": "agentmemory",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/agentmemory.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.agentmemory"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:aios_memory_bridge",
+        "name": "aios_memory_bridge",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/aios_memory_bridge.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.aios_memory_bridge"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:ben_agents3_registry",
+        "name": "ben-agents3-registry",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "pi-mcp",
+          "locator": "~/.pi/agent/mcp.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.ben.agents3.registry"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:cartograph",
+        "name": "cartograph",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "pi-mcp",
+          "locator": "~/.pi/agent/mcp.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.cartograph"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:chorus",
+        "name": "chorus",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "pi-mcp",
+          "locator": "~/.pi/agent/mcp.json",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.chorus"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:exa",
+        "name": "exa",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/exa.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.exa"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:executor",
+        "name": "executor",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/executor.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.executor"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:footprint_search",
+        "name": "footprint_search",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/footprint_search.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.footprint_search"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:github",
+        "name": "github",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/github.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.github"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:github_labels",
+        "name": "github_labels",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/github_labels.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.github_labels"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:market_lake",
+        "name": "market_lake",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/market_lake.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.market_lake"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:miyami_websearch",
+        "name": "miyami_websearch",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/miyami_websearch.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.miyami_websearch"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:octocode",
+        "name": "octocode",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/octocode.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.octocode"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:open_brain",
+        "name": "open_brain",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/open_brain.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.open_brain"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:openbb",
+        "name": "openbb",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/openbb.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.openbb"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:reddit_mcp_buddy",
+        "name": "reddit_mcp_buddy",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/reddit_mcp_buddy.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.reddit_mcp_buddy"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:workspace_mcp",
+        "name": "workspace_mcp",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/workspace_mcp.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.workspace_mcp"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:xactions",
+        "name": "xactions",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/xactions.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.xactions"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:zima",
+        "name": "zima",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/zima.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.zima"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:ax-research",
+        "name": "ax research",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/ax-research.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.ax.research"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:octocode"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github_labels"
+          },
+          {
+            "type": "contains",
+            "target": "tool:exa"
+          },
+          {
+            "type": "contains",
+            "target": "tool:miyami_websearch"
+          },
+          {
+            "type": "contains",
+            "target": "tool:reddit_mcp_buddy"
+          },
+          {
+            "type": "contains",
+            "target": "tool:xactions"
+          },
+          {
+            "type": "contains",
+            "target": "tool:agentmemory"
+          },
+          {
+            "type": "contains",
+            "target": "tool:aios_memory_bridge"
+          },
+          {
+            "type": "contains",
+            "target": "tool:open_brain"
+          },
+          {
+            "type": "contains",
+            "target": "tool:footprint_search"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:code-review",
+        "name": "code review",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/code-review.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.code.review"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:octocode"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:footprint-recall",
+        "name": "footprint recall",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/footprint-recall.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.footprint.recall"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:footprint_search"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:memory-only",
+        "name": "memory only",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/memory-only.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.memory.only"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:open_brain"
+          },
+          {
+            "type": "contains",
+            "target": "tool:aios_memory_bridge"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:ops-terminal",
+        "name": "ops terminal",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/ops-terminal.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.ops.terminal"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:octocode"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github_labels"
+          },
+          {
+            "type": "contains",
+            "target": "tool:exa"
+          },
+          {
+            "type": "contains",
+            "target": "tool:aios_memory_bridge"
+          },
+          {
+            "type": "contains",
+            "target": "tool:zima"
+          },
+          {
+            "type": "contains",
+            "target": "tool:executor"
+          },
+          {
+            "type": "contains",
+            "target": "tool:openbb"
+          },
+          {
+            "type": "contains",
+            "target": "tool:workspace_mcp"
+          },
+          {
+            "type": "contains",
+            "target": "tool:agent_mail"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:ops-terminal-footprint",
+        "name": "ops terminal footprint",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/ops-terminal-footprint.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.ops.terminal.footprint"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:octocode"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github_labels"
+          },
+          {
+            "type": "contains",
+            "target": "tool:exa"
+          },
+          {
+            "type": "contains",
+            "target": "tool:aios_memory_bridge"
+          },
+          {
+            "type": "contains",
+            "target": "tool:zima"
+          },
+          {
+            "type": "contains",
+            "target": "tool:executor"
+          },
+          {
+            "type": "contains",
+            "target": "tool:openbb"
+          },
+          {
+            "type": "contains",
+            "target": "tool:workspace_mcp"
+          },
+          {
+            "type": "contains",
+            "target": "tool:agent_mail"
+          },
+          {
+            "type": "contains",
+            "target": "tool:footprint_search"
+          },
+          {
+            "type": "contains",
+            "target": "tool:agentmemory"
+          },
+          {
+            "type": "contains",
+            "target": "tool:reddit_mcp_buddy"
+          },
+          {
+            "type": "contains",
+            "target": "tool:miyami_websearch"
+          },
+          {
+            "type": "contains",
+            "target": "tool:xactions"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:personal-tools",
+        "name": "personal tools",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/personal-tools.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.personal.tools"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:github"
+          },
+          {
+            "type": "contains",
+            "target": "tool:github_labels"
+          },
+          {
+            "type": "contains",
+            "target": "tool:octocode"
+          },
+          {
+            "type": "contains",
+            "target": "tool:zima"
+          },
+          {
+            "type": "contains",
+            "target": "tool:open_brain"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Toolset",
+      "metadata": {
+        "id": "toolset:quant-research",
+        "name": "quant research",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "mcp-registry",
+          "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/quant-research.yaml",
+          "observedAt": "2026-07-28T03:57:12.487Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "toolset.quant.research"
+        ],
+        "relations": [
+          {
+            "type": "contains",
+            "target": "tool:market_lake"
+          },
+          {
+            "type": "contains",
+            "target": "tool:octocode"
+          },
+          {
+            "type": "contains",
+            "target": "tool:open_brain"
+          },
+          {
+            "type": "contains",
+            "target": "tool:executor"
+          },
+          {
+            "type": "contains",
+            "target": "tool:workspace_mcp"
+          },
+          {
+            "type": "contains",
+            "target": "tool:openbb"
+          }
+        ],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-28T03:57:12.487Z"
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -9,6 +9,30 @@ tags: [deployment, tailscale, pwa, production, mobile]
 
 The dashboard runs as a production Next.js server, exposed to mobile devices over Tailscale with HTTPS, and installable as a PWA.
 
+> **SUPERSEDED 2026-07-25.** Production moved to the OVH VPS. The canonical
+> URL is now `https://ovh-vps.taila1553c.ts.net:8446` and the authoritative
+> runbook is [OVH Production](ovh-production.md). This page describes the old
+> Mac Mini setup and is kept for rollback only.
+
+## Canonical URL (historical Mini URL — rollback only)
+
+```
+https://bens-mac-mini.taila1553c.ts.net:8446
+```
+
+This is **HTTP/2** (verified). It multiplexes Electric long-polls over one
+TLS connection, so the browser's ~6-connection HTTP/1.1 cliff does not apply.
+
+**Do not** open `http://100.71.118.10:3000` (or any plain `http://100.x:3000`)
+from a phone or laptop for day-to-day use. That path is HTTP/1.1 and will
+reintroduce the stuck "Rendering" pill freezes described in
+[Live Sync Connection Budget](../architecture/live-sync-connection-budget.md).
+
+Production is kept up by launchd `com.bencharney.activityfeed.dashboard`
+(`~/activity-feed/dashboard/scripts/start-production.sh`), which also
+idempotently rebinds Tailscale Serve on `:8446`.
+
+
 ## Production Build
 
 ```bash
@@ -34,22 +58,28 @@ npm start       # starts on 0.0.0.0:3000
 }
 ```
 
-## Tailscale Serve
+## Tailscale Serve + launchd
+
+Managed by `com.bencharney.activityfeed.dashboard` (see central-repo-ops
+ADR-0066 amendment 2026-07-25). Manual equivalent:
 
 ```bash
-# Bind Next.js to all interfaces
-HOSTNAME=0.0.0.0 npm start
+# Production start (binds 0.0.0.0:3000)
+~/activity-feed/dashboard/scripts/start-production.sh
 
-# Expose via Tailscale serve (HTTPS)
+# Or just the HTTPS bind (idempotent; start script does this too)
 tailscale serve --bg --https=8446 http://127.0.0.1:3000
 ```
 
-The dashboard is then accessible at:
-```
-https://bens-mac-mini.taila1553c.ts.net:8446
+Verify HTTP/2:
+```bash
+curl -sI --http2 https://bens-mac-mini.taila1553c.ts.net:8446/ | head -1
+# expect: HTTP/2 200
 ```
 
-**Phone requirement:** Tailscale client installed and connected to the same tailnet.
+**Phone requirement:** Tailscale client installed and connected to the same
+tailnet. Install / reinstall the PWA from the **HTTPS** URL above — a home-
+screen icon saved from the plain HTTP IP will keep hitting HTTP/1.1.
 
 ## PWA Configuration
 
@@ -89,11 +119,13 @@ All must be running before the dashboard starts:
 
 ## Troubleshooting
 
-**"Connecting to electric-circuits" forever on phone:**
-1. Verify you're running production mode (`npm start`, not `npm run dev`)
-2. Verify Tailscale is connected on the phone
-3. Force-reload the page (Safari: pull down, or use `?v=N` query param)
-4. If installed as home-screen PWA: delete the icon and re-add
+**"Connecting to electric-circuits" forever on phone / lag / "Rendering" pill:**
+1. Confirm the URL is `https://bens-mac-mini.taila1553c.ts.net:8446` (HTTP/2),
+   **not** `http://100.x:3000`
+2. Confirm launchd is up: `launchctl print gui/$(id -u)/com.bencharney.activityfeed.dashboard | head`
+3. Confirm Tailscale is connected on the phone
+4. Force-reload (Safari pull-down, or `?v=N`). If the home-screen PWA was
+   installed from the plain HTTP IP, delete it and re-add from the HTTPS URL
 
 **Port conflicts:**
 - `:8790` is used by Bun MCP server — the API container is mapped to `:8795` instead

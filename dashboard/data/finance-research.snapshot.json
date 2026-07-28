@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-28T03:57:12.763Z",
+  "quantChannelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+  "contexts": [
+    {
+      "id": "cybersecurity-demand-2026-07",
+      "kind": "theme",
+      "title": "Cybersecurity demand",
+      "symbols": [
+        "CRWD",
+        "PANW",
+        "ZS",
+        "OKTA",
+        "S",
+        "CIBR",
+        "BUG",
+        "HACK",
+        "LAES",
+        "LSCC",
+        "VRNS",
+        "TENB",
+        "QLYS",
+        "RPD"
+      ],
+      "status": "working",
+      "verdict": "working_view",
+      "summary": "Base pass: quick_map thematic screen traced to a personal prediction logged 2026-07-06. Core judgment: threat acceleration is real and well-evidenced, but the public cyber trade (CIBR/HACK/BUG, CRWD/PANW/ZS/OKTA) has already re-rated meaningfully YTD. Extension pass (2026-07-17, standard depth): explicitly excluded CRWD/OKTA/ZS/CIBR per user request; screened non-human identity, AI-SOC automation, OT/cyber-physical security, SBOM/supply-chain security, post-quantum cryptography and cyber insurance, plus a lagging-proxy screen (VRNS/TENB/QLYS/RPD). Key finding: the most credible early names in each niche sub-sector are private and being acquired by strategic/PE buyers (Cisco, Accenture, Palo Alto Networks, Zurich, Thoma Bravo) before reaching public markets; the public small/mid-caps that remain cheap are cheap mainly because the market judges them as weaker franchises or takeover candidates, not because they were overlooked. VRNS stands out as the one name with a genuine growth/price disconnect worth independent verification; SEALSQ is the one public PQC pure-play but carries a bearish analyst view.",
+      "blockingGaps": [
+        "Several figures (Verizon DBIR detail, Gartner spend forecast, ETF YTD performance) are secondary-sourced, not pulled from primary documents",
+        "Palo Alto Networks revenue figure sourced in the base pass ($742M) looks inconsistent with known PANW scale; flagged, not corrected",
+        "No consensus/expectations check has been run on leading names or on the lagging-proxy cluster (VRNS/TENB/QLYS/RPD)",
+        "VRNS's reported ~167x forward P/E needs independent recalculation before any value framing",
+        "No public pure-play identified for non-human identity, OT security, SBOM/supply-chain security, or the fastest-growing cyber-insurance underwriters — recorded as an honest structural gap"
+      ],
+      "staleAfter": "2026-09-17",
+      "collection": [
+        {
+          "symbol": "CRWD",
+          "role": "endpoint / XDR platform",
+          "notes": "Clearest single-name evidence of demand acceleration — FY2026 ARR $5.25B with net-new ARR crossing $1B/quarter for the first time"
+        },
+        {
+          "symbol": "PANW",
+          "role": "network security / platform consolidation (SASE + endpoint + cloud security)",
+          "notes": "Broadest cyber platform play; benefits from budget consolidation trend as CISOs reduce vendor sprawl"
+        },
+        {
+          "symbol": "ZS",
+          "role": "identity / zero-trust network access (SSE/SASE)",
+          "notes": "Named explicitly as a primary zero-trust/identity beneficiary of the AI-threat-driven security spend narrative"
+        },
+        {
+          "symbol": "OKTA",
+          "role": "identity and access management (IAM)",
+          "notes": "Direct identity-layer proxy for the \"identity\" sub-sector the user asked about; named among zero-trust beneficiaries"
+        },
+        {
+          "symbol": "S",
+          "role": "endpoint / XDR platform (smaller scale challenger to CRWD)",
+          "notes": "Smaller-cap endpoint pure-play; potential has not fully re-rated candidate relative to CRWD — not verified this session"
+        },
+        {
+          "symbol": "CIBR",
+          "role": "diversified cyber ETF (market-cap weighted)",
+          "notes": "Best single-ticket way to express a broad cyber demand accelerating view without single-name concentration risk"
+        },
+        {
+          "symbol": "BUG",
+          "role": "diversified cyber ETF (concentrated equal-weight pure-play)",
+          "notes": "Higher-purity"
+        },
+        {
+          "symbol": "HACK",
+          "role": "diversified cyber ETF (pure-play + IT services/federal-security blend)",
+          "notes": "Broadest/most diluted cyber exposure of the three ETFs; useful only if the IT-services-for-federal-security angle is specifically wanted"
+        },
+        {
+          "symbol": "LAES",
+          "role": "post-quantum cryptography / secure semiconductors",
+          "notes": "Only identified public micro-cap pure-play in post-quantum cryptography; real regulatory tailwind (NIST/EU PQC migration mandates) but tiny revenue base and heavy cash burn — a promising angle with a genuinely weak specific candidate, not a clean hidden gem"
+        },
+        {
+          "symbol": "LSCC",
+          "role": "semiconductor (PQC-adjacent via crypto-agile secure microcontrollers)",
+          "notes": "Lower-purity way to get some PQC-migration exposure without a micro-cap balance sheet; PQC is one growth vector among several, not the core investment case"
+        },
+        {
+          "symbol": "VRNS",
+          "role": "data security / SaaS transition (DSPM)",
+          "notes": "Clearest lagging-proxy candidate found this pass: strong ARR/SaaS growth (ARR +69% YoY) and raised FY26 guidance, yet stock down ~38% trailing 12mo even as CRWD/ZS/OKTA rallied — but reported ~167x forward P/E complicates a simple 'cheap and overlooked' read"
+        },
+        {
+          "symbol": "TENB",
+          "role": "exposure management / vulnerability management",
+          "notes": "Second lagging-proxy candidate: single-digit revenue growth (+9.6% YoY) and margin expansion but stock down ~32% trailing 12mo at a much cheaper ~11x forward P/E than the crowded names — but M&A commentary frames this as a takeover/take-private candidate (Thoma Bravo/Permira named), not a clean re-rating story"
+        },
+        {
+          "symbol": "QLYS",
+          "role": "vulnerability management / compliance",
+          "notes": "Cheap valuation (~13x forward P/E) explicitly framed in sourcing as a plausible Thoma Bravo-style take-private candidate rather than an organic re-rating candidate"
+        },
+        {
+          "symbol": "RPD",
+          "role": "detection and response / vulnerability management",
+          "notes": "Most distressed name in the lagging-proxy cluster; sourcing explicitly frames this as the highest-probability private-equity buyout/carve-up target rather than an undervalued grower — a cautionary case, not a hidden gem"
+        }
+      ],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "3f0b6e86-08ea-41ff-a33c-4d145f2a1d11",
+        "objectType": "mira_case",
+        "objectId": "cybersecurity-demand-2026-07"
+      }
+    },
+    {
+      "id": "memory-storage-sector-2026-07",
+      "kind": "theme",
+      "title": "Memory & storage",
+      "symbols": [
+        "MU",
+        "WDC",
+        "STX",
+        "NTAP",
+        "HPE",
+        "DELL",
+        "SMCI",
+        "SIMO",
+        "PSTG",
+        "MRVL"
+      ],
+      "status": "working",
+      "verdict": "working_view",
+      "summary": "Prosumer layer scoped 2026-07-16 to standard depth: zero public pure-plays confirmed; WDC/STX capture HDD spend; four lesser-known angles identified (used enterprise arbitrage, Plex/Jellyfin demand driver, local AI storage, 2.5GbE upgrade cycle). Tracking signals defined with refresh cadence. Generated 2026-07-16 at quick_map depth from research question: 'What memory names haven't run up and why? What types of memory haven't run up and to what extent? General storage? Storage materials?' Working thesis: hoarding data and on-prem will grow consistently over the year and accelerate much more in the next 5 years than it has today. ABF case (abf-2026-05) provides upstream materials coverage.",
+      "blockingGaps": [
+        "PSTG, SIMO, MRVL not in Market Lake tracked universe — price and fundamental data unavailable",
+        "Enterprise IT spending survey data (Gartner, IDC) not yet sourced",
+        "DRAM/NAND contract pricing from industry trackers not yet sourced",
+        "NTAP/HPE storage segment revenue trajectories need L1 verification from filings",
+        "Cloud repatriation / on-prem data growth figures not yet sourced",
+        "Thesis-fit inference is agent judgment — needs external validation"
+      ],
+      "staleAfter": "2026-10-15",
+      "collection": [
+        {
+          "symbol": "MU",
+          "role": "commodity memory (DRAM/NAND/HBM)",
+          "notes": "The flagship commodity memory proxy — strongest HBM exposure among US-listed names"
+        },
+        {
+          "symbol": "WDC",
+          "role": "HDD and NAND flash storage",
+          "notes": "Core HDD tightness proxy — AI cold storage demand directly benefits nearline"
+        },
+        {
+          "symbol": "STX",
+          "role": "HDD storage",
+          "notes": "Second HDD duopoly member; same nearline tightness story as WDC"
+        },
+        {
+          "symbol": "NTAP",
+          "role": "enterprise storage systems",
+          "notes": "THE pure-play on-prem data hoarding proxy — if thesis is right this is the most direct beneficiary"
+        },
+        {
+          "symbol": "HPE",
+          "role": "enterprise servers storage networking",
+          "notes": "Broader enterprise IT proxy with storage exposure; less pure than NTAP but broader thesis coverage"
+        },
+        {
+          "symbol": "DELL",
+          "role": "enterprise servers storage PCs",
+          "notes": "A major beneficiary of enterprise AI buildout but the storage thesis is a secondary layer within DELL"
+        },
+        {
+          "symbol": "SMCI",
+          "role": "AI servers and storage systems",
+          "notes": "Idiosyncratic risk dominates; -42% 12m return is governance/turnover not sector"
+        },
+        {
+          "symbol": "SIMO",
+          "role": "enterprise SSD controllers",
+          "notes": "THE storage controller pure-play — if more storage gets deployed more controllers ship"
+        },
+        {
+          "symbol": "PSTG",
+          "role": "enterprise all-flash storage arrays",
+          "notes": "Pure storage systems play — direct thesis beneficiary alongside NTAP"
+        },
+        {
+          "symbol": "MRVL",
+          "role": "data infrastructure semiconductors (storage networking ASICs)",
+          "notes": "Broad data infrastructure play with storage controller exposure; less pure than SIMO"
+        }
+      ],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "4ab8a854-bc9e-4f25-b9f2-c0159e8d4b0e",
+        "objectType": "mira_case",
+        "objectId": "memory-storage-sector-2026-07"
+      }
+    },
+    {
+      "id": "mobile-ai-hardware-supercycle-2026-07",
+      "kind": "theme",
+      "title": "Mobile AI hardware",
+      "symbols": [
+        "QCOM",
+        "AAPL",
+        "AVGO"
+      ],
+      "status": "working",
+      "verdict": "working_view",
+      "summary": "quick_map industry-concept-analysis screen (near-term leg) scoped narrowly to the mobile-specific angle not covered by cases/ai-hardware-bottleneck-watchlist-2026-05; extended 2026-07-17 with a standard-depth longer-horizon (2027-2030+) angle survey per user request (longer-horizon-angles.md). `stale_after` (2026-10-31) applies to the near-term leg's shipment/margin data; the longer-horizon extension has no fixed stale_after given its multi-year horizon and should instead be revisited whenever any must_refresh_if item below fires, or roughly every 2 quarters. The longer-horizon extension is explicitly judgment/extrapolation-heavy and lower-confidence than the near-term leg; treat individually per angle. Not investment advice.",
+      "blockingGaps": [
+        "No SEC-filing-level cross-check performed (quick_map profile); Qualcomm/Apple/MediaTek/Broadcom segment data taken from earnings-release and trade-press summaries only.",
+        "WLAN chipset market-size figures from single trade/market-research citations without direct access to underlying report methodology.",
+        "No primary source found tying Wi-Fi 7 chipset demand growth specifically to mobile coding-agent or developer-tool usage.",
+        "Longer-horizon extension: no independently verified data on real-world third-party-app NPU utilization rates (Angle 2's central gap).",
+        "Longer-horizon extension: battery/power-efficiency claims (Enovix) are company-sourced only, not independently verified in a shipping device.",
+        "Longer-horizon extension: smart-glasses unit forecasts show wide dispersion across sources (13.6M vs. 68M by 2027-class estimates), not reconciled.",
+        "Longer-horizon extension: software value-capture read (Apple-Google) is a single case study based on reported, not disclosed, deal terms."
+      ],
+      "staleAfter": "2026-10-31",
+      "collection": [
+        {
+          "symbol": "QCOM",
+          "role": "Named research exposure",
+          "notes": ""
+        },
+        {
+          "symbol": "AAPL",
+          "role": "Named research exposure",
+          "notes": ""
+        },
+        {
+          "symbol": "AVGO",
+          "role": "Named research exposure",
+          "notes": ""
+        }
+      ],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "39874959-f2e2-4201-b8bc-c8c7886b06d4",
+        "objectType": "mira_case",
+        "objectId": "mobile-ai-hardware-supercycle-2026-07"
+      }
+    }
+  ]
+}

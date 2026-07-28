@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-28T04:18:50.619Z",
+  "ok": true,
+  "failCount": 0,
+  "warnCount": 0,
+  "openCount": 8,
+  "results": [
+    {
+      "id": "graph-continuity",
+      "title": "Graph Continuity",
+      "plan": "PLAN-graph-continuity.md",
+      "planStatusLine": "**Status:** shipped on OVH and rolled out globally on 2026-07-27",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "lifecycles",
+      "title": "Thread lifecycles + GuideBar",
+      "plan": "PLAN-lifecycles.md",
+      "planStatusLine": "Status: **shipped** (core lifecycle engine + GuideBar live on OVH as of 2026-07-26/27). Design agreed 2026-07-25; remaining open item is GuideBar Phase 6 browser QA (`task_plan.md`).",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": [
+        {
+          "severity": "open",
+          "message": "still open: GuideBar Phase 6 OVH browser QA"
+        }
+      ]
+    },
+    {
+      "id": "project-promotion",
+      "title": "Promote thread to AIWG project",
+      "plan": "PLAN-project-promotion.md",
+      "planStatusLine": "Status: **shipped** (promote API + GuideBar promote action + `PromoteStatusPanel` live). Design agreed 2026-07-25. Deeper AIWG project-detail UX is tracked separately in `PLAN-project-detail-aiwg.md`.",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "project-detail-aiwg",
+      "title": "AIWG-aware Project Detail",
+      "plan": "PLAN-project-detail-aiwg.md",
+      "planStatusLine": "**Status:** design captured — not yet implemented",
+      "claimed": "not_built",
+      "expectedStatus": "not_built",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "thread-move-advance",
+      "title": "Move threads + advance state",
+      "plan": "PLAN-thread-move-and-advance-state.md",
+      "planStatusLine": "**Status:** shipped on OVH (move-thread API + dialog; advance/GuideBar path live)",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "issues-channel",
+      "title": "Issues channel",
+      "plan": "PLAN-issues-channel.md",
+      "planStatusLine": "**Status:** shipped (issue lifecycle, issues list UI, repo targeting, work-runs control plane). Autonomous coding-worker transport remains deferred — see `.planning/issue-resolution-pipeline/`.",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "annotations",
+      "title": "Annotate / judge sessions",
+      "plan": "PLAN-annotations.md",
+      "planStatusLine": "**Status:** shipped (core) — `judgments` / `judgment_collections`, Activity judge UI, `/collections`, `/api/run-eval`. Broader agent-run measure/improve loop continues in `../AGENT-EVAL-PLAN.md` (Phases 3–5 still open).",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "mobile-pwa",
+      "title": "Mobile PWA hardening",
+      "plan": "PLAN-mobile-pwa.md",
+      "planStatusLine": "**Status:** mostly shipped — real channel/thread routes, Serwist SW (`sw.ts`), install prompt, update prompt. Remaining polish: proper 180×180 Apple touch icon (`layout.tsx` TODO still uses `/icon-192.png`). Bottom nav is now 6 tabs (Home, Activity, Channels, Fleet, Finance, Settings).",
+      "claimed": "mostly_shipped",
+      "expectedStatus": "mostly_shipped",
+      "ok": true,
+      "findings": [
+        {
+          "severity": "open",
+          "message": "open item still present: Proper 180×180 Apple touch icon"
+        }
+      ]
+    },
+    {
+      "id": "live-activity-feed",
+      "title": "Live agent activity feed",
+      "plan": "PLAN-live-activity-feed.md",
+      "planStatusLine": "**Status:** shipped and verified on OVH production (2026-07-26).",
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "fleet-bottom-nav",
+      "title": "Ops bottom nav (Fleet under Ops)",
+      "plan": null,
+      "planStatusLine": null,
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "agent-eval",
+      "title": "Agent eval measure / improve loop",
+      "plan": "docs/AGENT-EVAL-PLAN.md",
+      "planStatusLine": null,
+      "claimed": "mostly_shipped",
+      "expectedStatus": "mostly_shipped",
+      "ok": true,
+      "findings": [
+        {
+          "severity": "open",
+          "message": "tracked open item: Phase 3 — Automatic grading acceptance"
+        },
+        {
+          "severity": "open",
+          "message": "tracked open item: Phase 4 — /improvements propose-fixes loop"
+        },
+        {
+          "severity": "open",
+          "message": "tracked open item: Phase 5 — Regression suite"
+        },
+        {
+          "severity": "open",
+          "message": "open item still present: /improvements page not built yet"
+        },
+        {
+          "severity": "open",
+          "message": "open item still present: timeline/auto-judge feeders live on Mac (not in OVH dashboard package)"
+        }
+      ]
+    },
+    {
+      "id": "coding-worker-transport",
+      "title": "Autonomous coding-worker transport",
+      "plan": "docs/open-initiatives.md",
+      "planStatusLine": "Status: **not yet built** — intentionally deferred.",
+      "claimed": "not_built",
+      "expectedStatus": "not_built",
+      "ok": true,
+      "findings": [
+        {
+          "severity": "open",
+          "message": "tracked open item: Local coding-worker transport before autonomous repo mutation"
+        }
+      ]
+    },
+    {
+      "id": "deploy-graph-observation",
+      "title": "Post-deploy graph observation writer",
+      "plan": "docs/decisions/ADR-026-graph-initiatives-promote-gate.md",
+      "planStatusLine": null,
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    },
+    {
+      "id": "graph-initiatives",
+      "title": "Graph initiatives + promote gate",
+      "plan": "docs/decisions/ADR-026-graph-initiatives-promote-gate.md",
+      "planStatusLine": null,
+      "claimed": "shipped",
+      "expectedStatus": "shipped",
+      "ok": true,
+      "findings": []
+    }
+  ]
+}

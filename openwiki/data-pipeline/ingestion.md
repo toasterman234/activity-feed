@@ -9,22 +9,24 @@ tags: [data-pipeline, duckdb, postgres, ingestion, sync, finance]
 
 The ingestion pipeline syncs Life OS finance data from a local DuckDB analytical database into Postgres, where electric-circuits picks it up via logical replication and streams it to the dashboard.
 
+As of 2026-07-25, **Postgres and electric-circuits run on the OVH VPS**, not the Mac Mini. DuckDB and the sync script still run on the Mini and write to OVH over Tailscale (`ovh-vps.taila1553c.ts.net:5433`). See [OVH Production](../deployment/ovh-production.md).
+
 ## Pipeline Overview
 
 ```
-~/.life/analytical/footprint.duckdb (DuckDB, 95 GB)
+~/.life/analytical/footprint.duckdb (DuckDB on Mac Mini, 95 GB)
     │
-    ▼  python3 ingestion/sync_lifeos_to_pg.py
+    ▼  python3 ingestion/sync_lifeos_to_pg.py  (runs on Mini)
     │
-Postgres (activity-log-db, :5433, user: activity, db: activity_log)
+Postgres on OVH (activity-log-db, :5433, user: activity, db: activity_log)
     │
     ▼  logical replication (REPLICA IDENTITY FULL)
     │
-electric-circuits engine (Docker, :7011)
+electric-circuits engine on OVH (Docker, :7011)
     │
     ▼  /v1/shape (Z-set deltas)
     │
-Next.js PWA (@electric-circuits/client)
+Next.js PWA on OVH (@electric-circuits/client)
 ```
 
 ## Ingestion Script
@@ -91,8 +93,7 @@ On restart, the engine creates a replication slot, performs initial snapshot, an
 
 ## Activity Log Feeders
 
-Separate from the finance pipeline, three feeders write to the `activity_log` table:
+Separate from the finance pipeline, feeders write to the `activity_log` table:
 
-- **file-watcher.js** — watches `/Users/bencharney` for file create/modify/delete events
 - **pi-watcher.js** — tail -f on pi agent logs
 - **git-post-commit.sh** — git post-commit hook in monitored repos

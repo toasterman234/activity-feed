@@ -1,3 +1,10 @@
+# Activity Feed — agent notes
+
+**Phone / production dashboard is on OVH, not this Mac.**
+After changing `dashboard/`, deploy with `cd dashboard && npm run deploy:ovh`.
+Details: [`dashboard/AGENTS.md`](dashboard/AGENTS.md) and
+[`openwiki/deployment/ovh-production.md`](openwiki/deployment/ovh-production.md).
+
 <!-- OPENWIKI:START -->
 
 ## OpenWiki

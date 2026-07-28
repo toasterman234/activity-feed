@@ -5,11 +5,9 @@ import { usePathname } from "next/navigation";
 
 const TABS = [
   { href: "/", label: "Home" },
-  { href: "/activity", label: "Activity" },
   { href: "/channels", label: "Channels" },
-  { href: "/fleet", label: "Fleet" },
-  { href: "/finance", label: "Finance" },
-  { href: "/settings", label: "Settings" },
+  { href: "/ops", label: "Ops" },
+  { href: "/personal", label: "Personal" },
 ] as const;
 
 export default function BottomNav() {
@@ -19,7 +17,10 @@ export default function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-10 border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 pb-[env(safe-area-inset-bottom)]">
       <div className="mx-auto flex max-w-5xl h-12 items-center">
         {TABS.map((tab) => {
-          const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
+          const active =
+            tab.href === "/"
+              ? pathname === "/"
+              : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
           return (
             <Link
               key={tab.href}

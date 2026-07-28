@@ -1,0 +1,47 @@
+# Progress Log: Guided workflow cockpit
+
+## 2026-07-27
+
+- Completed live production, source, schema, and UI assessment.
+- Confirmed the exact linked Research/NAC thread lacks lifecycle metadata.
+- Loaded repository rules plus incremental implementation and frontend design guidance.
+- Preserved the unrelated Fleet task planning files and created isolated workflow-cockpit planning state.
+- Started Phase 1: workflow contracts and persistence.
+- Completed Phase 1: versioned stage contracts, additive migration, atomic root-thread creation, and backfill logic.
+- Completed Phase 2: append-only workflow events plus stage-scoped plans/artifacts through the existing polled extras path.
+- Completed Phase 3: workflow-first cockpit, Overview-first navigation, Tasks & runs, Artifacts, Conversation, and History.
+- Shape-budget verification passes; targeted TypeScript filtering reports no new errors in changed workflow files.
+- Local webpack build wedged under Node 24 after service-worker bundling; production Node 20 build is the canonical remaining verification.
+- Applied the idempotent OVH migration after correcting one rolled-back ambiguous-column query.
+- Backfill result: 46 root threads, 46 workflow instances, and 46 creation events.
+- Confirmed Research and Quant default to Research; Thoughts/ideas and Meta to Planning; Issues to Issue.
+- Production build compiled successfully in 4.3 seconds, generated all routes, restarted cleanly, and passed HTTP health checks.
+- Verified the linked NAC thread returns Research template v1, Frame (`drafted`) state, default verification workflows, and its creation event.
+- Added ADR-007 and updated the agent rules with the workflow-first invariant.
+- Task complete. All phases finished.
+- Resumed for the inline Frame interview and Personal Context Scan release.
+- Started Phase 5.
+- Completed Phase 5: one-question Frame interview, structured proposal, explicit approval, and enforced readiness.
+- Completed Phase 6: bounded read-only personal-context bridge, Graph/previous-thread merge, candidate review, and approved context artifact.
+- Shape-budget, targeted TypeScript, whitespace, migration syntax, and Python compilation checks pass.
+- Started Phase 7 production migration and deployment.
+- Applied the three additive production tables and deployed the Frame and Context Scan routes/UI.
+- Production Next build passed, the service restarted active, and the NAC thread returns HTTP 200.
+- Verified the context bridge reaches the Mac. macOS intermittently interrupts external-volume traversal, so the scan safely returns partial sources and supports retry/skip; graph and prior-thread sources remain live.
+- Added ADR-008 for inline interaction, explicit context admission, the read-only bridge, and the transition gate.
+- Phase 7 complete.
+- Standardization increment: added a validated lifecycle contract with reusable stage modules and declarative exit gates.
+- Replaced Research/Frame lifecycle-state conditionals in the UI, APIs, and transition engine with pinned-definition module/gate resolution.
+- Added append-only `workflow_templates`, complete per-task template snapshots, lazy snapshot backfill, and registry GET/publish APIs.
+- Added `/workflows`, a non-technical clone/build/reorder/module-attachment/version-publish interface.
+- Added ADR-009 and registry invariants to the project agent rules.
+- Applied the OVH registry/snapshot migration and deployed the production build.
+- The combined deploy's first build encountered a transient incomplete Next package install; a fresh lockfile install restored `next@16.2.11`, and the separated production build passed.
+- Live verification: four bundled templates published, `/workflows` HTTP 200, invalid definitions rejected, NAC pinned to Research v1 with both registered modules and gates, and an attempted premature transition was rejected without changing its Drafted state.
+- Published built-in v2 templates with a reusable guided-review/approval workspace for Planning Challenge, Research Verify, Coding Ready-to-ship, and Issue Verify.
+- Migrated 40 compatible active nonterminal tasks from v1 to v2 with a recorded `workflow.template_changed` event per task; terminal tasks remained pinned.
+- Verified the notification Planning task and the active Research Verify task both expose `guided-review` plus artifact/approval gates; the active-task audit now reports zero approval-stage dead ends.
+- Added a dry-run-first active-template migration script and serialized OVH deployments with a host lock after identifying overlapping remote builds.
+- Fixed exit gates being applied to every outgoing transition. Built-in v3 templates scope gates to completion targets so revise/stop/reject paths stay open.
+- Migrated 40 active nonterminal tasks from v2 to v3 and successfully replayed the notification task's intended Challenge → Plan transition.
+- Made review revision writes post-transition and proposals supersedable/idempotent to avoid stale or duplicate state after failed retries.

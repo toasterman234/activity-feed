@@ -106,6 +106,7 @@ function ThreadContent({
   const [promoteAnyway, setPromoteAnyway] = useState(false);
   const [dismissedPromotionId, setDismissedPromotionId] = useState<string | null>(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const [advancing, setAdvancing] = useState(false);
   const [activeTab, setActiveTab] = useState<ThreadTabId>("conversation");
   const [focusTriage, setFocusTriage] = useState(false);
@@ -383,10 +384,43 @@ function ThreadContent({
     openPromoteDialog(promoteDestination.trim() || defaultPromoteDestination);
   };
 
+
+  const archiveThread = async (action: "archive" | "unarchive") => {
+    if (archiving) return;
+    if (action === "archive") {
+      const ok = window.confirm("Archive this thread? It will leave Needs attention and channel lists. You can restore it later.");
+      if (!ok) return;
+    }
+    setArchiving(true);
+    try {
+      const response = await fetch("/api/channels/archive-thread", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ threadId, channelId, action }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `Archive failed (${response.status})`);
+      await extras.refresh();
+      if (action === "archive") {
+        router.push(`/channels/${channelId}`);
+      }
+    } catch (cause) {
+      window.alert(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setArchiving(false);
+    }
+  };
+
   const dismissPromotion = () => {
     if (rawPromotion?.id) setDismissedPromotionId(rawPromotion.id);
   };
 
+  const hasActiveReviewProposal = extras.interactions.some(
+    (item) =>
+      item.stage_id === currentState &&
+      item.kind === "review.proposal" &&
+      item.status === "active",
+  );
   const attention = lifecyclePicked && meta
     ? deriveThreadAttention({
         lifecycle: lifecycleKey,
@@ -394,6 +428,7 @@ function ThreadContent({
         assignee: meta.assignee,
         repoId: meta.repo_id,
         promotionStatus: promotion?.status || null,
+        hasActiveReviewProposal,
       })
     : null;
 
@@ -476,13 +511,32 @@ function ThreadContent({
           <p className="truncate text-xs font-medium text-zinc-800 dark:text-zinc-200"># {channel.name}</p>
           <p className="truncate text-[10px] text-zinc-400">Thread by {threadMsg.author}</p>
         </div>
-        {!isArchived && (
+        {!isArchived ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setShowMoveDialog(true)}
+              className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            >
+              Move…
+            </button>
+            <button
+              type="button"
+              disabled={archiving}
+              onClick={() => { void archiveThread("archive"); }}
+              className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            >
+              {archiving ? "…" : "Archive"}
+            </button>
+          </>
+        ) : (
           <button
             type="button"
-            onClick={() => setShowMoveDialog(true)}
-            className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            disabled={archiving}
+            onClick={() => { void archiveThread("unarchive"); }}
+            className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
-            Move…
+            {archiving ? "…" : "Restore"}
           </button>
         )}
       </header>
@@ -492,14 +546,28 @@ function ThreadContent({
           {isArchived && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-950">
               <p className="text-xs text-amber-700 dark:text-amber-300">
-                This thread was promoted to a project and is now archived (read-only).
+                {meta?.promoted_to
+                  ? "This thread was promoted to a project and is archived (read-only)."
+                  : "This thread is archived. It is hidden from Needs attention and channel lists."}
               </p>
-              <Link
-                href="/projects"
-                className="mt-1 inline-block text-[11px] font-medium text-amber-800 underline dark:text-amber-200"
-              >
-                Open Projects
-              </Link>
+              <div className="mt-1 flex flex-wrap gap-3">
+                {meta?.promoted_to && (
+                  <Link
+                    href="/projects"
+                    className="inline-block text-[11px] font-medium text-amber-800 underline dark:text-amber-200"
+                  >
+                    Open Projects
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  disabled={archiving}
+                  onClick={() => { void archiveThread("unarchive"); }}
+                  className="text-[11px] font-medium text-amber-800 underline disabled:opacity-40 dark:text-amber-200"
+                >
+                  Restore thread
+                </button>
+              </div>
             </div>
           )}
           {!lifecyclePicked && (
@@ -573,7 +641,8 @@ function ThreadContent({
                 subject={String(guidedReview.config?.subject || "work")}
                 plans={plans}
                 artifacts={extras.artifacts}
-                interactions={[]}
+                interactions={extras.interactions}
+                activity={extras.activity}
                 onRefresh={async () => { await extras.refresh(); }}
               />
             </div>

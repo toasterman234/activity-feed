@@ -211,6 +211,31 @@ export async function startWorkRun(
   return result.rows[0] || null;
 }
 
+export async function setWorkRunWorkspace(
+  db: Queryable,
+  input: {
+    runId: string;
+    workerId: string;
+    cwd: string;
+    branch: string;
+    baseCommit: string;
+  },
+): Promise<WorkRunRow | null> {
+  const result = await db.query<WorkRunRow>(
+    `UPDATE work_runs
+        SET cwd = $3,
+            branch = $4,
+            base_commit = $5,
+            updated_at = now()
+      WHERE id = $1
+        AND worker_id = $2
+        AND status = 'running'
+      RETURNING *`,
+    [input.runId, input.workerId, input.cwd, input.branch, input.baseCommit],
+  );
+  return result.rows[0] || null;
+}
+
 export async function heartbeatWorkRun(
   db: Queryable,
   input: { runId: string; workerId: string; leaseMs?: number; now?: Date },
@@ -235,7 +260,7 @@ export async function finishWorkRun(
   input: {
     runId: string;
     workerId: string;
-    status: "succeeded" | "failed";
+    status: "succeeded" | "failed" | "cancelled";
     resultPayload?: Record<string, unknown>;
     errorDetail?: string | null;
     rawRef?: string | null;

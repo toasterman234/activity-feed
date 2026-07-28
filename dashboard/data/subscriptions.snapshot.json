@@ -1,0 +1,60 @@
+{
+  "reachable": true,
+  "errors": [
+    "tokscale: npm error code EACCES\nnpm error syscall mkdir\nnpm error path /Volumes/Extra Storage Crucial 1TB SSD\nnpm error errno EACCES\nnpm error FetchError: Invalid response body while trying to fetch h",
+    "omp: /bin/sh: /Users/bencharney/.bun/bin/omp: No such file or directory\n"
+  ],
+  "accounts": [
+    {
+      "provider": "cursor",
+      "provider_label": "Cursor",
+      "account_id": "bencharney234@gmail.com",
+      "email": "bencharney234@gmail.com",
+      "plan": "Pro",
+      "source": "cursor-local",
+      "limits": [
+        {
+          "label": "Auto",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 1,
+          "remaining_frac": 0,
+          "unit": "percent",
+          "status": "exhausted",
+          "resets_at": "2026-08-10T01:35:25.000Z",
+          "duration_hours": null
+        },
+        {
+          "label": "API",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 1,
+          "remaining_frac": 0,
+          "unit": "percent",
+          "status": "exhausted",
+          "resets_at": "2026-08-10T01:35:25.000Z",
+          "duration_hours": null
+        },
+        {
+          "label": "Total",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 1,
+          "remaining_frac": 0,
+          "unit": "percent",
+          "status": "exhausted",
+          "resets_at": "2026-08-10T01:35:25.000Z",
+          "duration_hours": null
+        }
+      ],
+      "reset_credits": 0
+    }
+  ],
+  "generated_at": "2026-07-28T03:57:12.450Z"
+}

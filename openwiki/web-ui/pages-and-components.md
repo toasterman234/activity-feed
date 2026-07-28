@@ -14,17 +14,17 @@ The dashboard is a Next.js 16 App Router PWA. It is designed for phone use first
 | Route | Purpose | Primary Data Source |
 |---|---|---|
 | `/` | **Home** — compact overview with unread, needs-me, active work, hot threads, and agent/system status | `GET /api/home/overview` |
-| `/activity` | **Activity** — raw feed plus projects / memory / collections detail | electric-circuits + `GET /api/activity-log-cutoff` |
-| `/channels` | **Channels** — channel list with unread + lifecycle rollups | electric-circuits + `GET /api/channels/activity` |
+| `/channels` | **Channels** — channel list with unread + lifecycle rollups + Continuity | electric-circuits + `GET /api/channels/activity` |
 | `/channels/[channelId]` | **Channel detail** — channel members and thread list | electric-circuits + `GET /api/channels/thread-meta` |
 | `/channels/[channelId]/[threadId]` | **Thread detail** — lifecycle, plans, workflow steps, promotion state, replies | electric-circuits + `GET /api/channels/thread-extras` |
-| `/projects` | **Projects** — promoted/registered repos and work entry points | `GET /api/repos`, `POST /api/projects/work` |
-| `/projects/[repoId]` | **Project detail** — repo-specific thread/work views | project APIs |
-| `/finance` | **Finance** — portfolio, banking, watchlist, trades, screener, personal views | electric-circuits + Market Lake |
-| `/fleet` | **Fleet** — registry, agent profiles, runs entry | registry + fleet APIs |
-| `/workflows` | **Workflows** — versioned workflow template registry (also via Settings) | workflow APIs |
-| `/models` | **Models** — proxy/model status, swaps, subscriptions (Settings tab) | model APIs |
-| `/settings/perf` | **Perf** — web vitals and app measures | perf APIs |
+| `/channels/continuity` | **Continuity** — evidence initiatives, promote gate, graph inbox | ops evidence APIs |
+| `/projects` | **Projects** — promoted/registered repos and work entry points (via Channels) | `GET /api/repos`, `POST /api/projects/work` |
+| `/ops` | **Ops** — hub for Fleet / Activity / Runs / Config | redirects to `/ops/fleet` |
+| `/ops/fleet` | **Fleet** — hosts, registry, agent profiles | registry + fleet APIs |
+| `/ops/activity` | **Activity** — raw feed plus projects / memory / collections | electric-circuits + cutoff API |
+| `/ops/runs` | **Runs** — agent-run metrics and history | agent-runs APIs |
+| `/ops/config` | **Config** — Models / Workflows / Perf | model, workflow, perf APIs |
+| `/personal` | **Personal** — portfolio, banking, watchlist, screener | electric-circuits + Market Lake |
 
 ## Home page contract
 
@@ -46,7 +46,7 @@ The home page uses compact ranked slices from `GET /api/home/overview`:
 - `topThreads`
 - `topPulse`
 
-The UI shows counts first and only a few top rows per section. Deep detail stays behind `/activity`, `/channels`, and `/models`.
+The UI shows counts first and only a few top rows per section. Deep detail stays behind `/channels`, `/ops`, and `/personal`.
 
 ## Main data patterns
 
@@ -83,22 +83,21 @@ Thread plans, workflow steps, artifacts, and promotion rows are secondary detail
 Bottom nav is the primary mobile entry point:
 
 - **Home**
-- **Activity**
 - **Channels**
-- **Fleet**
-- **Finance**
-- **Settings**
+- **Ops**
+- **Personal**
 
-Settings secondary tabs: Performance · Models · Workflows.
+Ops secondary tabs: Fleet · Activity · Runs · Config  
+Config chips: Models · Workflows · Perf
+
+Legacy routes (`/activity`, `/fleet`, `/runs`, `/finance`, `/settings`, `/models`, `/workflows`) redirect into Ops or Personal.
 
 Rule of thumb:
 
-- Home = summary / routing
-- Activity = raw stream
-- Channels = thread workspace
-- Fleet = registry / agent fleet hub (Registry lives here)
-- Finance = portfolio / watchlist / screener / trades
-- Settings = perf, models, workflow registry editor
+- Home = summary / routing / needs attention
+- Channels = thread workspace + Continuity
+- Ops = fleet, activity feed, runs, models/workflows/perf
+- Personal = portfolio / watchlist / screener / banking
 
 ## PWA behavior
 

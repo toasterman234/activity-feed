@@ -139,21 +139,22 @@
     {
       "id": "fleet-bottom-nav",
       "plan": null,
-      "title": "Fleet primary bottom nav",
+      "title": "Ops bottom nav (Fleet under Ops)",
       "expectedStatus": "shipped",
       "requireAll": [
         "src/app/bottom-nav.tsx",
-        "src/app/fleet/page.tsx",
-        "src/app/settings/layout.tsx"
+        "src/app/ops/layout.tsx",
+        "src/app/ops/fleet/page.tsx",
+        "src/app/fleet/FleetPage.tsx"
       ],
       "requirePathContains": [
         {
           "path": "src/app/bottom-nav.tsx",
-          "includes": "href: \"/fleet\""
+          "includes": "href: \"/ops\""
         },
         {
-          "path": "src/app/settings/layout.tsx",
-          "includes": "href: \"/models\""
+          "path": "src/app/ops/layout.tsx",
+          "includes": "href: \"/ops/fleet\""
         }
       ]
     },
@@ -165,7 +166,7 @@
       "requireAll": [
         "src/app/api/agent-runs/overview/route.ts",
         "src/app/api/agent-runs/list/route.ts",
-        "src/app/runs/page.tsx"
+        "src/app/runs/RunsPage.tsx"
       ],
       "forbidAll": [
         "src/app/improvements/page.tsx"

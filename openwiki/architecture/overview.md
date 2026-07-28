@@ -36,7 +36,7 @@ Key source files:
 
 The electric-circuits engine runs in Docker (image: `electric-circuits-engine`) and consumes Postgres logical replication from 7 tables:
 
-- `activity_log` — file-watcher, pi-watcher, and git hook events
+- `activity_log` — Claude Code, pi, and git hook events
 - `portfolio_positions` — Schwab, Fidelity, on-chain wallet holdings
 - `portfolio_trades` — 5,400+ trades including options
 - `portfolio_balances` — cash account balances

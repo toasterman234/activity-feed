@@ -26,7 +26,10 @@ esac
 DETAIL=$(jq -n --arg project "$PROJECT" --arg session "$SESSION_ID" --arg tool "$TOOL_NAME" --arg event "$EVENT_TYPE" \
   '{project: $project, session_id: $session, tool: $tool, event: $event}')
 
-docker exec -i -e PGPASSWORD=activity -e PG_SUMMARY="$SUMMARY" -e PG_DETAIL="$DETAIL" -e PG_TYPE="claude.${EVENT_TYPE}" activity-log-db psql -U activity -d activity_log -q <<'SQL' >/dev/null 2>&1
+# DB moved to OVH (ops/OVH-MIGRATION-PLAN.md). No native psql on the Mac, so run
+# it in a throwaway container; tailnet IP because MagicDNS doesn't resolve in-container.
+ACTIVITY_DB_URL="${ACTIVITY_DB_URL:-postgres://activity:activity@100.101.106.60:5433/activity_log}"
+docker run --rm -i -e PG_SUMMARY="$SUMMARY" -e PG_DETAIL="$DETAIL" -e PG_TYPE="claude.${EVENT_TYPE}" postgres:16 psql "$ACTIVITY_DB_URL" -q <<'SQL' >/dev/null 2>&1
 \getenv summary PG_SUMMARY
 \getenv detail PG_DETAIL
 \getenv type PG_TYPE

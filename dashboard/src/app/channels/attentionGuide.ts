@@ -13,11 +13,14 @@ export function deriveThreadAttention(opts: {
   assignee?: string | null;
   repoId?: string | null;
   promotionStatus?: string | null;
+  /** True when a guided-review proposal exists and is waiting on human approval. */
+  hasActiveReviewProposal?: boolean;
 }): ThreadAttentionGuide | null {
   const lifecycle = opts.lifecycle || "";
   const state = opts.state || "";
   const assignee = (opts.assignee || "").trim();
   const repoId = opts.repoId || null;
+  const hasProposal = Boolean(opts.hasActiveReviewProposal);
 
   if (opts.promotionStatus === "failed_required_gate" || opts.promotionStatus === "errored") {
     return {
@@ -53,9 +56,13 @@ export function deriveThreadAttention(opts: {
   if (lifecycle === "issue" && state === "resolved") {
     return {
       need: "verify",
-      why: "Fix is implemented but still needs verification approval.",
-      nextStep: "Run the verify/approve workspace below, then close.",
-      cta: "Verify fix",
+      why: hasProposal
+        ? "Verification review is ready — still needs your approval to close."
+        : "Fix is implemented but still needs verification approval.",
+      nextStep: hasProposal
+        ? "Read the review below, then Approve to close the issue."
+        : "Run the verify/approve workspace below, then close.",
+      cta: hasProposal ? "Approve verification" : "Verify fix",
     };
   }
 
@@ -63,32 +70,48 @@ export function deriveThreadAttention(opts: {
     if (lifecycle === "research") {
       return {
         need: "review",
-        why: "Research synthesis is waiting for verification/publication approval.",
-        nextStep: "Use the review workspace below to verify and approve publication.",
-        cta: "Review synthesis",
+        why: hasProposal
+          ? "Review is ready — publication still needs your approval."
+          : "Research synthesis is waiting for verification/publication approval.",
+        nextStep: hasProposal
+          ? "Read the assessment below, then Approve research synthesis."
+          : "Use the review workspace below to run verification, then approve publication.",
+        cta: hasProposal ? "Approve publication" : "Review synthesis",
       };
     }
     if (lifecycle === "coding") {
       return {
         need: "review",
-        why: "Change is waiting on ship review approval.",
-        nextStep: "Use the review workspace below to approve shipping.",
-        cta: "Review before shipping",
+        why: hasProposal
+          ? "Ship review is ready — still needs your approval."
+          : "Change is waiting on ship review approval.",
+        nextStep: hasProposal
+          ? "Read the review below, then Approve shipping."
+          : "Use the review workspace below to run the review, then approve shipping.",
+        cta: hasProposal ? "Approve shipping" : "Review before shipping",
       };
     }
     if (lifecycle === "planning") {
       return {
         need: "review",
-        why: "Plan is waiting on challenge/approval.",
-        nextStep: "Use the review workspace below to challenge and approve the plan.",
-        cta: "Challenge plan",
+        why: hasProposal
+          ? "Plan challenge is ready — still needs your approval."
+          : "Plan is waiting on challenge/approval.",
+        nextStep: hasProposal
+          ? "Read the challenge below, then Approve plan (or apply the revised plan)."
+          : "Use the review workspace below to challenge and approve the plan.",
+        cta: hasProposal ? "Approve plan" : "Challenge plan",
       };
     }
     return {
       need: "review",
-      why: "Waiting on a human review gate.",
-      nextStep: "Complete the pending review/approval in the workspace below.",
-      cta: "Open review",
+      why: hasProposal
+        ? "Review is ready — still needs your approval."
+        : "Waiting on a human review gate.",
+      nextStep: hasProposal
+        ? "Read the review below, then Approve."
+        : "Complete the pending review/approval in the workspace below.",
+      cta: hasProposal ? "Approve review" : "Open review",
     };
   }
 

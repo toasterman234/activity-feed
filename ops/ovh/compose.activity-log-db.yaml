@@ -1,0 +1,39 @@
+# OVH production: the activity_log Postgres (system of record).
+# Mirrors the Mini's `activity-log-db` docker run: postgres:16, wal_level=logical,
+# on the external activity-feed-net network so the electric-circuits stack
+# (compose.yaml + compose.activity-feed.yaml) can reach it as `activity-log-db`.
+#
+#   docker network create activity-feed-net   # once
+#   docker compose -f compose.activity-log-db.yaml up -d
+name: activity-log
+
+services:
+  activity-log-db:
+    image: postgres:16
+    container_name: activity-log-db
+    command: ["postgres", "-c", "wal_level=logical"]
+    environment:
+      POSTGRES_USER: activity
+      POSTGRES_PASSWORD: activity
+      POSTGRES_DB: activity_log
+    ports:
+      # Bind to loopback only — feeders reach it over an SSH tunnel or via
+      # tailscale-bound psql; nothing on the public NIC.
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - activity-log-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U activity -d activity_log"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks:
+      - activity-feed-net
+
+volumes:
+  activity-log-data:
+
+networks:
+  activity-feed-net:
+    external: true

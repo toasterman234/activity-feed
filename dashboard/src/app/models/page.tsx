@@ -1,5 +1,5 @@
-import { ModelsPanel } from "./ModelsPanel";
+import { redirect } from "next/navigation";
 
-export default function ModelsPage() {
-  return <ModelsPanel />;
+export default function ModelsRedirect() {
+  redirect("/ops/config?tab=models");
 }
