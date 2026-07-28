@@ -199,23 +199,17 @@ export function ExecutionHandoffWorkspace({
 
         <details className="mt-3 rounded-lg border border-zinc-200 p-2 dark:border-zinc-800">
           <summary className="cursor-pointer text-xs font-medium">Approved plan · {orderedPlans.length} tasks</summary>
-          <ol className="mt-2 space-y-2">
-            {orderedPlans.map((plan, index) => {
-              const criteria = planList(plan.acceptance_criteria);
-              const dependencies = planList(plan.dependencies);
-              return (
-                <li key={plan.id} className="rounded-md border border-zinc-100 p-2 text-[11px] leading-5 dark:border-zinc-800">
-                  <div className="flex gap-2"><span className="font-mono text-zinc-400">{index + 1}.</span><span className="font-medium">{plan.title}</span></div>
-                  {criteria.length > 0 && (
-                    <ul className="mt-1 pl-6 text-zinc-500">
-                      {criteria.map((item) => <li key={item}>✓ {item}</li>)}
-                    </ul>
-                  )}
-                  {dependencies.length > 0 && <p className="mt-1 pl-6 text-[10px] text-zinc-400">Depends on steps {dependencies.join(", ")}</p>}
-                </li>
-              );
-            })}
+          <ol className="mt-2 space-y-1">
+            {orderedPlans.map((plan, index) => (
+              <li key={plan.id} className="flex gap-2 rounded-md p-1.5 text-[11px] leading-5">
+                <span className="mt-0.5 shrink-0 font-mono text-[10px] text-zinc-400">{index + 1}.</span>
+                <span className="text-zinc-600 dark:text-zinc-300">{plan.title}</span>
+              </li>
+            ))}
           </ol>
+          <p className="mt-2 text-[10px] text-zinc-400">
+            Status tracking moved to the execution task. Open it to toggle tasks as they complete.
+          </p>
         </details>
 
         <details className="mt-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
