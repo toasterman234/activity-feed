@@ -118,6 +118,18 @@ export type HomeOverview = {
     lastMessageAt: string | null;
     updatedAt: string | null;
   }>;
+  approvedPlans: Array<{
+    threadId: string;
+    channelId: string;
+    channelName: string;
+    title: string;
+    repoName: string | null;
+    repoId: string | null;
+    assignee: string | null;
+    taskCount: number;
+    approvedAt: string | null;
+    updatedAt: string;
+  }>;
   workStatus: {
     active: Array<{
       threadId: string;

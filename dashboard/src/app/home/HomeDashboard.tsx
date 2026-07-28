@@ -338,7 +338,7 @@ function HomeHeader({
             Where things stand
           </h1>
           <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-            Human gates first. Promote-ready and in-motion work are listed separately.
+            What needs you vs. what's in motion.
           </p>
         </div>
         <button
@@ -373,24 +373,12 @@ function StatusStrip({
     (continuity?.pendingInbox || 0);
 
   return (
-    <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
+    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
       <CountPill
-        label="Attention"
+        label="Needs you"
         value={attention}
         href="#needs-attention"
         tone={attention > 0 ? "warn" : "good"}
-      />
-      <CountPill
-        label="Ready"
-        value={continuity?.ready ?? "—"}
-        href="/channels/continuity?filter=ready"
-        tone={continuity?.ready ? "warn" : "neutral"}
-      />
-      <CountPill
-        label="Inbox"
-        value={continuity?.pendingInbox ?? "—"}
-        href="/channels/continuity/inbox"
-        tone={continuity?.pendingInbox ? "warn" : "neutral"}
       />
       <CountPill
         label="Active"
@@ -471,6 +459,8 @@ function NeedsAttentionPanel({
   data: HomeOverview;
   continuity: ContinuitySnapshot | null;
 }) {
+  const readyRows = continuity?.readyRows || [];
+
   const rows = useMemo(() => {
     const merged: AttentionRow[] = [...(continuity?.attentionRows || [])];
 
@@ -514,7 +504,7 @@ function NeedsAttentionPanel({
 
   return (
     <Card
-      title="Needs attention"
+      title="Needs you"
       action={
         <Link
           href="/channels/continuity?filter=attention"
@@ -525,39 +515,74 @@ function NeedsAttentionPanel({
       }
     >
       <p className="mb-2 text-[10px] text-zinc-400">
-        Only human gates: review/approval, blockers, failed gates, evidence fails, inbox, untriaged open issues.
+        Human gates: review/approval, blockers, failed gates, evidence fails, inbox, untriaged issues. Ready-to-promote items below.
       </p>
       <div id="needs-attention">
         <AttentionList rows={rows} />
+        {readyRows.length > 0 && (
+          <>
+            <div className="my-3 border-t border-zinc-100 dark:border-zinc-800" />
+            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
+              Ready to promote
+            </p>
+            <AttentionList rows={readyRows.slice(0, 5)} />
+          </>
+        )}
       </div>
     </Card>
   );
 }
 
 
-function ReadyToPromotePanel({ continuity }: { continuity: ContinuitySnapshot | null }) {
-  const rows = continuity?.readyRows || [];
-  if (!continuity) return null;
+function ReadyToExecutePanel({ plans }: { plans: HomeOverview["approvedPlans"] }) {
+  if (!plans || plans.length === 0) return null;
+
   return (
     <Card
-      title="Ready to promote"
+      title="Ready to execute"
       action={
         <Link
-          href="/channels/continuity?filter=ready"
+          href="/channels"
           className="text-[10px] font-medium text-blue-600 dark:text-blue-400"
         >
-          See all
+          Channels
         </Link>
       }
     >
       <p className="mb-2 text-[10px] text-zinc-400">
-        Checks pass — waiting for you to admit shipped on Continuity (not a blocker).
+        Approved plans waiting on a repo link and an assignee before execution.
       </p>
-      {rows.length === 0 ? (
-        <Empty text="Nothing waiting on promote." />
-      ) : (
-        <AttentionList rows={rows.slice(0, 5)} />
-      )}
+      <div className="space-y-1.5">
+        {plans.slice(0, 5).map((plan) => (
+          <Link
+            key={plan.threadId}
+            href={`/channels/${plan.channelId}/${plan.threadId}`}
+            className="block rounded-lg border border-zinc-100 px-2.5 py-2 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/60"
+          >
+            <div className="flex items-center gap-2">
+              <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                approved
+              </span>
+              <span className="truncate text-[11px] font-medium text-zinc-800 dark:text-zinc-200">
+                {plan.title}
+              </span>
+              <span className="ml-auto shrink-0 text-[10px] text-zinc-400">{relativeTime(plan.approvedAt)}</span>
+            </div>
+            <p className="mt-0.5 text-[10px] text-zinc-400">
+              # {plan.channelName}
+              {plan.taskCount > 0 ? ` · ${plan.taskCount} task${plan.taskCount === 1 ? "" : "s"}` : ""}
+              {plan.repoName ? ` · ${plan.repoName}` : plan.repoId ? " · repo linked" : ""}
+              {!plan.repoId && !plan.repoName ? " · ⚠ no repo" : ""}
+              {!plan.assignee ? " · ⚠ no assignee" : ` · @${plan.assignee}`}
+            </p>
+          </Link>
+        ))}
+        {plans.length > 5 && (
+          <p className="text-[10px] text-zinc-400">
+            +{plans.length - 5} more — open Channels
+          </p>
+        )}
+      </div>
     </Card>
   );
 }
@@ -795,7 +820,7 @@ export default function HomeDashboard() {
         />
         <StatusStrip counts={data.summaryCounts} continuity={continuity} />
         <NeedsAttentionPanel data={data} continuity={continuity} />
-        <ReadyToPromotePanel continuity={continuity} />
+        <ReadyToExecutePanel plans={data.approvedPlans} />
         <div className="grid gap-2 sm:grid-cols-2">
           <InMotionPanel data={data} continuity={continuity} />
           <SystemPanel data={data} />

@@ -181,7 +181,7 @@ function threadAttentionGuide(row: {
 export async function GET() {
   try {
     const viewer = "you";
-    const [channels, approvalsRes, promotionsRes, activityRes, threadsRes, workRes, recentAgentRes, agents] = await Promise.all([
+    const [channels, approvalsRes, promotionsRes, activityRes, threadsRes, workRes, recentAgentRes, agents, approvedPlansRes] = await Promise.all([
       getChannelRollups(viewer),
       pool.query<{
         thread_id: string;
@@ -392,6 +392,42 @@ export async function GET() {
           LIMIT 8`,
       ),
       getLiveAgents(),
+      pool.query<{
+        thread_id: string;
+        channel_id: string;
+        channel_name: string;
+        title: string;
+        repo_name: string | null;
+        repo_id: string | null;
+        assignee: string | null;
+        task_count: string;
+        approved_at: string | null;
+        updated_at: string;
+      }>(
+        `SELECT tm.thread_id,
+                tm.channel_id,
+                c.name AS channel_name,
+                split_part(root.body, E'\n', 1) AS title,
+                r.name AS repo_name,
+                tm.repo_id,
+                tm.assignee,
+                COUNT(tp.id)::int AS task_count,
+                MAX(twe.created_at) FILTER (
+                  WHERE twe.to_state = 'accepted' AND twe.event_type = 'stage.transitioned'
+                ) AS approved_at,
+                tm.updated_at
+           FROM thread_meta tm
+           JOIN channels c ON c.id = tm.channel_id
+           JOIN messages root ON root.id = tm.thread_id AND root.thread_id IS NULL
+           LEFT JOIN repos r ON r.id = tm.repo_id
+           LEFT JOIN thread_plans tp ON tp.thread_id = tm.thread_id
+           LEFT JOIN thread_workflow_events twe ON twe.thread_id = tm.thread_id
+          WHERE tm.archived_at IS NULL
+            AND tm.lifecycle = 'planning'
+            AND tm.state = 'accepted'
+          GROUP BY tm.thread_id, tm.channel_id, c.name, root.body, r.name, tm.repo_id, tm.assignee, tm.updated_at
+          ORDER BY tm.updated_at DESC`,
+      ),
     ]);
 
     const unreadChannels = channels.filter((channel) => channel.unreadCount > 0);
@@ -499,6 +535,19 @@ export async function GET() {
         };
       });
 
+    const approvedPlans = approvedPlansRes.rows.map((row) => ({
+      threadId: row.thread_id,
+      channelId: row.channel_id,
+      channelName: row.channel_name,
+      title: firstLine(row.title),
+      repoName: row.repo_name,
+      repoId: row.repo_id,
+      assignee: row.assignee,
+      taskCount: Number(row.task_count) || 0,
+      approvedAt: row.approved_at,
+      updatedAt: row.updated_at,
+    }));
+
     return NextResponse.json({
       generatedAt: new Date().toISOString(),
       summaryCounts: {
@@ -523,6 +572,7 @@ export async function GET() {
       workStatus: {
         active: activeThreads,
       },
+      approvedPlans,
       agents: {
         ...agents,
         recentActivity: recentAgentActivity,
