@@ -1,10 +1,3 @@
----
-type: Web UI
-title: Web UI Index
-description: Web UI documentation index for the Activity Feed Dashboard.
-tags: [web-ui, index]
----
+# Files
 
-# Web UI
-
-- [Pages and Components](pages-and-components.md) — Page routes, electric-circuits shapes, Market Lake API client
+- [Pages and Components](pages-and-components.md) - Current routes, data sources, and UI responsibilities for the OVH activity dashboard.
