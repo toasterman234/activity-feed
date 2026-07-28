@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 type Finding = { severity: string; message: string };
 type InitiativeMapRow = {
@@ -58,7 +58,7 @@ type PromoteError = {
   blockers?: unknown;
 };
 
-export default function EvidenceSettingsPage() {
+function ContinuityInitiativesPage() {
   const [data, setData] = useState<EvidencePayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [promoteDetail, setPromoteDetail] = useState<string | null>(null);
@@ -451,5 +451,13 @@ function Stat({
       <div className="text-[10px] uppercase tracking-wide opacity-70">{label}</div>
       <div className="text-sm font-semibold">{value}</div>
     </div>
+  );
+}
+
+export default function ContinuityPage() {
+  return (
+    <Suspense fallback={<p className="text-[11px] text-zinc-400">Loading initiatives…</p>}>
+      <ContinuityInitiativesPage />
+    </Suspense>
   );
 }
