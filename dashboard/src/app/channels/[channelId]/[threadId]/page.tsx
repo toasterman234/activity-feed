@@ -19,6 +19,7 @@ import { GuideBar } from "../../GuideBar";
 import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
 import { StageReviewWorkspace } from "../../StageReviewWorkspace";
+import { ExecutionHandoffWorkspace } from "../../ExecutionHandoffWorkspace";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
 import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
 import { ThreadConversationTab } from "../../ThreadConversationTab";
@@ -432,9 +433,9 @@ function ThreadContent({
       })
     : null;
 
-  const guidedReview = lifecyclePicked
-    ? stageModules(lifecycleKey, currentState).find((module) => module.type === "guided-review")
-    : null;
+  const currentStageModules = lifecyclePicked ? stageModules(lifecycleKey, currentState) : [];
+  const guidedReview = currentStageModules.find((module) => module.type === "guided-review");
+  const executionHandoff = currentStageModules.find((module) => module.type === "execution-handoff");
 
   const issueHeader = lifecyclePicked && lifecycleKey === "issue" && meta
     ? (
@@ -646,6 +647,15 @@ function ThreadContent({
                 onRefresh={async () => { await extras.refresh(); }}
               />
             </div>
+          )}
+
+          {executionHandoff && !isArchived && (
+            <ExecutionHandoffWorkspace
+              threadId={threadId}
+              channelId={channelId}
+              plans={plans}
+              onRefresh={async () => { await extras.refresh(); }}
+            />
           )}
 
           <div id="issue-triage" key={triageAnchor}>

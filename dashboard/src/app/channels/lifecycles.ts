@@ -16,7 +16,8 @@ export type StageModuleType =
   | "artifact-editor"
   | "approval"
   | "verification"
-  | "publish";
+  | "publish"
+  | "execution-handoff";
 
 export interface StageModule {
   id: string;
