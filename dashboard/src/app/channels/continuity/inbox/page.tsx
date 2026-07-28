@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { relativeTime } from "../shapes";
+import { relativeTime } from "../../shapes";
 
 type InboxDecision = {
   id: string;
