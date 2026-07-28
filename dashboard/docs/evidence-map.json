@@ -226,23 +226,31 @@
     },
     {
       "id": "deploy-graph-observation",
-      "plan": "docs/decisions/ADR-025-plan-evidence-and-continuity-visibility.md",
+      "plan": "docs/decisions/ADR-026-graph-initiatives-promote-gate.md",
       "title": "Post-deploy graph observation writer",
-      "expectedStatus": "not_built",
-      "requireAll": [],
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "scripts/emit-deploy-graph-event.mjs",
+        "src/lib/graph-initiatives.ts"
+      ],
       "requirePathContains": [
         {
-          "path": "docs/decisions/ADR-025-plan-evidence-and-continuity-visibility.md",
-          "includes": "observations from deploy remain optional follow-up"
+          "path": "scripts/deploy-ovh.sh",
+          "includes": "emit-deploy-graph-event.mjs"
         }
       ],
-      "openItems": [
-        {
-          "id": "deploy-obs-followup",
-          "path": "docs/decisions/ADR-025-plan-evidence-and-continuity-visibility.md",
-          "title": "Wire deploy success into a graph observation on #ops/#meta",
-          "includes": "observations from deploy remain optional follow-up"
-        }
+      "openItems": []
+    },
+    {
+      "id": "graph-initiatives",
+      "plan": "docs/decisions/ADR-026-graph-initiatives-promote-gate.md",
+      "title": "Graph initiatives + promote gate",
+      "expectedStatus": "shipped",
+      "requireAll": [
+        "src/lib/graph-initiatives.ts",
+        "src/app/api/ops/initiatives/route.ts",
+        "src/app/api/ops/initiatives/[id]/promote/route.ts",
+        "ops/migrations/003-graph-initiatives.sql"
       ]
     }
   ]

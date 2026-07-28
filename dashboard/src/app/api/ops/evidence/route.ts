@@ -3,6 +3,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 import { pool } from "../../_db";
+import { listInitiatives, syncInitiativesFromEvidenceMap } from "@/lib/graph-initiatives";
 
 export const dynamic = "force-dynamic";
 
@@ -52,9 +53,19 @@ async function inboxPending() {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const [evidence, inbox] = await Promise.all([runEvidenceCheck(), inboxPending()]);
+    const sync = new URL(request.url).searchParams.get("sync") === "1";
+    let syncResult = null;
+    if (sync) {
+      try { syncResult = await syncInitiativesFromEvidenceMap("evidence-sync"); }
+      catch (error) { syncResult = { error: String(error) }; }
+    }
+    const [evidence, inbox, initiatives] = await Promise.all([
+      runEvidenceCheck(),
+      inboxPending(),
+      listInitiatives().catch(() => []),
+    ]);
     const mismatches = (evidence.results || []).filter(
       (row: { ok?: boolean; findings?: Array<{ severity: string }> }) =>
         !row.ok || (row.findings || []).some((f) => f.severity === "warn" || f.severity === "fail" || f.severity === "open"),
@@ -63,13 +74,19 @@ export async function GET() {
       generatedAt: new Date().toISOString(),
       evidence,
       inbox,
+      initiatives,
+      sync: syncResult,
       summary: {
-        initiatives: evidence.results?.length || 0,
+        mapInitiatives: evidence.results?.length || 0,
+        graphInitiatives: Array.isArray(initiatives) ? initiatives.length : 0,
         failing: evidence.failCount || 0,
         warnings: evidence.warnCount || 0,
         open: evidence.openCount || 0,
         pendingInbox:
           (inbox.decisions || 0) + (inbox.proposals || 0) + (inbox.memory || 0),
+        shipped: Array.isArray(initiatives)
+          ? initiatives.filter((i: { status?: string }) => i.status === "shipped").length
+          : 0,
         attention: mismatches.length + ((inbox.decisions || 0) + (inbox.proposals || 0) + (inbox.memory || 0) > 0 ? 1 : 0),
       },
     });

@@ -80,4 +80,11 @@ curl -fsS --max-time 15 "https://ovh-vps.taila1553c.ts.net:8446/channels" >/dev/
 mkdir -p data
 printf '{"release":"%s","git_sha":"%s","dirty":%s,"deployed_at":"%s"}\n' \
   "$release_id" "$git_sha" "$dirty" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > data/last-deploy.json
+# Record deploy in the continuity event log (promote/evidence substrate).
+ssh "$HOST" "cd '${RELEASE_ROOT}/current' && \
+  DEPLOY_RELEASE_ID='${release_id}' DEPLOY_GIT_SHA='${git_sha}' DEPLOY_DIRTY='${dirty}' \
+  ACTIVITY_DB_URL='postgres://activity:activity@localhost:5433/activity_log' \
+  node scripts/emit-deploy-graph-event.mjs" \
+  || printf 'deploy: graph event emit failed (non-fatal)
+' >&2
 printf 'deployed %s\n' "$release_id"

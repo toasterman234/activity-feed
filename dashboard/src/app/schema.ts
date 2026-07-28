@@ -419,5 +419,26 @@ export const schema: Schema = {
       },
       primaryKey: "id",
     },
+    // ── Graph initiatives (promote gate) ────────────────────────────
+    graph_initiatives: {
+      columns: {
+        id: { type: "text" },
+        evidence_map_id: { type: "text" },
+        title: { type: "text" },
+        status: { type: "text" },
+        channel_id: { type: "text" },
+        thread_id: { type: "text" },
+        plan_path: { type: "text" },
+        evidence_refs: { type: "text" },
+        blocked_by: { type: "text" },
+        created_by: { type: "text" },
+        created_at: { type: "text" },
+        updated_at: { type: "text" },
+        shipped_at: { type: "text" },
+        shipped_by: { type: "text" },
+        ship_evidence: { type: "text" },
+      },
+      primaryKey: "id",
+    },
   },
 };

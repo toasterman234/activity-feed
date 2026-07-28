@@ -15,7 +15,8 @@
     "deploy:ovh": "bash scripts/deploy-ovh.sh",
     "rollback:ovh": "bash scripts/rollback-ovh.sh",
     "doctor:pi": "bash scripts/pi-execution-doctor.sh",
-    "check:plans": "node scripts/check-plan-status.mjs"
+    "check:plans": "node scripts/check-plan-status.mjs",
+    "init:initiatives": "node scripts/init-graph-initiatives.mjs"
   },
   "dependencies": {
     "@durable-streams/client": "^0.2.6",

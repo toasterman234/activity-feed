@@ -29,6 +29,8 @@ trap rollback ERR
 
 cd "$APP"
 npm ci
+ACTIVITY_DB_URL="${ACTIVITY_DB_URL:-postgres://activity:activity@localhost:5433/activity_log}" \
+  npm run init:initiatives
 npm run build
 test -s .next/BUILD_ID
 

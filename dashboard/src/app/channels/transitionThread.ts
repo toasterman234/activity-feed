@@ -7,6 +7,7 @@ import { LIFECYCLES, type Lifecycle } from "@/app/channels/lifecycles";
 import { evaluateStageExitGates } from "@/app/channels/workflowRuntime";
 import { recordWorkflowEvent } from "@/lib/workflowEvents";
 import { runThreadVerification } from "@/lib/verification-profiles";
+import { emitLifecycleTransitionEvent } from "@/lib/graph-initiatives";
 
 const execFileAsync = promisify(execFile);
 
@@ -426,6 +427,18 @@ export async function transitionThreadState(opts: {
       created_at: new Date().toISOString(),
     });
   }
+
+  await emitLifecycleTransitionEvent({
+    channelId: opts.channelId,
+    threadId: opts.threadId,
+    actor,
+    from,
+    to: resolvedState,
+    lifecycle: lifecycleKey,
+    gated,
+  }).catch((error) => {
+    console.error("[transition] graph lifecycle event failed:", (error as Error).message);
+  });
 
   return {
     ok: true,
