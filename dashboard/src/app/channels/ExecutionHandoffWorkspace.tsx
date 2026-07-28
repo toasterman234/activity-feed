@@ -46,8 +46,8 @@ export function ExecutionHandoffWorkspace({
   const [authority, setAuthority] = useState("implement");
   const [busy, setBusy] = useState<"link" | "start" | "promote" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [createdUrl, setCreatedUrl] = useState<string | null>(null);
   const [executions, setExecutions] = useState<Execution[]>([]);
+  const [justCreated, setJustCreated] = useState(false);
   const [newProjectPath, setNewProjectPath] = useState("");
   const [promotionStarted, setPromotionStarted] = useState(false);
   const [verification, setVerification] = useState<VerificationProfile | null>(null);
@@ -100,8 +100,15 @@ export function ExecutionHandoffWorkspace({
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
-      if (data.url) setCreatedUrl(String(data.url));
       if (action === "link") setLinkedRepoId(repoId);
+      if (action === "start") {
+        setJustCreated(true);
+        // Re-fetch executions so activeExecution picks it up immediately
+        fetch(`/api/channels/execution-handoff?threadId=${encodeURIComponent(threadId)}`, { cache: "no-store" })
+          .then((r) => r.json())
+          .then((d) => setExecutions(d.executions || []))
+          .catch(() => {});
+      }
       await onRefresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
@@ -152,21 +159,42 @@ export function ExecutionHandoffWorkspace({
     );
   };
 
-  if (activeExecution || createdUrl) {
+  if (justCreated && !activeExecution) {
+    return (
+      <section className="rounded-xl border border-emerald-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
+        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Approved · creating execution</p>
+        <h3 className="mt-1 text-base font-semibold">Creating execution task…</h3>
+        <p className="mt-1 text-xs leading-5 text-zinc-500">
+          Your execution task is being created. This should be ready momentarily.
+        </p>
+        <button
+          onClick={() => {
+            fetch(`/api/channels/execution-handoff?threadId=${encodeURIComponent(threadId)}`, { cache: "no-store" })
+              .then((r) => r.json())
+              .then((d) => { setExecutions(d.executions || []); setJustCreated(false); })
+              .catch(() => setJustCreated(false));
+          }}
+          className="mt-3 rounded-lg border border-zinc-300 px-3 py-2 text-xs font-medium dark:border-zinc-700"
+        >
+          Check again
+        </button>
+      </section>
+    );
+  }
+
+  if (activeExecution) {
     return (
       <section className="rounded-xl border border-emerald-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Approved · execution ready</p>
         <h3 className="mt-1 text-base font-semibold">Execution task created</h3>
         <p className="mt-1 text-xs leading-5 text-zinc-500">
-          {activeExecution
-            ? "A linked coding thread already exists for this approved plan. Open it to start working."
-            : "Your execution task is ready. Open it to start implementing the plan."}
+          A linked coding thread already exists for this approved plan. Open it to start working.
         </p>
         <Link
-          href={activeExecution ? activeExecution.url : createdUrl!}
+          href={activeExecution.url}
           className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
         >
-          Open execution task → {activeExecution && <span className="font-normal text-emerald-200">({activeExecution.state})</span>}
+          Open execution task → <span className="font-normal text-emerald-200">({activeExecution.state})</span>
         </Link>
 
         <details className="mt-3 rounded-lg border border-zinc-200 p-2 dark:border-zinc-800">
@@ -190,8 +218,7 @@ export function ExecutionHandoffWorkspace({
           </ol>
         </details>
 
-        {activeExecution && (
-          <details className="mt-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <details className="mt-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
             <summary className="cursor-pointer text-xs font-medium text-zinc-600 dark:text-zinc-300">Create another execution task</summary>
             <p className="mt-1 text-[11px] text-zinc-400">Use this if the existing task was abandoned or you need a fresh start.</p>
             <div className="mt-2">
@@ -204,7 +231,6 @@ export function ExecutionHandoffWorkspace({
               </button>
             </div>
           </details>
-        )}
 
         <p className="mt-3 text-[11px] text-zinc-400">Not ready to execute? Leave the approved plan here. Nothing starts until you explicitly create an execution task or project.</p>
         {error && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
