@@ -20,6 +20,7 @@ import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
 import { StageReviewWorkspace } from "../../StageReviewWorkspace";
 import { ExecutionHandoffWorkspace } from "../../ExecutionHandoffWorkspace";
+import { CodingExecutionWorkspace } from "../../CodingExecutionWorkspace";
 import { WorkflowStageModules } from "../../WorkflowStageModules";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
 import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
@@ -451,6 +452,7 @@ function ThreadContent({
   const currentStageModules = lifecyclePicked ? stageModules(lifecycleKey, currentState) : [];
   const guidedReview = currentStageModules.find((module) => module.type === "guided-review");
   const executionHandoff = currentStageModules.find((module) => module.type === "execution-handoff");
+  const showCodingWorkspace = lifecyclePicked && lifecycleKey === "coding" && currentState === "drafted" && meta;
 
   const issueHeader = lifecyclePicked && lifecycleKey === "issue" && meta
     ? (
@@ -669,6 +671,16 @@ function ThreadContent({
                 onRefresh={async () => { await extras.refresh(); }}
               />
             </div>
+          )}
+
+          {showCodingWorkspace && !isArchived && (
+            <CodingExecutionWorkspace
+              threadId={threadId}
+              channelId={channelId}
+              meta={meta}
+              plans={plans}
+              onRefresh={async () => { await extras.refresh(); }}
+            />
           )}
 
           {/* Catch-all: any module type not handled above (task-list, guided-interview, etc.) */}
