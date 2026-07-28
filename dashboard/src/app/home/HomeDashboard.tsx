@@ -332,7 +332,7 @@ function ContinuityEvidenceCard() {
   return (
     <Card
       title="Continuity"
-      action={<Link href="/settings/evidence" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Evidence</Link>}
+      action={<Link href="/channels/continuity" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Continuity</Link>}
     >
       {attention === 0 && summary.ready === 0 ? (
         <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -340,10 +340,10 @@ function ContinuityEvidenceCard() {
         </p>
       ) : (
         <div className="flex flex-wrap gap-2">
-          <CountPill label="Fails" value={summary.failing} href="/settings/evidence" tone={summary.failing ? "danger" : "good"} />
-          <CountPill label="Open" value={summary.open} href="/settings/evidence" tone={summary.open ? "warn" : "good"} />
-          <CountPill label="Ready" value={summary.ready} href="/settings/evidence" tone={summary.ready ? "warn" : "good"} />
-          <CountPill label="Inbox" value={summary.pendingInbox} href="/channels/inbox" tone={summary.pendingInbox ? "warn" : "good"} />
+          <CountPill label="Fails" value={summary.failing} href="/channels/continuity" tone={summary.failing ? "danger" : "good"} />
+          <CountPill label="Open" value={summary.open} href="/channels/continuity" tone={summary.open ? "warn" : "good"} />
+          <CountPill label="Ready" value={summary.ready} href="/channels/continuity" tone={summary.ready ? "warn" : "good"} />
+          <CountPill label="Inbox" value={summary.pendingInbox} href="/channels/continuity/inbox" tone={summary.pendingInbox ? "warn" : "good"} />
         </div>
       )}
     </Card>

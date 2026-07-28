@@ -40,7 +40,7 @@ export default function ChannelsPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-2">
           <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Channels</h1>
           <div className="flex items-center gap-3">
-            <Link href="/channels/inbox" className="text-xs text-zinc-600 dark:text-zinc-300">Inbox</Link>
+            <Link href="/channels/continuity" className="text-xs text-zinc-600 dark:text-zinc-300">Continuity</Link>
             <Link href="/projects" className="text-xs text-blue-600 dark:text-blue-400">Projects</Link>
           </div>
         </div>

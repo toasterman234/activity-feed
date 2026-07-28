@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 // Performance stays first. Each href is its own route so deep links work.
 const SETTINGS_TABS = [
   { href: "/settings/perf", label: "Performance" },
-  { href: "/settings/evidence", label: "Evidence" },
   { href: "/models", label: "Models" },
   { href: "/workflows", label: "Workflows" },
 ] as const;

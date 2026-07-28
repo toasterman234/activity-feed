@@ -250,7 +250,7 @@ export function ThreadConversationTab({
             <span className="text-zinc-500 dark:text-zinc-400">{continuity.activeDecisions.length} decisions</span>
             <span className="text-zinc-500 dark:text-zinc-400">{pendingTotal} pending</span>
             {pendingTotal > 0 && (
-              <Link href="/channels/inbox" className="text-zinc-700 underline dark:text-zinc-200">
+              <Link href="/channels/continuity/inbox" className="text-zinc-700 underline dark:text-zinc-200">
                 Inbox
               </Link>
             )}
