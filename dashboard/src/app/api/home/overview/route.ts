@@ -147,6 +147,68 @@ async function getChannelRollups(viewer: string): Promise<ChannelRollup[]> {
   });
 }
 
+
+function threadAttentionGuide(row: {
+  lifecycle: string;
+  state: string;
+  reason: ApprovalReason;
+  assignee: string | null;
+}): { nextStep: string; why: string } {
+  if (row.reason === "failed_required_gate") {
+    return {
+      why: "A required promotion/gate failed.",
+      nextStep: "Open the thread → GuideBar → fix the failed gate, then retry.",
+    };
+  }
+  if (row.state === "blocked" || row.reason === "blocked") {
+    return {
+      why: "Thread is blocked on a missing decision or input.",
+      nextStep: "Open the thread → GuideBar → record the blocker/unblock, then advance.",
+    };
+  }
+  if (row.lifecycle === "research" && row.state === "review") {
+    return {
+      why: "Research synthesis is waiting for verification/publication approval.",
+      nextStep: "Open the thread → GuideBar → Verify the synthesis / approve publication.",
+    };
+  }
+  if (row.lifecycle === "coding" && row.state === "review") {
+    return {
+      why: "Change is waiting on ship review approval.",
+      nextStep: "Open the thread → GuideBar → Review before shipping / approve.",
+    };
+  }
+  if (row.lifecycle === "planning" && row.state === "review") {
+    return {
+      why: "Plan is waiting on challenge/approval.",
+      nextStep: "Open the thread → GuideBar → Challenge the plan / approve.",
+    };
+  }
+  if (row.lifecycle === "issue" && row.state === "resolved") {
+    return {
+      why: "Fix is implemented but still needs verification approval.",
+      nextStep: "Open the thread → GuideBar → Verify the fix / approve to close.",
+    };
+  }
+  if (row.state === "review") {
+    return {
+      why: "Waiting on a human review gate.",
+      nextStep: "Open the thread → GuideBar → complete the pending review/approval.",
+    };
+  }
+  if (row.reason === "issue_needs_triage") {
+    const missing = !row.assignee ? "owner" : "repo";
+    return {
+      why: `Open issue is unscoped (missing ${missing}).`,
+      nextStep: "Open the issue → assign an owner and/or link a repo, then triage.",
+    };
+  }
+  return {
+    why: "Waiting on you.",
+    nextStep: "Open the thread and check GuideBar for the required action.",
+  };
+}
+
 export async function GET() {
   try {
     const viewer = "you";
@@ -182,6 +244,7 @@ export async function GET() {
                   WHEN lp.status = 'failed_required_gate' THEN 'failed_required_gate'
                   WHEN tm.state = 'review' THEN 'review'
                   WHEN tm.state = 'blocked' THEN 'blocked'
+                  WHEN tm.lifecycle = 'issue' AND tm.state = 'resolved' THEN 'review'
                   ELSE 'issue_needs_triage'
                 END AS reason
            FROM thread_meta tm
@@ -192,8 +255,10 @@ export async function GET() {
             AND (
               lp.status = 'failed_required_gate'
               OR tm.state IN ('review', 'blocked')
+              OR (tm.lifecycle = 'issue' AND tm.state = 'resolved')
               OR (
                 tm.lifecycle = 'issue'
+                AND tm.state = 'open'
                 AND (tm.repo_id IS NULL OR COALESCE(tm.assignee, '') = '')
               )
             )
@@ -201,7 +266,8 @@ export async function GET() {
             WHEN lp.status = 'failed_required_gate' THEN 0
             WHEN tm.state = 'blocked' THEN 1
             WHEN tm.state = 'review' THEN 2
-            ELSE 3
+            WHEN tm.state = 'resolved' THEN 3
+            ELSE 4
           END, tm.updated_at DESC`,
       ),
       pool.query<{
@@ -350,17 +416,27 @@ export async function GET() {
     ]);
 
     const unreadChannels = channels.filter((channel) => channel.unreadCount > 0);
-    const approvalThreads = approvalsRes.rows.map((row) => ({
-      threadId: row.thread_id,
-      channelId: row.channel_id,
-      channelName: row.channel_name,
-      title: firstLine(row.title),
-      lifecycle: row.lifecycle,
-      state: row.state,
-      assignee: row.assignee,
-      reason: row.reason,
-      updatedAt: row.updated_at,
-    }));
+    const approvalThreads = approvalsRes.rows.map((row) => {
+      const guide = threadAttentionGuide({
+        lifecycle: row.lifecycle,
+        state: row.state,
+        reason: row.reason,
+        assignee: row.assignee,
+      });
+      return {
+        threadId: row.thread_id,
+        channelId: row.channel_id,
+        channelName: row.channel_name,
+        title: firstLine(row.title),
+        lifecycle: row.lifecycle,
+        state: row.state,
+        assignee: row.assignee,
+        reason: row.reason,
+        updatedAt: row.updated_at,
+        why: guide.why,
+        nextStep: guide.nextStep,
+      };
+    });
     const failedPromotions = promotionsRes.rows.map((row) => ({
       threadId: row.thread_id,
       channelId: row.channel_id,
@@ -369,6 +445,8 @@ export async function GET() {
       progress: row.progress,
       errorDetail: row.error_detail,
       createdAt: row.created_at,
+      why: row.error_detail || row.progress || "Promotion/gate failed.",
+      nextStep: "Open the thread → GuideBar → resolve the failed gate, then retry promotion.",
     }));
     const threadActivity = threadsRes.rows.map((row) => ({
       threadId: row.thread_id,
@@ -442,7 +520,7 @@ export async function GET() {
         agentsDown: !agents.runtimeOk,
       },
       topUnread: unreadChannels.slice(0, 3),
-      topNeedsMe: approvalThreads.slice(0, 3),
+      topNeedsMe: approvalThreads.slice(0, 8),
       topActive: activeThreads.slice(0, 3),
       topThreads: threadActivity.slice(0, 3),
       topPulse: channels.slice(0, 2),

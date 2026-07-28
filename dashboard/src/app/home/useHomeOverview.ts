@@ -27,6 +27,8 @@ export type HomeOverview = {
     assignee: string | null;
     reason: "review" | "blocked" | "failed_required_gate" | "issue_needs_triage";
     updatedAt: string;
+    why?: string;
+    nextStep?: string;
   }>;
   topActive: Array<{
     threadId: string;
@@ -76,6 +78,8 @@ export type HomeOverview = {
       assignee: string | null;
       reason: "review" | "blocked" | "failed_required_gate" | "issue_needs_triage";
       updatedAt: string;
+      why?: string;
+      nextStep?: string;
     }>;
     failedPromotions: Array<{
       threadId: string;
@@ -85,6 +89,8 @@ export type HomeOverview = {
       progress: string | null;
       errorDetail: string | null;
       createdAt: string;
+      why?: string;
+      nextStep?: string;
     }>;
   };
   recentHighlights: Array<{

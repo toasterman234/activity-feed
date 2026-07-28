@@ -101,6 +101,8 @@ type AttentionRow = {
   title: string;
   meta: string;
   age: string;
+  why?: string;
+  nextStep?: string;
 };
 
 type ContinuitySnapshot = {
@@ -110,6 +112,7 @@ type ContinuitySnapshot = {
   shipped: number;
   pendingInbox: number;
   attentionRows: AttentionRow[];
+  readyRows: AttentionRow[];
   inMotionInitiatives: AttentionRow[];
 };
 
@@ -173,6 +176,7 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
         }> = evidence.initiatives || [];
 
         const attentionRows: AttentionRow[] = [];
+        const readyRows: AttentionRow[] = [];
         const inMotionInitiatives: AttentionRow[] = [];
 
         for (const init of initiatives) {
@@ -200,28 +204,35 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
               title: init.title,
               meta: topFinding || "Evidence checks failing",
               age,
+              why: topFinding || "Evidence checks failing.",
+              nextStep: "Open initiative detail → fix failing findings, then re-check.",
             });
           } else if (ready) {
-            attentionRows.push({
+            readyRows.push({
               key: `init-ready-${init.id}`,
               source: "initiative",
               priority: 40,
               href,
               badge: "ready",
               title: init.title,
-              meta: "Checks pass — promote to ship",
+              meta: "Checks pass",
               age,
+              why: "Evidence checks pass but graph status is not shipped yet.",
+              nextStep: "Open Continuity → Promote to shipped.",
             });
           } else if (hasOpen) {
-            attentionRows.push({
+            // Tracked open work is planned follow-up, not a human gate.
+            inMotionInitiatives.push({
               key: `init-open-${init.id}`,
               source: "initiative",
-              priority: 30,
+              priority: 35,
               href,
               badge: "open",
               title: init.title,
               meta: topFinding || "Open items remain",
               age,
+              why: topFinding || "Tracked open work remains.",
+              nextStep: "Open initiative detail → work the open items when you choose this track.",
             });
           } else if (init.status === "active" || init.status === "open") {
             inMotionInitiatives.push({
@@ -242,13 +253,13 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
             key: `inbox-d-${d.id}`,
             source: "inbox",
             priority: 15,
-            href: d.thread_id
-              ? `/channels/${d.channel_id}/${d.thread_id}`
-              : "/channels/continuity/inbox",
+            href: "/channels/continuity/inbox",
             badge: "inbox",
             title: d.statement,
             meta: `Decision · ${d.channel_name ? `# ${d.channel_name}` : "graph"}`,
             age: relativeTime(d.created_at),
+            why: "A graph decision is waiting for accept/reject.",
+            nextStep: "Open Continuity → Inbox → accept or reject this decision.",
           });
         }
         for (const p of inbox.proposals || []) {
@@ -256,13 +267,13 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
             key: `inbox-p-${p.id}`,
             source: "inbox",
             priority: 16,
-            href: p.thread_id
-              ? `/channels/${p.channel_id}/${p.thread_id}`
-              : "/channels/continuity/inbox",
+            href: "/channels/continuity/inbox",
             badge: "inbox",
             title: p.hypothesis,
             meta: `Proposal · ${p.channel_name ? `# ${p.channel_name}` : "graph"}`,
             age: relativeTime(p.created_at),
+            why: "A capability proposal is waiting for review.",
+            nextStep: "Open Continuity → Inbox → apply or reject this proposal.",
           });
         }
         for (const m of inbox.memoryCandidates || []) {
@@ -270,13 +281,13 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
             key: `inbox-m-${m.id}`,
             source: "inbox",
             priority: 17,
-            href: m.thread_id
-              ? `/channels/${m.channel_id}/${m.thread_id}`
-              : "/channels/continuity/inbox",
+            href: "/channels/continuity/inbox",
             badge: "inbox",
             title: m.text,
             meta: `Memory · ${m.channel_name ? `# ${m.channel_name}` : "graph"}`,
             age: relativeTime(m.created_at),
+            why: "A memory candidate is waiting for accept/reject.",
+            nextStep: "Open Continuity → Inbox → accept or reject this memory.",
           });
         }
 
@@ -294,6 +305,7 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
           shipped: Number(evidence.summary?.shipped || 0),
           pendingInbox: Number(evidence.summary?.pendingInbox || 0),
           attentionRows,
+          readyRows,
           inMotionInitiatives,
         });
       } catch {
@@ -326,7 +338,7 @@ function HomeHeader({
             Where things stand
           </h1>
           <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-            One triage list for channels, continuity, and inbox — then what&apos;s in motion.
+            Human gates first. Promote-ready and in-motion work are listed separately.
           </p>
         </div>
         <button
@@ -358,7 +370,6 @@ function StatusStrip({
     counts.failed +
     (continuity?.failing || 0) +
     (continuity?.open || 0) +
-    (continuity?.ready || 0) +
     (continuity?.pendingInbox || 0);
 
   return (
@@ -435,8 +446,13 @@ function AttentionList({ rows }: { rows: AttentionRow[] }) {
                 ? "Inbox"
                 : "Channels"}
             {" · "}
-            {row.meta}
+            {row.why || row.meta}
           </p>
+          {row.nextStep && (
+            <p className="mt-0.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-300">
+              Next: {row.nextStep}
+            </p>
+          )}
         </Link>
       ))}
       {hidden > 0 && (
@@ -468,30 +484,22 @@ function NeedsAttentionPanel({
         title: item.progress || item.errorDetail || "Promotion failed",
         meta: `# ${item.channelName}`,
         age: relativeTime(item.createdAt),
+        why: item.why || item.errorDetail || "Promotion/gate failed.",
+        nextStep: item.nextStep || "Open the thread → GuideBar → resolve the failed gate.",
       });
     }
     for (const item of data.topNeedsMe) {
       merged.push({
         key: `need-${item.threadId}`,
         source: "channel",
-        priority: 20,
+        priority: item.state === "blocked" ? 11 : item.reason === "review" ? 18 : 22,
         href: `/channels/${item.channelId}/${item.threadId}`,
         badge: item.state,
         title: item.title,
-        meta: `# ${item.channelName} · ${item.reason.replace(/_/g, " ")}`,
+        meta: `# ${item.channelName}`,
         age: relativeTime(item.updatedAt),
-      });
-    }
-    for (const item of data.topUnread.slice(0, 3)) {
-      merged.push({
-        key: `unread-${item.channelId}`,
-        source: "channel",
-        priority: 45,
-        href: `/channels/${item.channelId}`,
-        badge: `${item.unreadCount}`,
-        title: `# ${item.channelName}`,
-        meta: item.lastPulse ? item.lastPulse.author : "Unread channel",
-        age: relativeTime(item.lastPulse?.createdAt),
+        why: item.why || `Waiting on ${item.reason.replace(/_/g, " ")}.`,
+        nextStep: item.nextStep || "Open the thread → GuideBar for the required action.",
       });
     }
 
@@ -510,9 +518,40 @@ function NeedsAttentionPanel({
         </Link>
       }
     >
+      <p className="mb-2 text-[10px] text-zinc-400">
+        Only human gates: review/approval, blockers, failed gates, evidence fails, inbox, untriaged open issues.
+      </p>
       <div id="needs-attention">
         <AttentionList rows={rows} />
       </div>
+    </Card>
+  );
+}
+
+
+function ReadyToPromotePanel({ continuity }: { continuity: ContinuitySnapshot | null }) {
+  const rows = continuity?.readyRows || [];
+  if (!continuity) return null;
+  return (
+    <Card
+      title="Ready to promote"
+      action={
+        <Link
+          href="/channels/continuity?filter=ready"
+          className="text-[10px] font-medium text-blue-600 dark:text-blue-400"
+        >
+          See all
+        </Link>
+      }
+    >
+      <p className="mb-2 text-[10px] text-zinc-400">
+        Checks pass — waiting for you to admit shipped on Continuity (not a blocker).
+      </p>
+      {rows.length === 0 ? (
+        <Empty text="Nothing waiting on promote." />
+      ) : (
+        <AttentionList rows={rows.slice(0, 5)} />
+      )}
     </Card>
   );
 }
@@ -549,29 +588,11 @@ function InMotionPanel({
         </Link>
       }
     >
-      <div id="in-motion" className="space-y-1.5">
+      <div id="in-motion">
         {rows.length === 0 ? (
           <Empty text="Nothing actively moving." />
         ) : (
-          rows.map((row) => (
-            <Link
-              key={row.key}
-              href={row.href}
-              className="block rounded-lg border border-zinc-100 px-2.5 py-2 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/60"
-            >
-              <div className="flex items-center gap-2">
-                <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${stateBadge(row.badge)}`}>
-                  {row.badge}
-                </span>
-                <span className="truncate text-[11px] font-medium text-zinc-800 dark:text-zinc-200">
-                  {row.title}
-                </span>
-              </div>
-              <p className="mt-0.5 truncate text-[10px] text-zinc-400">
-                {row.source === "initiative" ? "Continuity" : "Channels"} · {row.meta}
-              </p>
-            </Link>
-          ))
+          <AttentionList rows={rows.slice(0, 8)} />
         )}
       </div>
     </Card>
@@ -768,6 +789,7 @@ export default function HomeDashboard() {
         />
         <StatusStrip counts={data.summaryCounts} continuity={continuity} />
         <NeedsAttentionPanel data={data} continuity={continuity} />
+        <ReadyToPromotePanel continuity={continuity} />
         <div className="grid gap-2 sm:grid-cols-2">
           <InMotionPanel data={data} continuity={continuity} />
           <SystemPanel data={data} />
