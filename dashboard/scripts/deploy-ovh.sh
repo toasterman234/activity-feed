@@ -33,7 +33,16 @@ remote_incoming="${RELEASE_ROOT}/.incoming-${release_id}"
 printf '==> export deployment snapshots\n'
 node scripts/export-subscriptions-snapshot.mjs
 node scripts/export-registry-snapshot.mjs
-node scripts/export-finance-research-snapshot.mjs
+# Finance export can hang on a dead NFS/mount (quant-research-pipeline). The
+# script itself times out per-file; this outer bound keeps deploy moving even
+# if Node itself wedges, reusing the last good snapshot when present.
+if ! node scripts/export-finance-research-snapshot.mjs; then
+  if [[ -f data/finance-research.snapshot.json ]]; then
+    printf 'deploy: finance snapshot export failed; reusing existing snapshot\n' >&2
+  else
+    die "finance snapshot export failed and no existing snapshot to reuse"
+  fi
+fi
 
 printf '==> stage %s on %s\n' "$release_id" "$HOST"
 ssh "$HOST" "mkdir -p '${remote_incoming}/dashboard' '${RELEASE_ROOT}/releases' && ln -sfn /home/ubuntu/activity-feed/electric-circuits '${remote_incoming}/electric-circuits'"

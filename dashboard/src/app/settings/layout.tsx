@@ -7,8 +7,8 @@ import { usePathname } from "next/navigation";
 // Performance stays first. Each href is its own route so deep links work.
 const SETTINGS_TABS = [
   { href: "/settings/perf", label: "Performance" },
+  { href: "/models", label: "Models" },
   { href: "/workflows", label: "Workflows" },
-  { href: "/fleet", label: "Fleet" },
 ] as const;
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
