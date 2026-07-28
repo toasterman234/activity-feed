@@ -283,7 +283,8 @@ function ThreadList({
   setSending: (v: boolean) => void;
   router: ReturnType<typeof useRouter>;
 }) {
-  const threadMeta = useChannelThreadMeta(channelId);
+  const [showArchived, setShowArchived] = useState(false);
+  const threadMeta = useChannelThreadMeta(channelId, 4000, showArchived);
   const metaByThread = useMemo(() => {
     const m: Record<string, ThreadMetaRow> = {};
     for (const row of threadMeta) m[row.thread_id] = row;
@@ -304,14 +305,75 @@ function ThreadList({
     return [...roots].sort((a, b) => lastAt(b.id).localeCompare(lastAt(a.id)));
   }, [channelMessages]);
 
-  const repliesCount = (msgId: string) =>
-    channelMessages.filter((m) => m.thread_id === msgId).length;
+  const activeThreads = useMemo(() =>
+    topLevel.filter((msg) => !metaByThread[msg.id]?.archived_at),
+    [topLevel, metaByThread],
+  );
+  const archivedThreads = useMemo(() =>
+    topLevel.filter((msg) => !!metaByThread[msg.id]?.archived_at),
+    [topLevel, metaByThread],
+  );
 
-  const lastReply = (msgId: string) => {
-    const replies = channelMessages
-      .filter((m) => m.thread_id === msgId)
-      .sort((a, b) => b.created_at.localeCompare(a.created_at));
-    return replies[0] || null;
+  const renderThreadRow = (msg: ReturnType<typeof useMessageRows>[number], isArchived: boolean) => {
+    const rc = isArchived
+      ? 0
+      : channelMessages.filter((m) => m.thread_id === msg.id).length;
+    const last = isArchived
+      ? null
+      : channelMessages.filter((m) => m.thread_id === msg.id).sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null;
+    const meta = metaByThread[msg.id];
+    const lc = meta ? LIFECYCLES[meta.lifecycle] : null;
+    const stateLabel = meta && lc ? (lc.states[meta.state]?.label || meta.state) : null;
+    const stateKind = meta && lc ? lc.states[meta.state]?.kind : null;
+    return (
+      <li key={msg.id}>
+        <Link
+          href={`/channels/${channelId}/${msg.id}`}
+          className={`flex w-full items-start gap-2 px-3 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 md:py-2 ${isArchived ? "opacity-60" : ""}`}
+        >
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className={`text-xs font-medium ${isArchived ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}>{msg.author}</span>
+              <span className="text-[10px] text-zinc-400">{relativeTime(msg.created_at)}</span>
+              {stateLabel && (
+                <span className={`rounded px-1.5 py-0.5 text-[10px] ${
+                  stateKind === "wait"
+                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                    : stateKind === "active"
+                      ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
+                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                }`}>
+                  {stateLabel}
+                </span>
+              )}
+              {isArchived && (
+                <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
+                  archived
+                </span>
+              )}
+              {meta?.assignee && (
+                <span className="text-[10px] text-zinc-400">@{meta.assignee}</span>
+              )}
+            </div>
+            <MessageBody body={msg.body} className={`whitespace-pre-wrap text-xs ${isArchived ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`} />
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-zinc-400">
+              {isArchived ? (
+                <span>Archived · no replies</span>
+              ) : (
+                <>
+                  <span>{rc > 0 ? `${rc} repl${rc === 1 ? "y" : "ies"}` : "Reply"} ›</span>
+                  {last && (
+                    <span className="truncate">
+                      last {last.author} · {relativeTime(last.created_at)}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </Link>
+      </li>
+    );
   };
 
   const postMessage = async (threadId: string | null, body: string) => {
@@ -343,55 +405,26 @@ function ThreadList({
   return (
     <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">
-        {topLevel.length === 0 && (
+        {activeThreads.length === 0 && archivedThreads.length === 0 && (
           <li className="px-3 py-6 text-center text-xs text-zinc-400">No threads yet — start one below</li>
         )}
-        {topLevel.map((msg) => {
-          const rc = repliesCount(msg.id);
-          const last = lastReply(msg.id);
-          const meta = metaByThread[msg.id];
-          const lc = meta ? LIFECYCLES[meta.lifecycle] : null;
-          const stateLabel = meta && lc ? (lc.states[meta.state]?.label || meta.state) : null;
-          const stateKind = meta && lc ? lc.states[meta.state]?.kind : null;
-          return (
-            <li key={msg.id}>
-              <Link
-                href={`/channels/${channelId}/${msg.id}`}
-                className="flex w-full items-start gap-2 px-3 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 md:py-2"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{msg.author}</span>
-                    <span className="text-[10px] text-zinc-400">{relativeTime(msg.created_at)}</span>
-                    {stateLabel && (
-                      <span className={`rounded px-1.5 py-0.5 text-[10px] ${
-                        stateKind === "wait"
-                          ? "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                          : stateKind === "active"
-                            ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
-                            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                      }`}>
-                        {stateLabel}
-                      </span>
-                    )}
-                    {meta?.assignee && (
-                      <span className="text-[10px] text-zinc-400">@{meta.assignee}</span>
-                    )}
-                  </div>
-                  <MessageBody body={msg.body} className="whitespace-pre-wrap text-xs text-zinc-700 dark:text-zinc-300" />
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-zinc-400">
-                    <span>{rc > 0 ? `${rc} repl${rc === 1 ? "y" : "ies"}` : "Reply"} ›</span>
-                    {last && (
-                      <span className="truncate">
-                        last {last.author} · {relativeTime(last.created_at)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            </li>
-          );
-        })}
+        {activeThreads.map((msg) => renderThreadRow(msg, false))}
+
+        {archivedThreads.length > 0 && (
+          <li>
+            <button
+              type="button"
+              onClick={() => setShowArchived((v) => !v)}
+              className="w-full px-3 py-2 text-left text-[11px] font-medium text-zinc-500 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"
+            >
+              {showArchived
+                ? `▲ Hide archived (${archivedThreads.length})`
+                : `▼ Show archived (${archivedThreads.length})`}
+            </button>
+          </li>
+        )}
+
+        {showArchived && archivedThreads.map((msg) => renderThreadRow(msg, true))}
       </ul>
       <div className="flex gap-1 border-t border-zinc-100 p-2 dark:border-zinc-800">
         <MentionInput

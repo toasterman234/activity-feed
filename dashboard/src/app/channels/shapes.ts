@@ -239,14 +239,16 @@ export function relativeTime(iso: string): string {
 
 // ── issues: poll thread_meta for a channel ─────────────────────
 
-export function useChannelThreadMeta(channelId: string, pollMs = 4000): ThreadMetaRow[] {
+export function useChannelThreadMeta(channelId: string, pollMs = 4000, includeArchived = false): ThreadMetaRow[] {
   const [meta, setMeta] = useState<ThreadMetaRow[]>([]);
 
   useEffect(() => {
     let active = true;
     const poll = async () => {
       try {
-        const res = await fetch(`/api/channels/thread-meta?channelId=${encodeURIComponent(channelId)}`, {
+        const url = `/api/channels/thread-meta?channelId=${encodeURIComponent(channelId)}` +
+          (includeArchived ? "&includeArchived=true" : "");
+        const res = await fetch(url, {
           cache: "no-store",
         });
         const data = await res.json();
@@ -257,7 +259,7 @@ export function useChannelThreadMeta(channelId: string, pollMs = 4000): ThreadMe
     void poll();
     const id = setInterval(() => { if (!document.hidden) void poll(); }, pollMs);
     return () => { active = false; clearInterval(id); };
-  }, [channelId, pollMs]);
+  }, [channelId, pollMs, includeArchived]);
 
   return meta;
 }
