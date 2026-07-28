@@ -28,6 +28,8 @@ export function CodingExecutionWorkspace({
   onRefresh: () => Promise<void>;
 }) {
   const [repoName, setRepoName] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [advanceError, setAdvanceError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!meta.repo_id) return;
@@ -45,15 +47,21 @@ export function CodingExecutionWorkspace({
   );
 
   const advance = async () => {
+    setBusy(true);
+    setAdvanceError(null);
     try {
-      await fetch("/api/channels/advance", {
+      const res = await fetch("/api/channels/advance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ threadId, channelId }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Advance failed (${res.status})`);
       await onRefresh();
-    } catch {
-      // GuideBar handles errors, workspace just triggers
+    } catch (err) {
+      setAdvanceError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -122,9 +130,10 @@ export function CodingExecutionWorkspace({
       <div className="mt-3 flex flex-wrap gap-2">
         <button
           onClick={() => { void advance(); }}
-          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+          disabled={busy}
+          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-40"
         >
-          Start implementing →
+          {busy ? "Starting agent…" : "Start implementing →"}
         </button>
         <Link
           href={`/channels/${channelId}/${threadId}?tab=work`}
@@ -134,9 +143,11 @@ export function CodingExecutionWorkspace({
         </Link>
       </div>
       <p className="mt-2 text-[11px] text-zinc-400">
-        Hitting start advances the thread to Implement and runs the agent with these {orderedPlans.length} tasks as its guide.
-        Toggle tasks on/off in the Work tab as the agent completes them.
+        {busy
+          ? "Running the agent now — this may take a moment. Check the Work tab for live activity."
+          : `Hitting start advances the thread to Implement and runs the agent with these ${orderedPlans.length} tasks as its guide. Toggle tasks on/off in the Work tab as the agent completes them.`}
       </p>
+      {advanceError && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{advanceError}</p>}
     </section>
   );
 }

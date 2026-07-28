@@ -452,7 +452,7 @@ function ThreadContent({
   const currentStageModules = lifecyclePicked ? stageModules(lifecycleKey, currentState) : [];
   const guidedReview = currentStageModules.find((module) => module.type === "guided-review");
   const executionHandoff = currentStageModules.find((module) => module.type === "execution-handoff");
-  const showCodingWorkspace = lifecyclePicked && lifecycleKey === "coding" && currentState === "drafted" && meta;
+  const showCodingWorkspace = lifecyclePicked && lifecycleKey === "coding" && (currentState === "drafted" || currentState === "running") && meta;
 
   const issueHeader = lifecyclePicked && lifecycleKey === "issue" && meta
     ? (
