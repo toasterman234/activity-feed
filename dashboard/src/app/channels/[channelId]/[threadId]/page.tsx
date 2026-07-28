@@ -188,7 +188,15 @@ function ThreadContent({
     setBooted(true);
   }, [extras.meta, booted, threadId, channelId]);
 
+  // Default to the Work tab for approved plans so the execution handoff
+  // is visible immediatly instead of stale challenge/conversation history.
   const meta: ThreadMetaRow | null = extras.meta;
+  useEffect(() => {
+    if (!meta) return;
+    if (meta.lifecycle === "planning" && meta.state === "accepted") {
+      setActiveTab("work");
+    }
+  }, [meta?.thread_id, meta?.lifecycle, meta?.state]);
   const lifecyclePicked = !!meta;
   const lifecycleKey = meta?.lifecycle || DEFAULT_LIFECYCLE;
   const currentState = meta?.state || LIFECYCLES[lifecycleKey]?.initial || "drafted";
