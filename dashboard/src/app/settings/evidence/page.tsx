@@ -140,6 +140,17 @@ export default function EvidenceSettingsPage() {
 
   const mapCount = data?.summary.mapInitiatives ?? data?.summary.initiatives ?? data?.evidence.results.length ?? 0;
 
+  const readyCount = useMemo(() => {
+    if (!data) return 0;
+    const byMapId = new Map(data.evidence.results.map((r) => [r.id, r]));
+    return (data.initiatives || []).filter((init) => {
+      if (init.status === "shipped") return false;
+      if (!init.evidence_map_id) return true;
+      const map = byMapId.get(init.evidence_map_id);
+      return map ? map.ok : false;
+    }).length;
+  }, [data]);
+
   return (
     <div className="space-y-4 pb-8">
       <div className="flex items-start justify-between gap-3">
@@ -173,7 +184,7 @@ export default function EvidenceSettingsPage() {
 
       {data && (
         <>
-          <div className="grid grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
             <Stat label="Tracked" value={mapCount} />
             <Stat label="Fails" value={data.summary.failing} tone={data.summary.failing ? "danger" : "good"} />
             <Stat
@@ -182,6 +193,7 @@ export default function EvidenceSettingsPage() {
               tone={data.summary.open || data.evidence.openCount ? "warn" : "good"}
             />
             <Stat label="Shipped" value={data.summary.shipped || 0} tone="good" />
+            <Stat label="Ready" value={readyCount} tone={readyCount ? "warn" : "neutral"} />
             <Link
               href="/channels/inbox"
               className={`rounded-lg border px-2 py-1.5 text-center ${
@@ -250,6 +262,11 @@ export default function EvidenceSettingsPage() {
                               <span className="font-medium text-zinc-700 dark:text-zinc-300">
                                 {init?.status || "not synced"}
                               </span>
+                              {canPromote && (
+                                <span className="ml-1.5 inline-flex rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+                                  Ready to promote
+                                </span>
+                              )}
                               {map ? (
                                 <>
                                   {" · "}PLAN claims{" "}

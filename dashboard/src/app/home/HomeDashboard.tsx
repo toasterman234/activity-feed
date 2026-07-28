@@ -289,6 +289,8 @@ function ContinuityEvidenceCard() {
     warnings: number;
     open: number;
     pendingInbox: number;
+    ready: number;
+    shipped: number;
   } | null>(null);
 
   useEffect(() => {
@@ -299,11 +301,22 @@ function ContinuityEvidenceCard() {
         if (!res.ok) return;
         const data = await res.json();
         if (cancelled) return;
+        const results = data.evidence?.results || [];
+        const byMap = new Map(results.map((r) => [r.id, r]));
+        const initiatives = data.initiatives || [];
+        const ready = initiatives.filter((init) => {
+          if (init.status === "shipped") return false;
+          if (!init.evidence_map_id) return true;
+          const row = byMap.get(init.evidence_map_id);
+          return row ? !!row.ok : false;
+        }).length;
         setSummary({
           failing: Number(data.summary?.failing || 0),
           warnings: Number(data.summary?.warnings || 0),
           open: Number(data.summary?.open || 0),
           pendingInbox: Number(data.summary?.pendingInbox || 0),
+          ready,
+          shipped: Number(data.summary?.shipped || 0),
         });
       } catch {
         /* non-critical */
@@ -316,27 +329,23 @@ function ContinuityEvidenceCard() {
 
   if (!summary) return null;
   const attention = summary.failing + summary.warnings + summary.open + summary.pendingInbox;
-  if (attention === 0) {
-    return (
-      <Card
-        title="Continuity"
-        action={<Link href="/settings/evidence" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Evidence</Link>}
-      >
-        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">No evidence fails/opens. Graph inbox empty.</p>
-      </Card>
-    );
-  }
-
   return (
     <Card
       title="Continuity"
       action={<Link href="/settings/evidence" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Evidence</Link>}
     >
-      <div className="flex gap-2">
-        <CountPill label="Fails" value={summary.failing} href="/settings/evidence" tone={summary.failing ? "danger" : "good"} />
-        <CountPill label="Open" value={summary.open} href="/settings/evidence" tone={summary.open ? "warn" : "good"} />
-        <CountPill label="Inbox" value={summary.pendingInbox} href="/channels/inbox" tone={summary.pendingInbox ? "warn" : "good"} />
-      </div>
+      {attention === 0 && summary.ready === 0 ? (
+        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+          Checks clean · {summary.shipped} shipped · inbox empty.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <CountPill label="Fails" value={summary.failing} href="/settings/evidence" tone={summary.failing ? "danger" : "good"} />
+          <CountPill label="Open" value={summary.open} href="/settings/evidence" tone={summary.open ? "warn" : "good"} />
+          <CountPill label="Ready" value={summary.ready} href="/settings/evidence" tone={summary.ready ? "warn" : "good"} />
+          <CountPill label="Inbox" value={summary.pendingInbox} href="/channels/inbox" tone={summary.pendingInbox ? "warn" : "good"} />
+        </div>
+      )}
     </Card>
   );
 }

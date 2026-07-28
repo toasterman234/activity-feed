@@ -142,6 +142,11 @@ export default function InitiativeDetailPage() {
           <h2 className="mt-1 text-base font-semibold text-zinc-900 dark:text-zinc-100">{init.title}</h2>
           <p className="mt-0.5 text-[11px] text-zinc-500">
             Graph <span className="font-medium text-zinc-700 dark:text-zinc-300">{init.status}</span>
+            {init.status !== "shipped" && (!check || check.ok) && blockers === 0 && (
+              <span className="ml-1.5 inline-flex rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+                Ready to promote
+              </span>
+            )}
             {check ? (
               <>
                 {" · "}checks {check.ok ? "pass" : "fail"} · PLAN claims{" "}
