@@ -13,9 +13,12 @@ import {
 import { writeChannelRow, markChannelRead } from "../../../writeChannelRow";
 import { type MentionOption } from "../../MentionInput";
 import { parseMentions } from "../../../../lib/mentions";
-import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows } from "../../lifecycles";
+import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows, stageModules } from "../../lifecycles";
 import { RESEARCH_MODES, DEFAULT_RESEARCH_MODE } from "../../researchModes";
 import { GuideBar } from "../../GuideBar";
+import { DoNowBanner } from "../../DoNowBanner";
+import { deriveThreadAttention } from "../../attentionGuide";
+import { StageReviewWorkspace } from "../../StageReviewWorkspace";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
 import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
 import { ThreadConversationTab } from "../../ThreadConversationTab";
@@ -105,7 +108,15 @@ function ThreadContent({
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [advancing, setAdvancing] = useState(false);
   const [activeTab, setActiveTab] = useState<ThreadTabId>("conversation");
+  const [focusTriage, setFocusTriage] = useState(false);
+  const [triageAnchor, setTriageAnchor] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const need = new URLSearchParams(window.location.search).get("need");
+    if (need === "triage") setFocusTriage(true);
+  }, []);
 
   useEffect(() => {
     fetch("/api/agents/list")
@@ -376,8 +387,34 @@ function ThreadContent({
     if (rawPromotion?.id) setDismissedPromotionId(rawPromotion.id);
   };
 
+  const attention = lifecyclePicked && meta
+    ? deriveThreadAttention({
+        lifecycle: lifecycleKey,
+        state: currentState,
+        assignee: meta.assignee,
+        repoId: meta.repo_id,
+        promotionStatus: promotion?.status || null,
+      })
+    : null;
+
+  const guidedReview = lifecyclePicked
+    ? stageModules(lifecycleKey, currentState).find((module) => module.type === "guided-review")
+    : null;
+
   const issueHeader = lifecyclePicked && lifecycleKey === "issue" && meta
-    ? <IssueHeader threadId={threadId} meta={meta} />
+    ? (
+      <IssueHeader
+        threadId={threadId}
+        meta={meta}
+        forceEdit={focusTriage || attention?.need === "triage"}
+        highlightMissing
+        onSaved={async () => {
+          setFocusTriage(false);
+          setTriageAnchor((n) => n + 1);
+          await extras.refresh();
+        }}
+      />
+    )
     : null;
 
   // After a move, messages are filtered by URL channelId so threadMsg vanishes
@@ -493,6 +530,25 @@ function ThreadContent({
           )}
 
 
+          {attention && !isArchived && (
+            <DoNowBanner
+              guide={attention}
+              onCta={() => {
+                if (attention.need === "triage") {
+                  setFocusTriage(true);
+                  setTriageAnchor((n) => n + 1);
+                  document.getElementById("issue-triage")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  return;
+                }
+                if (attention.need === "review" || attention.need === "verify") {
+                  document.getElementById("do-now-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  return;
+                }
+                document.getElementById("do-now")?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            />
+          )}
+
           {lifecyclePicked && lc && !isArchived && (
             <GuideBar
               lifecycleKey={lifecycleKey}
@@ -506,7 +562,26 @@ function ThreadContent({
               }}
             />
           )}
-          {issueHeader}
+
+          {guidedReview && !isArchived && (
+            <div id="do-now-workspace">
+              <StageReviewWorkspace
+                threadId={threadId}
+                channelId={channelId}
+                stageId={currentState}
+                endpoint={String(guidedReview.config?.endpoint || "/api/channels/stage-review")}
+                subject={String(guidedReview.config?.subject || "work")}
+                plans={plans}
+                artifacts={extras.artifacts}
+                interactions={[]}
+                onRefresh={async () => { await extras.refresh(); }}
+              />
+            </div>
+          )}
+
+          <div id="issue-triage" key={triageAnchor}>
+            {issueHeader}
+          </div>
 
 
           <ThreadTabs
@@ -647,25 +722,51 @@ function ThreadContent({
 
 // ── IssueHeader: shown on thread detail when lifecycle is "issue" ─
 
-function IssueHeader({ threadId, meta }: { threadId: string; meta: ThreadMetaRow }) {
+function IssueHeader({
+  threadId,
+  meta,
+  forceEdit = false,
+  highlightMissing = false,
+  onSaved,
+}: {
+  threadId: string;
+  meta: ThreadMetaRow;
+  forceEdit?: boolean;
+  highlightMissing?: boolean;
+  onSaved?: () => void | Promise<void>;
+}) {
   const [repoName, setRepoName] = useState<string | null>(null);
   const [repoPath, setRepoPath] = useState<string | null>(null);
-  const [editing, setEditing] = useState(false);
+  const [repos, setRepos] = useState<RepoRow[]>([]);
+  const [editing, setEditing] = useState(forceEdit);
   const [editPriority, setEditPriority] = useState(meta.priority || "none");
   const [editAssignee, setEditAssignee] = useState(meta.assignee || "");
+  const [editRepoId, setEditRepoId] = useState(meta.repo_id || "");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (meta.repo_id) {
-      fetch("/api/repos")
-        .then((r) => r.json())
-        .then((d) => {
-          const repo = (d.repos || []).find((r: RepoRow) => r.id === meta.repo_id);
-          if (repo) { setRepoName(repo.name); setRepoPath(repo.path); }
-        })
-        .catch(() => {});
-    }
+    if (forceEdit) setEditing(true);
+  }, [forceEdit]);
+
+  useEffect(() => {
+    fetch("/api/repos")
+      .then((r) => r.json())
+      .then((d) => {
+        const list = (d.repos || []) as RepoRow[];
+        setRepos(list);
+        if (meta.repo_id) {
+          const repo = list.find((r) => r.id === meta.repo_id);
+          if (repo) {
+            setRepoName(repo.name);
+            setRepoPath(repo.path);
+          }
+        }
+      })
+      .catch(() => {});
   }, [meta.repo_id]);
+
+  const missingOwner = !(meta.assignee || "").trim();
+  const missingRepo = !meta.repo_id;
 
   const save = async () => {
     setSaving(true);
@@ -675,9 +776,11 @@ function IssueHeader({ threadId, meta }: { threadId: string; meta: ThreadMetaRow
         channel_id: meta.channel_id,
         priority: editPriority === "none" ? null : editPriority,
         assignee: editAssignee.trim() || null,
+        repo_id: editRepoId || null,
         updated_at: new Date().toISOString(),
       });
       setEditing(false);
+      await onSaved?.();
     } finally {
       setSaving(false);
     }
@@ -695,70 +798,121 @@ function IssueHeader({ threadId, meta }: { threadId: string; meta: ThreadMetaRow
   const prio = meta.priority || "none";
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-center gap-2">
-        <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${prioColors[prio]}`}>
-          {prioLabels[prio]}
-        </span>
-        {meta.assignee && (
-          <span className="text-[10px] text-zinc-500 dark:text-zinc-400">@{meta.assignee}</span>
+    <div
+      className={`rounded-lg border bg-white p-3 dark:bg-zinc-900 ${
+        highlightMissing && (missingOwner || missingRepo)
+          ? "border-amber-400 dark:border-amber-700"
+          : "border-zinc-200 dark:border-zinc-800"
+      }`}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Issue setup</p>
+        {!editing && (
+          <button
+            onClick={() => {
+              setEditPriority(meta.priority || "none");
+              setEditAssignee(meta.assignee || "");
+              setEditRepoId(meta.repo_id || "");
+              setEditing(true);
+            }}
+            className="text-[10px] font-medium text-amber-700 underline dark:text-amber-300"
+          >
+            Edit owner / repo
+          </button>
         )}
-        {repoName && (
-          <span className="text-[10px] text-zinc-400">
-            📁 {repoName}
+      </div>
+
+      {highlightMissing && (missingOwner || missingRepo) && !editing && (
+        <p className="mb-2 text-[11px] text-amber-800 dark:text-amber-200">
+          Missing:{" "}
+          {[missingOwner ? "owner" : null, missingRepo ? "repo" : null].filter(Boolean).join(", ")}.
+          Tap edit to set them here.
+        </p>
+      )}
+
+      {editing ? (
+        <div className="space-y-2">
+          <label className="block text-[10px] text-zinc-500">
+            Owner
+            <input
+              autoFocus={missingOwner || forceEdit}
+              value={editAssignee}
+              onChange={(e) => setEditAssignee(e.target.value)}
+              placeholder="e.g. you"
+              className={`mt-0.5 w-full rounded border px-2 py-1.5 text-xs dark:bg-zinc-800 dark:text-zinc-200 ${
+                !editAssignee.trim()
+                  ? "border-amber-400 dark:border-amber-600"
+                  : "border-zinc-200 dark:border-zinc-700"
+              }`}
+              disabled={saving}
+            />
+          </label>
+          <label className="block text-[10px] text-zinc-500">
+            Repo
+            <select
+              value={editRepoId}
+              onChange={(e) => setEditRepoId(e.target.value)}
+              className={`mt-0.5 w-full rounded border px-2 py-1.5 text-xs dark:bg-zinc-800 dark:text-zinc-200 ${
+                !editRepoId
+                  ? "border-amber-400 dark:border-amber-600"
+                  : "border-zinc-200 dark:border-zinc-700"
+              }`}
+              disabled={saving}
+            >
+              <option value="">Select repo…</option>
+              {repos.map((repo) => (
+                <option key={repo.id} value={repo.id}>
+                  {repo.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block text-[10px] text-zinc-500">
+            Priority
+            <select
+              value={editPriority}
+              onChange={(e) => setEditPriority(e.target.value)}
+              className="mt-0.5 w-full rounded border border-zinc-200 px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+              disabled={saving}
+            >
+              <option value="none">—</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </label>
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => { void save(); }}
+              disabled={saving || !editAssignee.trim()}
+              className="rounded-md bg-amber-700 px-3 py-1.5 text-[11px] font-semibold text-white disabled:opacity-40 dark:bg-amber-400 dark:text-amber-950"
+            >
+              {saving ? "Saving…" : "Save and continue"}
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              disabled={saving}
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-[11px] text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${prioColors[prio]}`}>
+            {prioLabels[prio]}
+          </span>
+          <span className={`text-[11px] ${missingOwner ? "font-medium text-amber-700 dark:text-amber-300" : "text-zinc-500"}`}>
+            {meta.assignee ? `@${meta.assignee}` : "No owner"}
+          </span>
+          <span className={`text-[11px] ${missingRepo ? "font-medium text-amber-700 dark:text-amber-300" : "text-zinc-400"}`}>
+            {repoName ? `📁 ${repoName}` : "No repo"}
             {repoPath && <span className="ml-1 font-mono text-zinc-300 dark:text-zinc-600">{repoPath}</span>}
           </span>
-        )}
-        <div className="ml-auto">
-          {editing ? (
-            <div className="flex items-center gap-1">
-              <select
-                value={editPriority}
-                onChange={(e) => setEditPriority(e.target.value)}
-                className="text-[10px] rounded border border-zinc-200 px-1 py-0.5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                disabled={saving}
-              >
-                <option value="none">—</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-              <input
-                value={editAssignee}
-                onChange={(e) => setEditAssignee(e.target.value)}
-                placeholder="Assignee…"
-                className="w-24 text-[10px] rounded border border-zinc-200 px-1 py-0.5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                disabled={saving}
-              />
-              <button
-                onClick={save}
-                disabled={saving}
-                className="rounded border border-zinc-200 px-1.5 py-0.5 text-[10px] text-zinc-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
-              >
-                ✓
-              </button>
-              <button
-                onClick={() => setEditing(false)}
-                className="rounded px-1 py-0.5 text-[10px] text-zinc-400"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => {
-                setEditPriority(meta.priority || "none");
-                setEditAssignee(meta.assignee || "");
-                setEditing(true);
-              }}
-              className="text-[10px] text-zinc-400 underline hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
-            >
-              Edit
-            </button>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

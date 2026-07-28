@@ -479,7 +479,7 @@ function NeedsAttentionPanel({
         key: `failed-${item.threadId}-${item.createdAt}`,
         source: "channel",
         priority: 12,
-        href: `/channels/${item.channelId}/${item.threadId}`,
+        href: `/channels/${item.channelId}/${item.threadId}?need=gate`,
         badge: "failed",
         title: item.progress || item.errorDetail || "Promotion failed",
         meta: `# ${item.channelName}`,
@@ -489,17 +489,23 @@ function NeedsAttentionPanel({
       });
     }
     for (const item of data.topNeedsMe) {
+      const need = item.need || (
+        item.reason === "review" ? "review"
+        : item.reason === "blocked" ? "blocked"
+        : item.reason === "failed_required_gate" ? "gate"
+        : "triage"
+      );
       merged.push({
         key: `need-${item.threadId}`,
         source: "channel",
         priority: item.state === "blocked" ? 11 : item.reason === "review" ? 18 : 22,
-        href: `/channels/${item.channelId}/${item.threadId}`,
+        href: `/channels/${item.channelId}/${item.threadId}?need=${need}`,
         badge: item.state,
         title: item.title,
         meta: `# ${item.channelName}`,
         age: relativeTime(item.updatedAt),
         why: item.why || `Waiting on ${item.reason.replace(/_/g, " ")}.`,
-        nextStep: item.nextStep || "Open the thread → GuideBar for the required action.",
+        nextStep: item.nextStep || "Open the thread and follow Do this now.",
       });
     }
 

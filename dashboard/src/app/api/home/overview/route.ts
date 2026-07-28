@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { deriveThreadAttention } from "@/app/channels/attentionGuide";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { pool } from "../../_db";
@@ -153,59 +154,25 @@ function threadAttentionGuide(row: {
   state: string;
   reason: ApprovalReason;
   assignee: string | null;
+  repoId?: string | null;
 }): { nextStep: string; why: string } {
-  if (row.reason === "failed_required_gate") {
-    return {
-      why: "A required promotion/gate failed.",
-      nextStep: "Open the thread → GuideBar → fix the failed gate, then retry.",
-    };
-  }
-  if (row.state === "blocked" || row.reason === "blocked") {
-    return {
-      why: "Thread is blocked on a missing decision or input.",
-      nextStep: "Open the thread → GuideBar → record the blocker/unblock, then advance.",
-    };
-  }
-  if (row.lifecycle === "research" && row.state === "review") {
-    return {
-      why: "Research synthesis is waiting for verification/publication approval.",
-      nextStep: "Open the thread → GuideBar → Verify the synthesis / approve publication.",
-    };
-  }
-  if (row.lifecycle === "coding" && row.state === "review") {
-    return {
-      why: "Change is waiting on ship review approval.",
-      nextStep: "Open the thread → GuideBar → Review before shipping / approve.",
-    };
-  }
-  if (row.lifecycle === "planning" && row.state === "review") {
-    return {
-      why: "Plan is waiting on challenge/approval.",
-      nextStep: "Open the thread → GuideBar → Challenge the plan / approve.",
-    };
-  }
-  if (row.lifecycle === "issue" && row.state === "resolved") {
-    return {
-      why: "Fix is implemented but still needs verification approval.",
-      nextStep: "Open the thread → GuideBar → Verify the fix / approve to close.",
-    };
-  }
-  if (row.state === "review") {
-    return {
-      why: "Waiting on a human review gate.",
-      nextStep: "Open the thread → GuideBar → complete the pending review/approval.",
-    };
-  }
+  const guide = deriveThreadAttention({
+    lifecycle: row.lifecycle,
+    state: row.state,
+    assignee: row.assignee,
+    repoId: row.repoId || null,
+    promotionStatus: row.reason === "failed_required_gate" ? "failed_required_gate" : null,
+  });
+  if (guide) return { nextStep: guide.nextStep, why: guide.why };
   if (row.reason === "issue_needs_triage") {
-    const missing = !row.assignee ? "owner" : "repo";
     return {
-      why: `Open issue is unscoped (missing ${missing}).`,
-      nextStep: "Open the issue → assign an owner and/or link a repo, then triage.",
+      why: "Open issue is unscoped (missing owner or repo).",
+      nextStep: "Open the issue → assign an owner and link a repo, then triage.",
     };
   }
   return {
     why: "Waiting on you.",
-    nextStep: "Open the thread and check GuideBar for the required action.",
+    nextStep: "Open the thread and follow the Do this now banner.",
   };
 }
 
@@ -222,6 +189,7 @@ export async function GET() {
         lifecycle: string;
         state: string;
         assignee: string | null;
+        repo_id: string | null;
         updated_at: string;
         reason: ApprovalReason;
       }>(
@@ -239,6 +207,7 @@ export async function GET() {
                 tm.lifecycle,
                 tm.state,
                 tm.assignee,
+                tm.repo_id,
                 tm.updated_at,
                 CASE
                   WHEN lp.status = 'failed_required_gate' THEN 'failed_required_gate'
@@ -422,6 +391,7 @@ export async function GET() {
         state: row.state,
         reason: row.reason,
         assignee: row.assignee,
+        repoId: row.repo_id,
       });
       return {
         threadId: row.thread_id,
@@ -435,6 +405,13 @@ export async function GET() {
         updatedAt: row.updated_at,
         why: guide.why,
         nextStep: guide.nextStep,
+        need: deriveThreadAttention({
+          lifecycle: row.lifecycle,
+          state: row.state,
+          assignee: row.assignee,
+          repoId: row.repo_id,
+          promotionStatus: row.reason === "failed_required_gate" ? "failed_required_gate" : null,
+        })?.need || null,
       };
     });
     const failedPromotions = promotionsRes.rows.map((row) => ({

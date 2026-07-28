@@ -29,6 +29,7 @@ export type HomeOverview = {
     updatedAt: string;
     why?: string;
     nextStep?: string;
+    need?: string | null;
   }>;
   topActive: Array<{
     threadId: string;
@@ -80,6 +81,7 @@ export type HomeOverview = {
       updatedAt: string;
       why?: string;
       nextStep?: string;
+      need?: string | null;
     }>;
     failedPromotions: Array<{
       threadId: string;

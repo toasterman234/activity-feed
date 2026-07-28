@@ -174,6 +174,28 @@ export default function InitiativeDetailPage() {
         </pre>
       )}
 
+      {init.status !== "shipped" && check && !check.ok && (
+        <div className="rounded-xl border-2 border-red-400 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-red-700 dark:text-red-300">Do this now</p>
+          <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-zinc-100">Evidence checks are failing.</p>
+          <p className="mt-1 text-[12px] text-red-900/80 dark:text-red-100/80">
+            <span className="font-semibold">Next:</span> Fix the findings below, then re-check / promote.
+          </p>
+        </div>
+      )}
+
+      {canPromote && (
+        <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-300">Do this now</p>
+          <p className="mt-1 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            Checks pass — admit this as shipped in the graph.
+          </p>
+          <p className="mt-1 text-[12px] text-amber-900/80 dark:text-amber-100/80">
+            <span className="font-semibold">Next:</span> Tap <span className="font-semibold">Promote to shipped</span> above.
+          </p>
+        </div>
+      )}
+
       <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">What this is</h3>
         <dl className="mt-2 space-y-1.5 text-[11px] text-zinc-600 dark:text-zinc-300">
