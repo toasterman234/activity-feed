@@ -1,10 +1,3 @@
----
-type: Architecture
-title: Architecture Index
-description: Architecture documentation index for the Activity Feed Dashboard.
-tags: [architecture, index]
----
+# Files
 
-# Architecture
-
-- [Overview](overview.md) — Electric-circuits sync, data flow, Next.js rewrites, Tailscale routing
+- [Architecture Overview](overview.md) - Electric-circuits sync, data flow, Next.js rewrites, and Tailscale routing for the Activity Feed Dashboard.

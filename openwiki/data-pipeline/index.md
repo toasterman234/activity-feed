@@ -1,10 +1,3 @@
----
-type: Data Pipeline
-title: Data Pipeline Index
-description: Data pipeline documentation index for the Activity Feed Dashboard.
-tags: [data-pipeline, index]
----
+# Files
 
-# Data Pipeline
-
-- [Ingestion](ingestion.md) — DuckDB → Postgres sync, Postgres schema, electric-circuits table replication
+- [Data Ingestion](ingestion.md) - DuckDB to Postgres sync for Life OS finance data, Postgres schema, and electric-circuits table replication.

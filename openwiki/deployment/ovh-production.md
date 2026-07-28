@@ -1,3 +1,9 @@
+---
+type: "Reference"
+title: "OVH Production (canonical since 2026-07-25)"
+openwiki_generated: true
+---
+
 # OVH Production (canonical since 2026-07-25)
 
 Production moved from the Mac Mini to the OVH VPS so the PWA survives the

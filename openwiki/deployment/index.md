@@ -1,10 +1,4 @@
----
-type: Deployment
-title: Deployment Index
-description: Deployment documentation index for the Activity Feed Dashboard.
-tags: [deployment, index]
----
+# Files
 
-# Deployment
-
-- [Tailscale and PWA](tailscale-and-pwa.md) — Tailscale serve, PWA setup, production build, mobile access
+- [OVH Production (canonical since 2026-07-25)](ovh-production.md)
+- [Tailscale and PWA Deployment](tailscale-and-pwa.md) - Tailscale serve configuration, PWA setup, production build, and mobile access patterns for the Activity Feed Dashboard.
