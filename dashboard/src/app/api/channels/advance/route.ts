@@ -80,7 +80,21 @@ async function advance(opts: {
     }
   }
 
-  // 4. Run agent with workflow instructions
+  // 4. Read plan tasks for this thread so the agent knows what to work on
+  const planRes = await pool.query(
+    `SELECT title, status, acceptance_criteria
+       FROM thread_plans
+      WHERE thread_id = $1
+      ORDER BY sort_order, created_at`,
+    [opts.threadId],
+  );
+  const plans = planRes.rows.map((row) => ({
+    title: row.title,
+    status: row.status,
+    acceptance_criteria: row.acceptance_criteria,
+  }));
+
+  // 5. Run agent with workflow instructions
   const stepId = randomUUID();
   await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: "GuideBar advance", status: "running" });
 
@@ -102,6 +116,7 @@ async function advance(opts: {
     currentState: currentStateDef.label,
     targetState: lc.states[mainNext]?.label || mainNext,
     workflowInstructions,
+    plans,
   });
 
   let structured: StructuredReply;

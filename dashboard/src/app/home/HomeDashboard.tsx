@@ -571,9 +571,13 @@ function ReadyToExecutePanel({ plans }: { plans: HomeOverview["approvedPlans"] }
             <p className="mt-0.5 text-[10px] text-zinc-400">
               # {plan.channelName}
               {plan.taskCount > 0 ? ` · ${plan.taskCount} task${plan.taskCount === 1 ? "" : "s"}` : ""}
-              {plan.repoName ? ` · ${plan.repoName}` : plan.repoId ? " · repo linked" : ""}
-              {!plan.repoId && !plan.repoName ? " · ⚠ no repo" : ""}
-              {!plan.assignee ? " · ⚠ no assignee" : ` · @${plan.assignee}`}
+              {plan.activeExecutionCount > 0 ? " · → execution exists" : (
+                <>
+                  {plan.repoName ? ` · ${plan.repoName}` : plan.repoId ? " · repo linked" : ""}
+                  {!plan.repoId && !plan.repoName ? " · ⚠ no repo" : ""}
+                  {!plan.assignee ? " · ⚠ no assignee" : ` · @${plan.assignee}`}
+                </>
+              )}
             </p>
           </Link>
         ))}

@@ -129,6 +129,7 @@ export type HomeOverview = {
     taskCount: number;
     approvedAt: string | null;
     updatedAt: string;
+    activeExecutionCount: number;
   }>;
   workStatus: {
     active: Array<{

@@ -20,6 +20,7 @@ import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
 import { StageReviewWorkspace } from "../../StageReviewWorkspace";
 import { ExecutionHandoffWorkspace } from "../../ExecutionHandoffWorkspace";
+import { WorkflowStageModules } from "../../WorkflowStageModules";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
 import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
 import { ThreadConversationTab } from "../../ThreadConversationTab";
@@ -668,6 +669,24 @@ function ThreadContent({
                 onRefresh={async () => { await extras.refresh(); }}
               />
             </div>
+          )}
+
+          {/* Catch-all: any module type not handled above (task-list, guided-interview, etc.) */}
+          {currentStageModules.filter(
+            (m) => m.type !== "guided-review" && m.type !== "execution-handoff"
+          ).length > 0 && !isArchived && (
+            <WorkflowStageModules
+              lifecycleKey={lifecycleKey}
+              stageId={currentState}
+              threadId={threadId}
+              channelId={channelId}
+              plans={plans}
+              artifacts={extras.artifacts}
+              interactions={extras.interactions}
+              scans={[]}
+              candidates={[]}
+              onRefresh={async () => { await extras.refresh(); }}
+            />
           )}
 
           {executionHandoff && !isArchived && (

@@ -210,16 +210,34 @@ export function buildWorkflowPrompt(opts: {
   currentState: string;
   targetState: string;
   workflowInstructions: string[];
+  plans?: Array<{ title: string; status: string; acceptance_criteria?: string }>;
 }): string {
   const instructions = opts.workflowInstructions.length
     ? opts.workflowInstructions.map((i) => `- ${i}`).join("\n")
     : "Complete the work for this state.";
-  return [
+  const parts = [
     `You are advancing a ${opts.lifecycleLabel} thread from "${opts.currentState}" to "${opts.targetState}".`,
     ``,
+  ];
+  if (opts.plans && opts.plans.length > 0) {
+    parts.push(
+      `Approved plan (${opts.plans.length} tasks) — work through these in order:`,
+      ...opts.plans.map((p, i) => {
+        const criteria = (() => {
+          try { return JSON.parse(p.acceptance_criteria || "[]"); } catch { return []; }
+        })();
+        const marker = p.status === "done" ? "✓" : `${i + 1}.`;
+        const extra = criteria.length ? ` (criteria: ${criteria.join("; ")})` : "";
+        return `${marker} ${p.title}${extra}`;
+      }),
+      ``,
+    );
+  }
+  parts.push(
     `Workflow instructions:`,
     instructions,
     ``,
     `After completing these instructions, set "nextState" to "${opts.targetState}" and include a brief "message" summarizing what you did.`,
-  ].join("\n");
+  );
+  return parts.join("\n");
 }

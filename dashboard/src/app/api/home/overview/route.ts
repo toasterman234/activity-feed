@@ -403,6 +403,7 @@ export async function GET() {
         task_count: string;
         approved_at: string | null;
         updated_at: string;
+        active_execution_count: string;
       }>(
         `SELECT tm.thread_id,
                 tm.channel_id,
@@ -419,7 +420,15 @@ export async function GET() {
                     AND twe.event_type = 'stage.transitioned'
                   ORDER BY twe.created_at DESC
                   LIMIT 1) AS approved_at,
-                tm.updated_at
+                tm.updated_at,
+                (SELECT COUNT(*)
+                   FROM thread_links tl
+                   JOIN thread_meta exm ON exm.thread_id = tl.target_thread_id
+                  WHERE tl.source_thread_id = tm.thread_id
+                    AND tl.relation = 'executes'
+                    AND exm.archived_at IS NULL
+                    AND exm.state NOT IN ('accepted','rejected','stopped','closed','wont_fix')
+                )::int AS active_execution_count
            FROM thread_meta tm
            JOIN channels c ON c.id = tm.channel_id
            JOIN messages root ON root.id = tm.thread_id AND root.thread_id IS NULL
@@ -547,6 +556,7 @@ export async function GET() {
       taskCount: Number(row.task_count) || 0,
       approvedAt: row.approved_at,
       updatedAt: row.updated_at,
+      activeExecutionCount: Number(row.active_execution_count) || 0,
     }));
 
     return NextResponse.json({
