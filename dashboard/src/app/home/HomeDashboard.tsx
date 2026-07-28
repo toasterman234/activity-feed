@@ -287,6 +287,7 @@ function ContinuityEvidenceCard() {
   const [summary, setSummary] = useState<{
     failing: number;
     warnings: number;
+    open: number;
     pendingInbox: number;
   } | null>(null);
 
@@ -301,6 +302,7 @@ function ContinuityEvidenceCard() {
         setSummary({
           failing: Number(data.summary?.failing || 0),
           warnings: Number(data.summary?.warnings || 0),
+          open: Number(data.summary?.open || 0),
           pendingInbox: Number(data.summary?.pendingInbox || 0),
         });
       } catch {
@@ -313,14 +315,14 @@ function ContinuityEvidenceCard() {
   }, []);
 
   if (!summary) return null;
-  const attention = summary.failing + summary.warnings + summary.pendingInbox;
+  const attention = summary.failing + summary.warnings + summary.open + summary.pendingInbox;
   if (attention === 0) {
     return (
       <Card
         title="Continuity"
         action={<Link href="/settings/evidence" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">Evidence</Link>}
       >
-        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">PLAN evidence clean. Graph inbox empty.</p>
+        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">No evidence fails/opens. Graph inbox empty.</p>
       </Card>
     );
   }
@@ -332,7 +334,7 @@ function ContinuityEvidenceCard() {
     >
       <div className="flex gap-2">
         <CountPill label="Fails" value={summary.failing} href="/settings/evidence" tone={summary.failing ? "danger" : "good"} />
-        <CountPill label="Warns" value={summary.warnings} href="/settings/evidence" tone={summary.warnings ? "warn" : "good"} />
+        <CountPill label="Open" value={summary.open} href="/settings/evidence" tone={summary.open ? "warn" : "good"} />
         <CountPill label="Inbox" value={summary.pendingInbox} href="/channels/inbox" tone={summary.pendingInbox ? "warn" : "good"} />
       </div>
     </Card>

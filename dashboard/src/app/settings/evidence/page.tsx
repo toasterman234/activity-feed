@@ -17,9 +17,9 @@ type Initiative = {
 
 type EvidencePayload = {
   generatedAt: string;
-  evidence: { ok: boolean; failCount: number; warnCount: number; results: Initiative[] };
+  evidence: { ok: boolean; failCount: number; warnCount: number; openCount?: number; results: Initiative[] };
   inbox: { decisions: number; proposals: number; memory: number; error?: string };
-  summary: { initiatives: number; failing: number; warnings: number; pendingInbox: number };
+  summary: { initiatives: number; failing: number; warnings: number; open?: number; pendingInbox: number };
   error?: string;
 };
 
@@ -69,10 +69,11 @@ export default function EvidenceSettingsPage() {
 
       {data && (
         <>
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-5 gap-1.5">
             <Stat label="Initiatives" value={data.summary.initiatives} />
             <Stat label="Fails" value={data.summary.failing} tone={data.summary.failing ? "danger" : "good"} />
             <Stat label="Warns" value={data.summary.warnings} tone={data.summary.warnings ? "warn" : "good"} />
+            <Stat label="Open" value={data.summary.open || data.evidence.openCount || 0} tone={(data.summary.open || data.evidence.openCount) ? "warn" : "good"} />
             <Link
               href="/channels/inbox"
               className={`rounded-lg border px-2 py-1.5 text-center ${
@@ -107,16 +108,18 @@ export default function EvidenceSettingsPage() {
                 {row.planStatusLine && (
                   <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400">{row.planStatusLine}</p>
                 )}
-                {row.findings.filter((f) => f.severity !== "info").length > 0 && (
+                {row.findings.filter((f) => f.severity === "fail" || f.severity === "warn" || f.severity === "open").length > 0 && (
                   <ul className="mt-2 space-y-1">
                     {row.findings
-                      .filter((f) => f.severity !== "info")
+                      .filter((f) => f.severity === "fail" || f.severity === "warn" || f.severity === "open")
                       .map((f, i) => (
                         <li
                           key={`${row.id}-${i}`}
                           className={`text-[11px] ${
                             f.severity === "fail"
                               ? "text-red-600 dark:text-red-400"
+                              : f.severity === "open"
+                                ? "text-sky-700 dark:text-sky-300"
                               : "text-amber-700 dark:text-amber-300"
                           }`}
                         >

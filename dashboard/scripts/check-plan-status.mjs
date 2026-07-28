@@ -68,7 +68,7 @@ async function evaluateOpenItem(item) {
         message: `open item marker missing in ${item.path} (may already be resolved): ${item.includes}`,
       });
     } else {
-      findings.push({ severity: "info", message: `open item still present: ${item.title || item.id}` });
+      findings.push({ severity: "open", message: `open item still present: ${item.title || item.id}` });
     }
   }
   if (item.plan && item.marker) {
@@ -91,7 +91,9 @@ async function evaluateOpenItem(item) {
               : `could not find unchecked box near ${item.marker}`,
           });
         } else if (item.expectUnchecked && unchecked) {
-          findings.push({ severity: "info", message: `still open: ${item.title || item.marker}` });
+          findings.push({ severity: "open", message: `still open: ${item.title || item.marker}` });
+        } else if (!item.expectUnchecked) {
+          findings.push({ severity: "open", message: `tracked open item: ${item.title || item.marker}` });
         }
       }
     }
@@ -104,6 +106,7 @@ export async function evaluateEvidenceMap() {
   const results = [];
   let fails = 0;
   let warns = 0;
+  let opens = 0;
 
   for (const initiative of map.initiatives || []) {
     const findings = [];
@@ -193,8 +196,10 @@ export async function evaluateEvidenceMap() {
 
     const rowFails = findings.filter((f) => f.severity === "fail").length;
     const rowWarns = findings.filter((f) => f.severity === "warn").length;
+    const rowOpens = findings.filter((f) => f.severity === "open").length;
     fails += rowFails;
     warns += rowWarns;
+    opens += rowOpens;
 
     results.push({
       id: initiative.id,
@@ -214,6 +219,7 @@ export async function evaluateEvidenceMap() {
     ok: fails === 0,
     failCount: fails,
     warnCount: warns,
+    openCount: opens,
     results,
   };
 }
@@ -241,8 +247,8 @@ async function main() {
     }
     console.log(
       report.ok
-        ? `✓ plan-evidence check passed (${report.warnCount} warning${report.warnCount === 1 ? "" : "s"})`
-        : `✗ plan-evidence check failed (${report.failCount} fail, ${report.warnCount} warn)`,
+        ? `✓ plan-evidence check passed (${report.warnCount} warning${report.warnCount === 1 ? "" : "s"}, ${report.openCount} open)`
+        : `✗ plan-evidence check failed (${report.failCount} fail, ${report.warnCount} warn, ${report.openCount} open)`,
     );
   }
 

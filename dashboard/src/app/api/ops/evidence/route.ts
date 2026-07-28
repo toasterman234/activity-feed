@@ -57,7 +57,7 @@ export async function GET() {
     const [evidence, inbox] = await Promise.all([runEvidenceCheck(), inboxPending()]);
     const mismatches = (evidence.results || []).filter(
       (row: { ok?: boolean; findings?: Array<{ severity: string }> }) =>
-        !row.ok || (row.findings || []).some((f) => f.severity === "warn" || f.severity === "fail"),
+        !row.ok || (row.findings || []).some((f) => f.severity === "warn" || f.severity === "fail" || f.severity === "open"),
     );
     return NextResponse.json({
       generatedAt: new Date().toISOString(),
@@ -67,6 +67,7 @@ export async function GET() {
         initiatives: evidence.results?.length || 0,
         failing: evidence.failCount || 0,
         warnings: evidence.warnCount || 0,
+        open: evidence.openCount || 0,
         pendingInbox:
           (inbox.decisions || 0) + (inbox.proposals || 0) + (inbox.memory || 0),
         attention: mismatches.length + ((inbox.decisions || 0) + (inbox.proposals || 0) + (inbox.memory || 0) > 0 ? 1 : 0),
