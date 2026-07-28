@@ -146,7 +146,7 @@ export default function EvidenceSettingsPage() {
         <div>
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Evidence</h2>
           <p className="mt-0.5 max-w-xl text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
-            Each card is a tracked initiative. The checker verifies PLAN claims against code.
+            Each card is a tracked initiative — tap the title for plan links, required files, findings, and timeline.
             <span className="font-medium text-zinc-700 dark:text-zinc-300"> Promote </span>
             means “admit this as officially shipped in the graph” — only if checks pass. It does not rewrite PLAN files.
           </p>
@@ -227,8 +227,23 @@ export default function EvidenceSettingsPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                            {gateOk ? "✓" : "✗"} {title}
+                            {gateOk ? "✓" : "✗"}{" "}
+                            {init ? (
+                              <Link href={`/settings/evidence/${init.id}`} className="underline-offset-2 hover:underline">
+                                {title}
+                              </Link>
+                            ) : (
+                              title
+                            )}
                           </div>
+                          {init && (
+                            <Link
+                              href={`/settings/evidence/${init.id}`}
+                              className="mt-0.5 inline-block text-[10px] text-zinc-400 underline"
+                            >
+                              Open details →
+                            </Link>
+                          )}
                           <div className="mt-0.5 space-y-0.5 text-[11px] text-zinc-500">
                             <div>
                               Graph:{" "}

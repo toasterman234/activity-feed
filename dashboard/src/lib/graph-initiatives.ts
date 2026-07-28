@@ -401,3 +401,185 @@ export async function emitDeployActivatedEvent(opts: {
     },
   });
 }
+
+
+export type EvidenceMapEntry = {
+  id: string;
+  title: string;
+  plan?: string | null;
+  expectedStatus?: string;
+  requireAll?: string[];
+  forbidAll?: string[];
+  openItems?: Array<Record<string, unknown>>;
+  contentChecks?: Array<Record<string, unknown>>;
+};
+
+export type InitiativeTimelineItem = {
+  at: string;
+  kind: string;
+  actor: string;
+  summary: string;
+  payload: Record<string, unknown>;
+};
+
+function summarizeEvent(kind: string, payload: Record<string, unknown>, actor: string): string {
+  if (kind === "initiative.created") return `Created as ${payload.status || "open"} by ${actor}`;
+  if (kind === "initiative.promoted") return `Promoted to shipped by ${actor}`;
+  if (kind === "initiative.status_changed") {
+    return `Status ${payload.from || "?"} → ${payload.to || "?"} by ${actor}`;
+  }
+  if (kind === "lifecycle.transitioned") {
+    return `Thread lifecycle ${payload.from || "?"} → ${payload.to || "?"}`;
+  }
+  if (kind === "deploy.activated") {
+    return `Deploy ${payload.releaseId || payload.gitSha || "activated"}`;
+  }
+  return `${kind} by ${actor}`;
+}
+
+async function loadEvidenceMapEntry(mapId: string | null): Promise<EvidenceMapEntry | null> {
+  if (!mapId) return null;
+  const fs = await import("node:fs/promises");
+  const mapPath = path.join(process.cwd(), "docs/evidence-map.json");
+  try {
+    const map = JSON.parse(await fs.readFile(mapPath, "utf8")) as {
+      initiatives: EvidenceMapEntry[];
+    };
+    return map.initiatives.find((i) => i.id === mapId) || null;
+  } catch {
+    return null;
+  }
+}
+
+async function loadPlanExcerpt(planPath: string | null): Promise<{
+  path: string;
+  exists: boolean;
+  statusLine: string | null;
+  excerpt: string | null;
+} | null> {
+  if (!planPath) return null;
+  const fs = await import("node:fs/promises");
+  const abs = path.join(process.cwd(), planPath);
+  try {
+    const raw = await fs.readFile(abs, "utf8");
+    const lines = raw.split(/\r?\n/);
+    const statusLine =
+      lines.find((l) => /^status\s*:/i.test(l.trim()) || /^\*\*status\*\*/i.test(l.trim())) ||
+      lines.find((l) => /^#\s+/.test(l)) ||
+      null;
+    const excerpt = lines.slice(0, 24).join("\n").trim();
+    return { path: planPath, exists: true, statusLine, excerpt };
+  } catch {
+    return { path: planPath, exists: false, statusLine: null, excerpt: null };
+  }
+}
+
+export async function resolveInitiative(idOrMapId: string): Promise<GraphInitiative | null> {
+  return (await getInitiative(idOrMapId)) || (await getInitiativeByEvidenceMapId(idOrMapId));
+}
+
+/** Full detail payload for Evidence drill-down. */
+export async function getInitiativeDetail(idOrMapId: string) {
+  const initiative = await resolveInitiative(idOrMapId);
+  if (!initiative) return null;
+
+  const mapEntry = await loadEvidenceMapEntry(initiative.evidence_map_id);
+  const planPath = initiative.plan_path || mapEntry?.plan || null;
+  const plan = await loadPlanExcerpt(planPath);
+
+  let check: {
+    id: string;
+    title: string;
+    plan: string | null;
+    claimed: string;
+    expectedStatus: string;
+    ok: boolean;
+    findings: Array<{ severity: string; message: string }>;
+  } | null = null;
+
+  if (initiative.evidence_map_id) {
+    try {
+      const report = await runEvidenceCheckForMapId(initiative.evidence_map_id);
+      const row = (report.results || []).find(
+        (r: { id?: string }) => r.id === initiative.evidence_map_id,
+      );
+      if (row) check = row;
+    } catch (error) {
+      check = {
+        id: initiative.evidence_map_id,
+        title: initiative.title,
+        plan: planPath,
+        claimed: "unknown",
+        expectedStatus: mapEntry?.expectedStatus || "unknown",
+        ok: false,
+        findings: [{ severity: "fail", message: `evidence check error: ${String(error)}` }],
+      };
+    }
+  }
+
+  const blockedBy = await countBlockingRelations(initiative.id);
+
+  const events = await pool.query(
+    `SELECT id, kind, actor, payload, created_at
+       FROM graph_events
+      WHERE (
+            kind LIKE 'initiative.%'
+        AND payload LIKE $1
+      ) OR (
+            kind = 'lifecycle.transitioned'
+        AND payload LIKE $1
+      )
+      ORDER BY created_at DESC
+      LIMIT 50`,
+    [`%"initiativeId":"${initiative.id}"%`],
+  );
+
+  const timeline: InitiativeTimelineItem[] = events.rows.map((row) => {
+    let payload: Record<string, unknown> = {};
+    try {
+      payload = typeof row.payload === "string" ? JSON.parse(row.payload) : (row.payload || {});
+    } catch {
+      payload = {};
+    }
+    return {
+      at: row.created_at,
+      kind: row.kind,
+      actor: row.actor,
+      summary: summarizeEvent(row.kind, payload, row.actor),
+      payload,
+    };
+  });
+
+  let shipEvidence: Record<string, unknown> | null = null;
+  if (initiative.ship_evidence) {
+    try {
+      shipEvidence = JSON.parse(initiative.ship_evidence);
+    } catch {
+      shipEvidence = { raw: initiative.ship_evidence };
+    }
+  }
+
+  return {
+    initiative,
+    mapEntry,
+    plan,
+    check,
+    shipEvidence,
+    blockers: blockedBy,
+    links: {
+      planPath,
+      mapId: initiative.evidence_map_id,
+      channelId: initiative.channel_id,
+      threadId: initiative.thread_id,
+      channelHref: initiative.channel_id
+        ? `/channels/${initiative.channel_id}`
+        : null,
+      threadHref:
+        initiative.channel_id && initiative.thread_id
+          ? `/channels/${initiative.channel_id}/${initiative.thread_id}`
+          : null,
+    },
+    timeline,
+  };
+}
+
