@@ -44,6 +44,7 @@ export function GuideBar({
   threadId,
   onDone,
   onPromote,
+  onScrollToExecution,
 }: {
   lifecycleKey: string;
   currentState: string;
@@ -52,6 +53,7 @@ export function GuideBar({
   threadId: string;
   onDone: () => void | Promise<void>;
   onPromote?: () => void;
+  onScrollToExecution?: () => void;
 }) {
   const [barState, setBarState] = useState<GuideBarState>(
     () => LIFECYCLES[lifecycleKey]?.states[currentState]?.terminal
@@ -104,13 +106,25 @@ export function GuideBar({
 
   // ── Terminal state ──
   if (barState.kind === "terminal") {
+    const isAcceptedPlan = lifecycleKey === "planning" && currentState === "accepted";
     return (
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 dark:border-emerald-800 dark:bg-emerald-950">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">{lc.label}</span>
           {chip}
-          <span className="text-xs text-emerald-600 dark:text-emerald-400">{summary.stateLabel} — done</span>
-          {onPromote && (
+          <span className="text-xs text-emerald-600 dark:text-emerald-400">
+            {isAcceptedPlan ? "Approved — hand off to execution" : `${summary.stateLabel} — done`}
+          </span>
+          {isAcceptedPlan && onScrollToExecution && (
+            <button
+              type="button"
+              onClick={onScrollToExecution}
+              className="rounded-md border border-emerald-300 bg-white px-2.5 py-1 text-[11px] font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 dark:hover:bg-emerald-800"
+            >
+              Execute plan ↓
+            </button>
+          )}
+          {onPromote && !isAcceptedPlan && (
             <button
               type="button"
               onClick={onPromote}

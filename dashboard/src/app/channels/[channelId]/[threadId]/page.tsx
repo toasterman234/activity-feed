@@ -637,6 +637,13 @@ function ThreadContent({
               onPromote={() => {
                 openPromoteDialog();
               }}
+              onScrollToExecution={
+                executionHandoff
+                  ? () => {
+                      document.getElementById("execution-handoff-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  : undefined
+              }
             />
           )}
 
@@ -658,12 +665,14 @@ function ThreadContent({
           )}
 
           {executionHandoff && !isArchived && (
+            <div id="execution-handoff-workspace">
             <ExecutionHandoffWorkspace
               threadId={threadId}
               channelId={channelId}
               plans={plans}
               onRefresh={async () => { await extras.refresh(); }}
             />
+            </div>
           )}
 
           <div id="issue-triage" key={triageAnchor}>
