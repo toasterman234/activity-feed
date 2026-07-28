@@ -411,21 +411,22 @@ export async function GET() {
                 r.name AS repo_name,
                 tm.repo_id,
                 tm.assignee,
-                COUNT(tp.id)::int AS task_count,
-                MAX(twe.created_at) FILTER (
-                  WHERE twe.to_state = 'accepted' AND twe.event_type = 'stage.transitioned'
-                ) AS approved_at,
+                (SELECT COUNT(*) FROM thread_plans tp WHERE tp.thread_id = tm.thread_id)::int AS task_count,
+                (SELECT twe.created_at
+                   FROM thread_workflow_events twe
+                  WHERE twe.thread_id = tm.thread_id
+                    AND twe.to_state = 'accepted'
+                    AND twe.event_type = 'stage.transitioned'
+                  ORDER BY twe.created_at DESC
+                  LIMIT 1) AS approved_at,
                 tm.updated_at
            FROM thread_meta tm
            JOIN channels c ON c.id = tm.channel_id
            JOIN messages root ON root.id = tm.thread_id AND root.thread_id IS NULL
            LEFT JOIN repos r ON r.id = tm.repo_id
-           LEFT JOIN thread_plans tp ON tp.thread_id = tm.thread_id
-           LEFT JOIN thread_workflow_events twe ON twe.thread_id = tm.thread_id
           WHERE tm.archived_at IS NULL
             AND tm.lifecycle = 'planning'
             AND tm.state = 'accepted'
-          GROUP BY tm.thread_id, tm.channel_id, c.name, root.body, r.name, tm.repo_id, tm.assignee, tm.updated_at
           ORDER BY tm.updated_at DESC`,
       ),
     ]);
