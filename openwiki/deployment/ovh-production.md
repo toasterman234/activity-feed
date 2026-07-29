@@ -147,6 +147,29 @@ Readiness check:
 ```
 
 
+## Agent health
+
+Home overview checks three signals for the `agentsDown` banner:
+
+1. **pi binary** — `process.env.CHANNEL_PI_BIN` or `which pi` on the host. This is the real execution path (channels spawn `pi -p` directly, not paseo).
+2. **paseo daemon** — `paseo ls --json` (port 6767). If the daemon isn't running, paseo reports "error" but does NOT force the banner red.
+3. **work_runs** — any `running` row with a heartbeat <2min old or any `succeeded` row <24h old.
+
+**Banner shows down only when `piBin` is missing.** If paseo is down (daemon not started), the banner stays neutral and shows a recovery hint: "Paseo daemon is not running. Agent runtime is available via pi."
+
+To silence the paseo signal entirely, start the daemon:
+
+```bash
+paseo daemon start
+```
+
+To restore pi if missing:
+
+```bash
+npm install -g @earendil-works/pi-coding-agent
+# or pin in systemd: Environment=CHANNEL_PI_BIN=/path/to/pi
+```
+
 ## Rollback (window: keep through ~2026-08-01)
 
 The Mini stack is stopped but intact: launchd plist
