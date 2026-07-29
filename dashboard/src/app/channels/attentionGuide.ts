@@ -40,16 +40,12 @@ export function deriveThreadAttention(opts: {
     };
   }
 
-  if (lifecycle === "issue" && state === "open" && (!assignee || !repoId)) {
-    const missing = [
-      !assignee ? "owner" : null,
-      !repoId ? "repo" : null,
-    ].filter(Boolean).join(" and ");
+  if (lifecycle === "issue" && state === "open" && !assignee) {
     return {
       need: "triage",
-      why: `Open issue is unscoped (missing ${missing}).`,
-      nextStep: "Assign an owner and link a repo below, then triage/advance.",
-      cta: "Assign owner / repo",
+      why: "Open issue has no owner assigned.",
+      nextStep: "Assign an owner below, then triage/advance.",
+      cta: "Assign owner",
     };
   }
 

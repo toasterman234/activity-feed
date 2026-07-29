@@ -19,6 +19,7 @@ import { WorkflowCockpit } from "../../WorkflowCockpit";
 import { StageActionBar } from "../../StageActionBar";
 import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
+import { proposeIssueMetaHeal, DEFAULT_ISSUE_OWNER } from "../../issueMetaHeal";
 import { ThreadStageStack } from "../../ThreadStageStack";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
 import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
@@ -113,6 +114,8 @@ function ThreadContent({
   const [activeTab, setActiveTab] = useState<ThreadTabId>("work");
   const [focusTriage, setFocusTriage] = useState(false);
   const [triageAnchor, setTriageAnchor] = useState(0);
+  const [healed, setHealed] = useState(false);
+  const [repos, setRepos] = useState<RepoRow[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -188,6 +191,35 @@ function ThreadContent({
     }
     setBooted(true);
   }, [extras.meta, booted, threadId, channelId]);
+
+  // Heal issue metadata (default owner, infer repo) on first load
+  useEffect(() => {
+    if (!extras.meta || healed) return;
+    if (extras.meta.lifecycle !== "issue" || extras.meta.state !== "open") return;
+    fetch("/api/repos")
+      .then((r) => r.json())
+      .then((d) => {
+        const list: RepoRow[] = (d.repos || []);
+        setRepos(list);
+        const patch = proposeIssueMetaHeal({
+          lifecycle: extras.meta!.lifecycle,
+          state: extras.meta!.state,
+          title: (threadMsg?.body || "").split("\n")[0] || "",
+          assignee: extras.meta!.assignee,
+          repoId: extras.meta!.repo_id,
+          repos: list,
+        });
+        if (!patch) return;
+        writeChannelRow("thread_meta", {
+          thread_id: threadId,
+          channel_id: channelId,
+          ...patch,
+          updated_at: new Date().toISOString(),
+        }).then(() => extras.refresh()).catch(() => {});
+      })
+      .catch(() => {});
+    setHealed(true);
+  }, [extras.meta, healed, threadId, channelId, threadMsg?.body]);
 
   // Default to the Work tab for approved plans so the execution handoff
   // is visible immediatly instead of stale challenge/conversation history.
@@ -447,7 +479,7 @@ function ThreadContent({
       <IssueHeader
         threadId={threadId}
         meta={meta}
-        forceEdit={focusTriage || attention?.need === "triage"}
+        forceEdit={focusTriage || (attention?.need === "triage" && !(meta.assignee || "").trim())}
         highlightMissing
         onSaved={async () => {
           setFocusTriage(false);
@@ -648,13 +680,11 @@ function ThreadContent({
           )}
 
 
-          {attention && !isArchived && attention.need === "triage" && (
+          {attention && !isArchived && attention.need !== "triage" && (
             <DoNowBanner
               guide={attention}
               onCta={() => {
-                setFocusTriage(true);
-                setTriageAnchor((n) => n + 1);
-                document.getElementById("issue-triage")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                document.getElementById("stage-action-bar")?.scrollIntoView({ behavior: "smooth", block: "center" });
               }}
             />
           )}
@@ -926,11 +956,14 @@ function IssueHeader({
         )}
       </div>
 
-      {highlightMissing && (missingOwner || missingRepo) && !editing && (
+      {highlightMissing && missingOwner && !editing && (
         <p className="mb-2 text-[11px] text-amber-800 dark:text-amber-200">
-          Missing:{" "}
-          {[missingOwner ? "owner" : null, missingRepo ? "repo" : null].filter(Boolean).join(", ")}.
-          Tap edit to set them here.
+          Missing: owner. Tap edit to set it here.
+        </p>
+      )}
+      {highlightMissing && missingRepo && !missingOwner && !editing && (
+        <p className="mb-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+          Link a repo when you're ready to run agents.
         </p>
       )}
 
@@ -942,7 +975,7 @@ function IssueHeader({
               autoFocus={missingOwner || forceEdit}
               value={editAssignee}
               onChange={(e) => setEditAssignee(e.target.value)}
-              placeholder="e.g. you"
+              placeholder="you"
               className={`mt-0.5 w-full rounded border px-2 py-1.5 text-xs dark:bg-zinc-800 dark:text-zinc-200 ${
                 !editAssignee.trim()
                   ? "border-amber-400 dark:border-amber-600"
@@ -956,11 +989,7 @@ function IssueHeader({
             <select
               value={editRepoId}
               onChange={(e) => setEditRepoId(e.target.value)}
-              className={`mt-0.5 w-full rounded border px-2 py-1.5 text-xs dark:bg-zinc-800 dark:text-zinc-200 ${
-                !editRepoId
-                  ? "border-amber-400 dark:border-amber-600"
-                  : "border-zinc-200 dark:border-zinc-700"
-              }`}
+              className="mt-0.5 w-full rounded border border-zinc-200 px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
               disabled={saving}
             >
               <option value="">Select repo…</option>
