@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "../../_db";
 import { requireIiiToken } from "@/lib/iii-auth";
+import { getBind } from "@/lib/iii-binds";
 import {
   errorBody,
   parseStatus,
@@ -26,30 +27,65 @@ async function threadsForRepo(repoId: string): Promise<string[]> {
   return res.rows.map((row) => String(row.thread_id));
 }
 
+async function resolveThreadId(opts: {
+  threadId?: string;
+  sessionId?: string;
+}): Promise<{ threadId: string } | { error: ReturnType<typeof NextResponse.json> }> {
+  const threadId = (opts.threadId || "").trim();
+  const sessionId = (opts.sessionId || "").trim();
+  if (threadId) {
+    if (!(await threadExists(threadId))) {
+      return { error: NextResponse.json(errorBody("thread not found", "not_found"), { status: 404 }) };
+    }
+    return { threadId };
+  }
+  if (sessionId) {
+    const bind = await getBind(sessionId);
+    if (!bind) {
+      return {
+        error: NextResponse.json(
+          errorBody("session not bound; call POST /api/iii/bind with ensure_thread", "not_found"),
+          { status: 404 },
+        ),
+      };
+    }
+    return { threadId: bind.thread_id };
+  }
+  return {
+    error: NextResponse.json(
+      errorBody("thread_id or session_id is required", "invalid"),
+      { status: 400 },
+    ),
+  };
+}
+
 export async function GET(req: NextRequest) {
   const denied = requireIiiToken(req);
   if (denied) return denied;
 
   const url = req.nextUrl;
-  const threadId = url.searchParams.get("thread_id")?.trim() || "";
+  const threadIdParam = url.searchParams.get("thread_id")?.trim() || "";
+  const sessionId = url.searchParams.get("session_id")?.trim() || "";
   const repoId = url.searchParams.get("repo_id")?.trim() || "";
   const statusFilter = url.searchParams.get("status")?.trim() || "";
   const limitRaw = Number(url.searchParams.get("limit") || "100");
   const limit = Number.isFinite(limitRaw) ? Math.min(200, Math.max(1, Math.floor(limitRaw))) : 100;
 
-  if (!threadId && !repoId) {
-    return NextResponse.json(errorBody("thread_id or repo_id is required", "invalid"), { status: 400 });
+  if (!threadIdParam && !sessionId && !repoId) {
+    return NextResponse.json(
+      errorBody("thread_id, session_id, or repo_id is required", "invalid"),
+      { status: 400 },
+    );
   }
   if (statusFilter && !parseStatus(statusFilter)) {
     return NextResponse.json(errorBody("status must be todo or done", "invalid"), { status: 400 });
   }
 
   let threadIds: string[] = [];
-  if (threadId) {
-    if (!(await threadExists(threadId))) {
-      return NextResponse.json(errorBody("thread not found", "not_found"), { status: 404 });
-    }
-    threadIds = [threadId];
+  if (threadIdParam || sessionId) {
+    const resolved = await resolveThreadId({ threadId: threadIdParam, sessionId });
+    if ("error" in resolved) return resolved.error;
+    threadIds = [resolved.threadId];
   } else {
     threadIds = await threadsForRepo(repoId);
     if (threadIds.length === 0) {
@@ -89,13 +125,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errorBody("invalid JSON body", "invalid"), { status: 400 });
   }
 
-  const threadId = String(body.thread_id || "").trim();
-  if (!threadId) {
-    return NextResponse.json(errorBody("thread_id is required", "invalid"), { status: 400 });
-  }
-  if (!(await threadExists(threadId))) {
-    return NextResponse.json(errorBody("thread not found", "not_found"), { status: 404 });
-  }
+  const resolved = await resolveThreadId({
+    threadId: String(body.thread_id || "").trim(),
+    sessionId: String(body.session_id || "").trim(),
+  });
+  if ("error" in resolved) return resolved.error;
+  const threadId = resolved.threadId;
 
   const externalId =
     body.external_id === undefined || body.external_id === null
