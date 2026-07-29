@@ -49,26 +49,40 @@ export default function InstallPrompt() {
       if (localStorage.getItem(DISMISSED_KEY) === "1") return;
     } catch {}
 
-    // iOS Safari detection: no beforeinstallprompt, show manual instructions
-    const ua = navigator.userAgent;
-    const isIOSDevice =
-      /iPad|iPhone|iPod/.test(ua) &&
-      !(window as any).MSStream;
-    if (isIOSDevice) {
-      setIsIOS(true);
-      setShow(true);
-      return;
-    }
+    let cancelled = false;
+    const delayMs = 8000;
+    let promptHandler: ((e: Event) => void) | null = null;
 
-    // Android/Chrome: listen for beforeinstallprompt
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShow(true);
+    const timer = window.setTimeout(() => {
+      if (cancelled) return;
+
+      // iOS Safari detection: no beforeinstallprompt, show manual instructions
+      const ua = navigator.userAgent;
+      const isIOSDevice =
+        /iPad|iPhone|iPod/.test(ua) &&
+        !(window as any).MSStream;
+      if (isIOSDevice) {
+        setIsIOS(true);
+        setShow(true);
+        return;
+      }
+
+      // Android/Chrome: if event already deferred somehow, show; else listen
+      promptHandler = (e: Event) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+        setShow(true);
+      };
+      window.addEventListener("beforeinstallprompt", promptHandler);
+    }, delayMs);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      if (promptHandler) {
+        window.removeEventListener("beforeinstallprompt", promptHandler);
+      }
     };
-
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, [mounted]);
 
   if (!show || !mounted) return null;

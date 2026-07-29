@@ -822,6 +822,26 @@ export default function HomeDashboard() {
           error={error}
           onRefresh={() => void refresh()}
         />
+        {(data.summaryCounts.agentsDown || !data.agents.runtimeOk) && (
+          <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 dark:border-amber-800 dark:bg-amber-950">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Agent runtime is down</p>
+                <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-200">
+                  {data.agents.runtimeOk
+                    ? "Agents are marked down in the home summary."
+                    : "Paseo unavailable"}
+                </p>
+              </div>
+              <Link
+                href="/ops/config?tab=models"
+                className="shrink-0 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-100 dark:hover:bg-amber-800"
+              >
+                Open Models
+              </Link>
+            </div>
+          </div>
+        )}
         <StatusStrip counts={data.summaryCounts} continuity={continuity} />
         <NeedsAttentionPanel data={data} continuity={continuity} />
         <ReadyToExecutePanel plans={data.approvedPlans} />

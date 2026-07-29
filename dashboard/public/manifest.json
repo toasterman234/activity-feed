@@ -1,7 +1,7 @@
 {
-  "name": "Finance PWA",
-  "short_name": "Finance",
-  "description": "Real-time portfolio dashboard with Electric Circuits",
+  "name": "Activity",
+  "short_name": "Activity",
+  "description": "Workflow and agent activity dashboard",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

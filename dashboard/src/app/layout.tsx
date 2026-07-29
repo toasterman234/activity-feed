@@ -8,13 +8,13 @@ import InstallPrompt from "./install-prompt";
 import PerfMonitors from "./perf-monitors";
 
 export const metadata: Metadata = {
-  title: "Finance Dashboard",
-  description: "Real-time portfolio with Electric Circuits sync + Market Lake",
+  title: "Activity",
+  description: "Workflow and agent activity dashboard",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Finance",
+    title: "Activity",
   },
   icons: {
     icon: "/icon-192.png",
