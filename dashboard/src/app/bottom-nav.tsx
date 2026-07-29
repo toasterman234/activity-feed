@@ -7,6 +7,7 @@ const TABS = [
   { href: "/", label: "Home" },
   { href: "/channels", label: "Channels" },
   { href: "/ops", label: "Ops" },
+  { href: "/personal", label: "Personal" },
 ] as const;
 
 export default function BottomNav() {
