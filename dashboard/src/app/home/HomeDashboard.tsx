@@ -521,7 +521,7 @@ function NeedsAttentionPanel({
       }
     >
       <p className="mb-2 text-[10px] text-zinc-400">
-        Human gates: review/approval, blockers, failed gates, evidence fails, inbox, untriaged issues. Ready-to-promote items below.
+        Human gates: review/approval, blockers, failed gates, evidence fails, inbox.
       </p>
       <div id="needs-attention">
         <AttentionList rows={rows} />
