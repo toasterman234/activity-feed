@@ -481,7 +481,7 @@ export async function GET() {
       errorDetail: row.error_detail,
       createdAt: row.created_at,
       why: row.error_detail || row.progress || "Promotion/gate failed.",
-      nextStep: "Open the thread → GuideBar → resolve the failed gate, then retry promotion.",
+      nextStep: "Open the thread → Stage Action Bar → resolve the failed gate, then retry promotion.",
     }));
     const threadActivity = threadsRes.rows.map((row) => ({
       threadId: row.thread_id,

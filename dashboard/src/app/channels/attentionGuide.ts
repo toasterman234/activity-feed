@@ -36,7 +36,7 @@ export function deriveThreadAttention(opts: {
       need: "blocked",
       why: "This thread is blocked on a missing decision or input.",
       nextStep: "Record the blocker and unblocking action, then advance.",
-      cta: "Unblock in GuideBar",
+      cta: "Unblock via Stage Action Bar",
     };
   }
 

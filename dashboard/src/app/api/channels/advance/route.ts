@@ -96,9 +96,9 @@ async function advance(opts: {
 
   // 5. Run agent with workflow instructions
   const stepId = randomUUID();
-  await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: "GuideBar advance", status: "running" });
+  await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: "Stage advance", status: "running" });
 
-  const handle = "pi"; // default agent for GuideBar advances
+  const handle = "pi"; // default agent for stage advances
   const { provider, model } = piInvocationForHandle(handle);
   const piBin = process.env.CHANNEL_PI_BIN || "pi";
 
@@ -132,13 +132,13 @@ async function advance(opts: {
     structured = outcome.parsed;
   } catch (err) {
     await upsertWorkflowStep({
-      id: stepId, threadId: opts.threadId, label: "GuideBar advance",
+      id: stepId, threadId: opts.threadId, label: "Stage advance",
       status: "error", detail: (err as Error).message.slice(0, 200),
     });
     return { ok: false, error: `Agent failed: ${(err as Error).message.slice(0, 200)}` };
   }
 
-  await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: "GuideBar advance", status: "done" });
+  await upsertWorkflowStep({ id: stepId, threadId: opts.threadId, label: "Stage advance", status: "done" });
 
   // 5. If agent proposed a nextState, validate it; fall back to mainNext
   const agentNextState = structured.nextState;
@@ -151,7 +151,7 @@ async function advance(opts: {
     threadId: opts.threadId,
     channelId: opts.channelId,
     toState,
-    actor: `${actor} (GuideBar)`,
+    actor: `${actor} (StageActionBar)`,
     announce: true,
   });
 
