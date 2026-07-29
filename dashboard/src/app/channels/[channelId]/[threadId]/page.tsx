@@ -114,7 +114,6 @@ function ThreadContent({
   const [activeTab, setActiveTab] = useState<ThreadTabId>("work");
   const [focusTriage, setFocusTriage] = useState(false);
   const [triageAnchor, setTriageAnchor] = useState(0);
-  const [healed, setHealed] = useState(false);
   const [repos, setRepos] = useState<RepoRow[]>([]);
   const router = useRouter();
 
@@ -192,14 +191,14 @@ function ThreadContent({
     setBooted(true);
   }, [extras.meta, booted, threadId, channelId]);
 
-  // Heal issue metadata (default owner, infer repo) on first load
+  // Heal issue metadata (default owner, infer repo) on first load.
+  // Identity is the data itself — skip if already satisfied.
   useEffect(() => {
-    if (!extras.meta || healed) return;
-    if (extras.meta.lifecycle !== "issue" || extras.meta.state !== "open") {
-      setHealed(true);
-      return;
-    }
-    // Wait for threadMsg to be available for title-based repo inference
+    if (!extras.meta) return;
+    if (extras.meta.lifecycle !== "issue" || extras.meta.state !== "open") return;
+    const hasOwner = !!(extras.meta.assignee || "").trim();
+    const hasRepo = !!extras.meta.repo_id;
+    if (hasOwner && hasRepo) return;
     if (!threadMsg) return;
     fetch("/api/repos")
       .then((r) => r.json())
@@ -225,9 +224,7 @@ function ThreadContent({
           updated_at: new Date().toISOString(),
         }).then(() => extras.refresh()).catch(() => {});
       })
-      .then(() => setHealed(true))
       .catch(() => {});
-    // heal retries on next mount if repos fetch fails (e.g. 502)
   }, [extras.meta, healed, threadId, channelId, threadMsg?.body]);
 
   // Default to the Work tab for approved plans so the execution handoff
