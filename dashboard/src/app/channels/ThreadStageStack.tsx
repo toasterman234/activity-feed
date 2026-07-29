@@ -5,6 +5,7 @@ import { StageReviewWorkspace } from "./StageReviewWorkspace";
 import { ExecutionHandoffWorkspace } from "./ExecutionHandoffWorkspace";
 import { CodingExecutionWorkspace } from "./CodingExecutionWorkspace";
 import { VerificationWorkspace } from "./VerificationWorkspace";
+import { ReviewEntryPanel } from "./ReviewEntryPanel";
 import { WorkflowStageModules } from "./WorkflowStageModules";
 import type { ThreadMetaRow, ThreadPlanRow, ThreadArtifactRow, StageInteractionRow, ActivityEventRow, WorkflowStepRow } from "./shapes";
 
@@ -52,6 +53,7 @@ export function ThreadStageStack({
   const guidedReview = currentStageModules.find((module) => module.type === "guided-review");
   const executionHandoff = currentStageModules.find((module) => module.type === "execution-handoff");
   const verification = currentStageModules.find((module) => module.type === "verification");
+  const reviewEntry = currentStageModules.find((module) => module.type === "review-entry");
   const showCodingWorkspace =
     lifecycleKey === "coding" &&
     (currentState === "drafted" || currentState === "running") &&
@@ -117,9 +119,18 @@ export function ThreadStageStack({
           />
         )}
 
+        {reviewEntry && !isArchived && (
+          <ReviewEntryPanel
+            threadId={threadId}
+            channelId={channelId}
+            currentState={currentState}
+            onRefresh={onRefresh}
+          />
+        )}
+
         {/* Catch-all: any module type not handled above (task-list, guided-interview, etc.) */}
         {currentStageModules.filter(
-          (module) => module.type !== "guided-review" && module.type !== "execution-handoff" && module.type !== "verification",
+          (module) => module.type !== "guided-review" && module.type !== "execution-handoff" && module.type !== "verification" && module.type !== "review-entry",
         ).length > 0 && !isArchived && (
           <WorkflowStageModules
             lifecycleKey={lifecycleKey}

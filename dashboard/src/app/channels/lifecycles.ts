@@ -17,7 +17,8 @@ export type StageModuleType =
   | "approval"
   | "verification"
   | "publish"
-  | "execution-handoff";
+  | "execution-handoff"
+  | "review-entry";
 
 export interface StageModule {
   id: string;
@@ -138,7 +139,17 @@ export const LIFECYCLES: Record<string, Lifecycle> = {
       },
       "review": {
         "label": "Review",
-        "kind": "wait"
+        "kind": "wait",
+        "modules": [
+          {
+            "id": "review-entry",
+            "type": "review-entry",
+            "label": "Ready for ship review",
+            "config": {
+              "transitionTo": "verified"
+            }
+          }
+        ]
       },
       "verified": {
         "label": "Ready to ship",
