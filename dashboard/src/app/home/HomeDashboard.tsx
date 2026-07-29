@@ -828,9 +828,7 @@ export default function HomeDashboard() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Agent runtime is down</p>
                 <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-200">
-                  {data.agents.runtimeOk
-                    ? "Agents are marked down in the home summary."
-                    : "Paseo unavailable"}
+                  {data.agents.recoveryHint || "Check agent configuration."}
                 </p>
               </div>
               <Link

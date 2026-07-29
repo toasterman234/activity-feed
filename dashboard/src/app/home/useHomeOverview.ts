@@ -163,6 +163,12 @@ export type HomeOverview = {
       channelName: string | null;
       threadId: string | null;
     }>;
+    signals?: {
+      paseo: "ok" | "missing" | "error";
+      piBin: "ok" | "missing" | "error";
+      workRuns: "ok" | "stale" | "none" | "error";
+    };
+    recoveryHint?: string;
   };
   channels: Array<{
     channelId: string;

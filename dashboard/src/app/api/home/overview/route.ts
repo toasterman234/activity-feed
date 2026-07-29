@@ -2,12 +2,122 @@ import { NextResponse } from "next/server";
 import { deriveThreadAttention } from "@/app/channels/attentionGuide";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { existsSync } from "fs";
 import { pool } from "../../_db";
 import { stateKind } from "@/app/channels/lifecycles";
 
 const execFileAsync = promisify(execFile);
 
 export const dynamic = "force-dynamic";
+
+// ── Multi-signal agent runtime health ─────────────────────────────────────
+
+interface AgentRuntimeHealth {
+  runtimeOk: boolean;
+  runtimeError: string | null;
+  liveAgents: Array<{
+    id: string;
+    shortId: string;
+    name: string;
+    provider: string;
+    status: string;
+    cwd: string;
+  }>;
+  signals: {
+    paseo: "ok" | "missing" | "error";
+    piBin: "ok" | "missing" | "error";
+    workRuns: "ok" | "stale" | "none" | "error";
+  };
+  recoveryHint: string;
+}
+
+async function getAgentRuntimeHealth(): Promise<AgentRuntimeHealth> {
+  const signals: AgentRuntimeHealth["signals"] = {
+    paseo: "missing",
+    piBin: "missing",
+    workRuns: "none",
+  };
+
+  // Signal A: pi binary present
+  const piBin = process.env.CHANNEL_PI_BIN || "pi";
+  try {
+    if (existsSync(piBin)) {
+      signals.piBin = "ok";
+    } else {
+      // Try which/resolve
+      const { stdout } = await execFileAsync("which", [piBin], { timeout: 1000 });
+      if (stdout.trim()) signals.piBin = "ok";
+    }
+  } catch {
+    signals.piBin = "missing";
+  }
+
+  // Signal B: paseo (try daemon, but don't block or fail on missing daemon)
+  let paseoAgents: Record<string, unknown>[] = [];
+  try {
+    const { stdout } = await execFileAsync("paseo", ["ls", "--json"], {
+      timeout: 1200,
+      env: process.env,
+      maxBuffer: 2 * 1024 * 1024,
+    });
+    paseoAgents = JSON.parse(stdout || "[]");
+    signals.paseo = "ok";
+  } catch {
+    // paseo daemon likely not running — not fatal
+    signals.paseo = "error";
+  }
+
+  // Signal C: work_runs — any running with fresh heartbeat or recently succeeded
+  try {
+    const { rows } = await pool.query<{ count: string }>(
+      `SELECT COUNT(*)::int AS count
+         FROM work_runs
+        WHERE (
+          (status = 'running' AND heartbeat_at > NOW() - INTERVAL '2 minutes')
+          OR (status = 'succeeded' AND completed_at > NOW() - INTERVAL '24 hours')
+        )`,
+    );
+    if (Number(rows[0]?.count || 0) > 0) {
+      signals.workRuns = "ok";
+    }
+  } catch {
+    signals.workRuns = "error";
+  }
+
+  // runtimeOk: pi binary is the real execution path (channels use pi directly)
+  const runtimeOk = signals.piBin === "ok";
+  let runtimeError: string | null = null;
+  let recoveryHint = "";
+
+  if (!runtimeOk) {
+    runtimeError = "pi binary not found on host";
+    recoveryHint = "Install pi: npm install -g @earendil-works/pi-coding-agent, or set CHANNEL_PI_BIN env.";
+  } else if (signals.paseo === "error") {
+    recoveryHint = "Paseo daemon is not running. Agent runtime is available via pi — Home banner is informational only.";
+  }
+
+  return {
+    runtimeOk,
+    runtimeError,
+    liveAgents: paseoAgents.map((agent: Record<string, unknown>) => ({
+      id: String(agent.id ?? ""),
+      shortId: String(agent.shortId ?? agent.id ?? "").slice(0, 8),
+      name: String(agent.name ?? agent.title ?? ""),
+      provider: String(agent.provider ?? ""),
+      status: String(agent.status ?? ""),
+      cwd: String(agent.cwd ?? ""),
+    })),
+    signals,
+    recoveryHint,
+  };
+}
+
+// ── Deprecated (kept for type compatibility, replaced by getAgentRuntimeHealth) ──
+async function getLiveAgents(): ReturnType<typeof getAgentRuntimeHealth> {
+  return getAgentRuntimeHealth();
+}
+
+// ── Types ──────────────────────────────────────────────────────────────────
 
 type ChannelPulse = {
   author: string;
@@ -45,35 +155,6 @@ function parseJson<T>(value: string | null | undefined): T | null {
     return JSON.parse(value) as T;
   } catch {
     return null;
-  }
-}
-
-async function getLiveAgents(): Promise<{ runtimeOk: boolean; runtimeError: string | null; liveAgents: Array<{ id: string; shortId: string; name: string; provider: string; status: string; cwd: string; }>; }> {
-  try {
-    const { stdout } = await execFileAsync("paseo", ["ls", "--json"], {
-      timeout: 1200,
-      env: process.env,
-      maxBuffer: 2 * 1024 * 1024,
-    });
-    const agents = JSON.parse(stdout || "[]");
-    return {
-      runtimeOk: true,
-      runtimeError: null,
-      liveAgents: (Array.isArray(agents) ? agents : []).map((agent: Record<string, unknown>) => ({
-        id: String(agent.id ?? ""),
-        shortId: String(agent.shortId ?? agent.id ?? "").slice(0, 8),
-        name: String(agent.name ?? agent.title ?? ""),
-        provider: String(agent.provider ?? ""),
-        status: String(agent.status ?? ""),
-        cwd: String(agent.cwd ?? ""),
-      })),
-    };
-  } catch (error) {
-    return {
-      runtimeOk: false,
-      runtimeError: String(error),
-      liveAgents: [],
-    };
   }
 }
 
