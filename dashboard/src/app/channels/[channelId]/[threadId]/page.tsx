@@ -16,6 +16,7 @@ import { parseMentions } from "../../../../lib/mentions";
 import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows, stageModules } from "../../lifecycles";
 import { RESEARCH_MODES, DEFAULT_RESEARCH_MODE } from "../../researchModes";
 import { GuideBar } from "../../GuideBar";
+import { WorkflowCockpit } from "../../WorkflowCockpit";
 import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
 import { StageReviewWorkspace } from "../../StageReviewWorkspace";
@@ -112,7 +113,7 @@ function ThreadContent({
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [advancing, setAdvancing] = useState(false);
-  const [activeTab, setActiveTab] = useState<ThreadTabId>("conversation");
+  const [activeTab, setActiveTab] = useState<ThreadTabId>("work");
   const [focusTriage, setFocusTriage] = useState(false);
   const [triageAnchor, setTriageAnchor] = useState(0);
   const router = useRouter();
@@ -589,6 +590,19 @@ function ThreadContent({
               </div>
             </div>
           )}
+          {lifecyclePicked && meta && lc && (
+            <WorkflowCockpit
+              lifecycleKey={lifecycleKey}
+              currentState={currentState}
+              meta={meta}
+              plans={plans}
+              artifacts={extras.artifacts}
+              steps={steps}
+              activity={extras.activity}
+              workflowEvents={extras.workflowEvents}
+            />
+          )}
+
           {!lifecyclePicked && (
             <div className="flex items-center gap-2 rounded-lg border border-dashed border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800 dark:bg-blue-950">
               <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Suggestion</span>

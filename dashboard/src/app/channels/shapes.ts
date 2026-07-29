@@ -225,7 +225,16 @@ export function useThreadExtras(threadId: string): ThreadExtras {
         plans: (next.plans || []) as ThreadPlanRow[],
         steps: (next.steps || []) as WorkflowStepRow[],
         artifacts: (next.artifacts || []) as ThreadArtifactRow[],
-        meta: (next.meta as ThreadMetaRow | null) || null,
+        meta: (() => {
+          const m = (next.meta as ThreadMetaRow | null) || null;
+          if (!m) return null;
+          const tv = m.template_version as unknown;
+          if (typeof tv === "string" && tv.trim() !== "") {
+            const n = Number(tv);
+            return { ...m, template_version: Number.isFinite(n) ? n : m.template_version };
+          }
+          return m;
+        })(),
         promotion: promoRows.sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null,
         interactions: (next.interactions || []) as StageInteractionRow[],
         activity: (next.activity || []) as ActivityEventRow[],
