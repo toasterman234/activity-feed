@@ -215,9 +215,11 @@ function ThreadContent({
           repos: list,
         });
         if (!patch) return;
-        return writeChannelRow("thread_meta", {
+      return writeChannelRow("thread_meta", {
           thread_id: threadId,
           channel_id: channelId,
+          lifecycle: extras.meta!.lifecycle,
+          state: extras.meta!.state,
           ...patch,
           updated_at: new Date().toISOString(),
         }).then(() => extras.refresh()).catch(() => {});
