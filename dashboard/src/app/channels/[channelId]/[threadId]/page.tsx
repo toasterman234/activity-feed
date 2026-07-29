@@ -13,16 +13,13 @@ import {
 import { writeChannelRow, markChannelRead } from "../../../writeChannelRow";
 import { type MentionOption } from "../../MentionInput";
 import { parseMentions } from "../../../../lib/mentions";
-import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows, stageModules } from "../../lifecycles";
+import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows } from "../../lifecycles";
 import { RESEARCH_MODES, DEFAULT_RESEARCH_MODE } from "../../researchModes";
 import { WorkflowCockpit } from "../../WorkflowCockpit";
 import { StageActionBar } from "../../StageActionBar";
 import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
-import { StageReviewWorkspace } from "../../StageReviewWorkspace";
-import { ExecutionHandoffWorkspace } from "../../ExecutionHandoffWorkspace";
-import { CodingExecutionWorkspace } from "../../CodingExecutionWorkspace";
-import { WorkflowStageModules } from "../../WorkflowStageModules";
+import { ThreadStageStack } from "../../ThreadStageStack";
 import { MoveThreadDialog } from "../../MoveThreadDialog";
 import { ThreadArtifactsTab } from "../../ThreadArtifactsTab";
 import { ThreadConversationTab } from "../../ThreadConversationTab";
@@ -443,10 +440,7 @@ function ThreadContent({
       })
     : null;
 
-  const currentStageModules = lifecyclePicked ? stageModules(lifecycleKey, currentState) : [];
-  const guidedReview = currentStageModules.find((module) => module.type === "guided-review");
-  const executionHandoff = currentStageModules.find((module) => module.type === "execution-handoff");
-  const showCodingWorkspace = lifecyclePicked && lifecycleKey === "coding" && (currentState === "drafted" || currentState === "running") && meta;
+
 
   const issueHeader = lifecyclePicked && lifecycleKey === "issue" && meta
     ? (
@@ -606,12 +600,18 @@ function ThreadContent({
               plans={plans}
               artifacts={extras.artifacts}
               steps={steps}
-              onDone={async () => { await extras.refresh(); }}
+              onDone={async () => {
+                await extras.refresh();
+                requestAnimationFrame(() => {
+                  document.getElementById("stage-action-bar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  document.getElementById("active-stage-workspace")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                });
+              }}
               onPromote={() => {
                 openPromoteDialog();
               }}
               onScrollToExecution={
-                executionHandoff
+                (meta.lifecycle === "planning" && currentState === "accepted")
                   ? () => {
                       document.getElementById("execution-handoff-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }
@@ -660,61 +660,22 @@ function ThreadContent({
           )}
 
 
-          {guidedReview && !isArchived && (
-            <div id="do-now-workspace">
-              <StageReviewWorkspace
-                threadId={threadId}
-                channelId={channelId}
-                stageId={currentState}
-                endpoint={String(guidedReview.config?.endpoint || "/api/channels/stage-review")}
-                subject={String(guidedReview.config?.subject || "work")}
-                plans={plans}
-                artifacts={extras.artifacts}
-                interactions={extras.interactions}
-                activity={extras.activity}
-                onRefresh={async () => { await extras.refresh(); }}
-              />
-            </div>
-          )}
-
-          {showCodingWorkspace && !isArchived && (
-            <CodingExecutionWorkspace
-              threadId={threadId}
-              channelId={channelId}
-              meta={meta}
-              plans={plans}
-              currentState={currentState}
-              onRefresh={async () => { await extras.refresh(); }}
-            />
-          )}
-
-          {/* Catch-all: any module type not handled above (task-list, guided-interview, etc.) */}
-          {currentStageModules.filter(
-            (m) => m.type !== "guided-review" && m.type !== "execution-handoff"
-          ).length > 0 && !isArchived && (
-            <WorkflowStageModules
+          {/* Stage workspace stack: one expanded for current state, completed stages collapsed */}
+          {lifecyclePicked && meta && !isArchived && (
+            <ThreadStageStack
               lifecycleKey={lifecycleKey}
-              stageId={currentState}
-              threadId={threadId}
+              currentState={currentState}
+              meta={meta}
               channelId={channelId}
+              threadId={threadId}
               plans={plans}
               artifacts={extras.artifacts}
               interactions={extras.interactions}
               scans={[]}
               candidates={[]}
+              activity={extras.activity}
               onRefresh={async () => { await extras.refresh(); }}
             />
-          )}
-
-          {executionHandoff && !isArchived && (
-            <div id="execution-handoff-workspace">
-            <ExecutionHandoffWorkspace
-              threadId={threadId}
-              channelId={channelId}
-              plans={plans}
-              onRefresh={async () => { await extras.refresh(); }}
-            />
-            </div>
           )}
 
           <div id="issue-triage" key={triageAnchor}>

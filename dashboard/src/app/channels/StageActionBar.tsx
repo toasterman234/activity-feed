@@ -179,7 +179,7 @@ export function StageActionBar({
 
   if (barState.kind === "working") {
     return (
-      <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 dark:border-blue-800 dark:bg-blue-950">
+      <div id="stage-action-bar" className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 dark:border-blue-800 dark:bg-blue-950">
         <div className="flex items-center gap-2">
           {chip}
           <span className="text-xs text-blue-600 dark:text-blue-400">{summary.nextHint || "Working…"}</span>
@@ -191,7 +191,7 @@ export function StageActionBar({
 
   if (barState.kind === "error") {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 dark:border-red-800 dark:bg-red-950">
+      <div id="stage-action-bar" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 dark:border-red-800 dark:bg-red-950">
         <div className="flex flex-wrap items-center gap-2">
           {chip}
           <span className="text-xs text-red-700 dark:text-red-300">{barState.reason}</span>
@@ -214,7 +214,7 @@ export function StageActionBar({
     const primaryPromote = !primaryExecute && onPromote;
 
     return (
-      <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 dark:border-emerald-800 dark:bg-emerald-950">
+      <div id="stage-action-bar" className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 dark:border-emerald-800 dark:bg-emerald-950">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">{lc.label}</span>
           {chip}
@@ -259,7 +259,7 @@ export function StageActionBar({
   };
 
   return (
-    <div className="space-y-1.5">
+    <div id="stage-action-bar" className="space-y-1.5">
       <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2.5 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{lc.label}</span>
