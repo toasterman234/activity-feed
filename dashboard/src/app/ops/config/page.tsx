@@ -6,14 +6,16 @@ import { Suspense } from "react";
 import { ModelsPanel } from "@/app/models/ModelsPanel";
 import WorkflowsPage from "@/app/workflows/WorkflowsPage";
 import PerfPage from "@/app/settings/perf/PerfPage";
+import EnableNotifications from "@/app/settings/notifications/EnableNotifications";
 
-const CONFIG_TABS = ["Models", "Workflows", "Perf"] as const;
+const CONFIG_TABS = ["Models", "Workflows", "Notifications", "Perf"] as const;
 type ConfigTab = (typeof CONFIG_TABS)[number];
 
 function parseTab(raw: string | null): ConfigTab {
   const v = (raw || "").toLowerCase();
   if (v === "workflows" || v === "workflow") return "Workflows";
   if (v === "perf" || v === "performance") return "Perf";
+  if (v === "notifications" || v === "notifs" || v === "notification") return "Notifications";
   return "Models";
 }
 
@@ -60,6 +62,11 @@ function OpsConfigInner() {
       {visited.has("Perf") && (
         <div className={tab === "Perf" ? "block" : "hidden"}>
           <PerfPage />
+        </div>
+      )}
+      {visited.has("Notifications") && (
+        <div className={tab === "Notifications" ? "block" : "hidden"}>
+          <EnableNotifications />
         </div>
       )}
     </div>
