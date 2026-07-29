@@ -7,6 +7,7 @@ import { ModelsPanel } from "@/app/models/ModelsPanel";
 import WorkflowsPage from "@/app/workflows/WorkflowsPage";
 import PerfPage from "@/app/settings/perf/PerfPage";
 import EnableNotifications from "@/app/settings/notifications/EnableNotifications";
+import NotificationSettings from "@/app/settings/notifications/NotificationSettings";
 
 const CONFIG_TABS = ["Models", "Workflows", "Notifications", "Perf"] as const;
 type ConfigTab = (typeof CONFIG_TABS)[number];
@@ -67,6 +68,9 @@ function OpsConfigInner() {
       {visited.has("Notifications") && (
         <div className={tab === "Notifications" ? "block" : "hidden"}>
           <EnableNotifications />
+          <div className="mt-6">
+            <NotificationSettings />
+          </div>
         </div>
       )}
     </div>
