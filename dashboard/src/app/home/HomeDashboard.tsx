@@ -5,6 +5,12 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHomeOverview, type HomeOverview } from "./useHomeOverview";
 
+function displayStepLabel(label: string): string {
+  if (/^@\w+ responding$/i.test(label)) return "Agent working";
+  if (/guidebar advance/i.test(label)) return "Stage advance";
+  return label;
+}
+
 function relativeTime(iso: string | null | undefined): string {
   if (!iso) return "—";
   const diff = Date.now() - Date.parse(iso);
@@ -607,7 +613,7 @@ function InMotionPanel({
       badge: item.state,
       title: item.title,
       meta: item.latestStep
-        ? `${item.latestStep.status} · ${item.latestStep.label}`
+        ? `${item.latestStep.status} · ${displayStepLabel(item.latestStep.label)}`
         : `# ${item.channelName}`,
       age: "",
     })),

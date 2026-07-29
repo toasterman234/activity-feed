@@ -749,7 +749,7 @@ async function runMentionJob(opts: {
   await upsertWorkflowStep({
     id: stepId,
     threadId: opts.threadId,
-    label: `${author} responding`,
+    label: `${author} · Agent run`,
     status: "running",
   });
 
@@ -931,7 +931,7 @@ When coding tools are available, do the repository work before replying. Follow 
       await upsertWorkflowStep({
         id: stepId,
         threadId: opts.threadId,
-        label: `${author} responding`,
+        label: `${author} · Agent run`,
         status: "done",
         detail: "duplicate trigger suppressed",
       });
@@ -1216,7 +1216,7 @@ When coding tools are available, do the repository work before replying. Follow 
     await upsertWorkflowStep({
       id: stepId,
       threadId: opts.threadId,
-      label: `${author} responding`,
+      label: `${author} · Agent run`,
       status: verificationError ? "error" : "done",
       detail: verificationError || undefined,
     });
@@ -1257,7 +1257,7 @@ When coding tools are available, do the repository work before replying. Follow 
       created_at: new Date().toISOString(),
     });
     await upsertWorkflowStep({
-      id: stepId, threadId: opts.threadId, label: `${author} responding`, status: "error",
+      id: stepId, threadId: opts.threadId, label: `${author} · Agent run`, status: "error",
       detail: detail.slice(0, 200),
     });
     // Never leave activity rows stuck 'running' — that would keep the UI's
