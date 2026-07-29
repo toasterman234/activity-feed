@@ -215,6 +215,7 @@ function ThreadContent({
           repos: list,
         });
         if (!patch) return;
+        // persist the patch
       return writeChannelRow("thread_meta", {
           thread_id: threadId,
           channel_id: channelId,
@@ -224,8 +225,9 @@ function ThreadContent({
           updated_at: new Date().toISOString(),
         }).then(() => extras.refresh()).catch(() => {});
       })
-      .finally(() => setHealed(true))
-      .catch(() => setHealed(true));
+      .then(() => setHealed(true))
+      .catch(() => {});
+    // heal retries on next mount if repos fetch fails (e.g. 502)
   }, [extras.meta, healed, threadId, channelId, threadMsg?.body]);
 
   // Default to the Work tab for approved plans so the execution handoff
