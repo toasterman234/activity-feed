@@ -8,6 +8,7 @@ import { evaluateStageExitGates } from "@/app/channels/workflowRuntime";
 import { recordWorkflowEvent } from "@/lib/workflowEvents";
 import { runThreadVerification } from "@/lib/verification-profiles";
 import { emitLifecycleTransitionEvent } from "@/lib/graph-initiatives";
+import { emitNotification, type NotificationEvent } from "@/lib/notificationEmit";
 
 const execFileAsync = promisify(execFile);
 
@@ -278,6 +279,17 @@ export async function transitionThreadState(opts: {
         body: `⚠️ ${verification.summary} The issue remains in Resolve; the failure output is attached as **Verification feedback**.`,
         created_at: new Date().toISOString(),
       });
+      // Notification: verification failed
+      void emitNotification(pool, {
+        event: "verification.failed",
+        threadId: opts.threadId,
+        channelId: opts.channelId,
+        title: "Verification Failed",
+        body: verification.summary.slice(0, 200),
+        appUrl: `/channels/${opts.channelId}/${opts.threadId}`,
+        sourceEventId: `verify-${opts.threadId}-${verification.feedbackCycle || "cycle"}`,
+        actor,
+      });
       return {
         ok: false,
         error: verification.summary,
@@ -297,6 +309,17 @@ export async function transitionThreadState(opts: {
       fromState: from,
       toState: requested,
       payload: { runId, summary: verification.summary },
+    });
+    // Notification: verification passed
+    void emitNotification(pool, {
+      event: "verification.passed",
+      threadId: opts.threadId,
+      channelId: opts.channelId,
+      title: "Verification Passed",
+      body: verification.summary.slice(0, 200),
+      appUrl: `/channels/${opts.channelId}/${opts.threadId}`,
+      sourceEventId: `verify-pass-${opts.threadId}-${runId}`,
+      actor,
     });
   }
 

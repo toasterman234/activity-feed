@@ -22,7 +22,8 @@
     "init:iii-binds": "node scripts/init-iii-binds.mjs",
     "init:notifications": "node scripts/init-notifications.mjs",
     "rollback:notifications": "node scripts/rollback-notifications.mjs",
-    "gen:vapid": "node scripts/gen-vapid-keys.mjs"
+    "gen:vapid": "node scripts/gen-vapid-keys.mjs",
+    "deliver:notifications": "node scripts/deliver-notifications.mjs"
   },
   "dependencies": {
     "@durable-streams/client": "^0.2.6",

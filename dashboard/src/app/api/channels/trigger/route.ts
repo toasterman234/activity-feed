@@ -31,6 +31,7 @@ import {
   type WorkRunRow,
 } from "@/lib/work-runs";
 import { prepareRunWorktree } from "@/lib/worktree-manager";
+import { emitNotification } from "@/lib/notificationEmit";
 
 export const dynamic = "force-dynamic";
 
@@ -1235,6 +1236,21 @@ When coding tools are available, do the repository work before replying. Follow 
         verificationPassed: !verificationError,
       },
     });
+    // Notification: work run completed or failed
+    const runEvent: "work_run.completed" | "work_run.failed" = verificationError ? "work_run.failed" : "work_run.completed";
+    void emitNotification(pool, {
+      event: runEvent,
+      threadId: opts.threadId,
+      channelId: opts.channelId,
+      stageId: durableRun.stage_id,
+      title: verificationError ? `Run Failed — ${author}` : `Run Completed — ${author}`,
+      body: verificationError
+        ? (verificationError.slice(0, 200) || "Agent run failed")
+        : `Agent run finished successfully`,
+      appUrl: `/channels/${opts.channelId}/${opts.threadId}`,
+      sourceEventId: durableRun.id,
+      actor: author,
+    });
   } catch (err) {
     console.error("[channels/trigger] job failed for", opts.handle, err);
     const e = err as Error & { signal?: string | null; killed?: boolean; stderr?: string; code?: number | null };
@@ -1277,6 +1293,18 @@ When coding tools are available, do the repository work before replying. Follow 
         errorDetail: detail.slice(0, 4000),
         resultPayload: { workflowStepId: stepId },
       }).catch(() => {});
+      // Notification: run failed (unexpected error)
+      void emitNotification(pool, {
+        event: "work_run.failed",
+        threadId: opts.threadId,
+        channelId: opts.channelId,
+        stageId: durableRun.stage_id,
+        title: `Run Interrupted — ${opts.handle}`,
+        body: detail.slice(0, 200),
+        appUrl: `/channels/${opts.channelId}/${opts.threadId}`,
+        sourceEventId: `err-${durableRun.id}`,
+        actor: String(opts.handle),
+      });
     }
   } finally {
     if (heartbeatTimer) clearInterval(heartbeatTimer);
