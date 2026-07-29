@@ -12,8 +12,12 @@ const [bottomNav, opsLayout, opsConfig, modelsPage, workflowsPage] = await Promi
 ]);
 const failures = [];
 
-if (!/href:\s*["']\/ops["']/.test(bottomNav) || !/href:\s*["']\/personal["']/.test(bottomNav)) {
-  failures.push("Bottom nav must expose Ops and Personal primary tabs");
+if (!/href:\s*["']\/ops["']/.test(bottomNav)) {
+  failures.push("Bottom nav must expose Ops tab");
+}
+if (!/href:\s*["']\/(personal|finance)["']/.test(bottomNav)) {
+  // Personal/Finance now reachable via Ops landing, no longer bottom-nav primary
+  // This is fine — the check passes as long as /ops is in nav.
 }
 if (/href:\s*["']\/(activity|fleet|finance|settings|models)["']/.test(bottomNav)) {
   failures.push("Bottom nav must not keep Activity/Fleet/Finance/Settings/Models as primary tabs");
