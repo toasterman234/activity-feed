@@ -29,6 +29,7 @@ import { ThreadConversationTab } from "../../ThreadConversationTab";
 import { ThreadOverviewTab } from "../../ThreadOverviewTab";
 import { ThreadTabs, type ThreadTabId } from "../../ThreadTabs";
 import { ThreadWorkTab } from "../../ThreadWorkTab";
+import { WorkRunsPanel } from "../../WorkRunsPanel";
 import { ThreadHistoryTab } from "../../ThreadHistoryTab";
 
 function uuid(): string {
@@ -112,7 +113,6 @@ function ThreadContent({
   const [dismissedPromotionId, setDismissedPromotionId] = useState<string | null>(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [archiving, setArchiving] = useState(false);
-  const [advancing, setAdvancing] = useState(false);
   const [activeTab, setActiveTab] = useState<ThreadTabId>("work");
   const [focusTriage, setFocusTriage] = useState(false);
   const [triageAnchor, setTriageAnchor] = useState(0);
@@ -375,14 +375,6 @@ function ThreadContent({
       setPromoteError(String(e));
       setShowPromoteDialog(true);
       setPromoting(false);
-    }
-  };
-  const handleAdvanceDone = async () => {
-    setAdvancing(true);
-    try {
-      await extras.refresh();
-    } finally {
-      setAdvancing(false);
     }
   };
 
@@ -728,6 +720,8 @@ function ThreadContent({
             {issueHeader}
           </div>
 
+
+          <WorkRunsPanel threadId={threadId} compact />
 
           <ThreadTabs
             active={activeTab}

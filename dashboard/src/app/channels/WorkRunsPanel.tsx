@@ -52,7 +52,7 @@ function elapsed(run: WorkRun): string {
   return seconds < 3600 ? `${minutes}m ${seconds % 60}s` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 }
 
-export function WorkRunsPanel({ threadId }: { threadId: string }) {
+export function WorkRunsPanel({ threadId, compact = false }: { threadId: string; compact?: boolean }) {
   const [runs, setRuns] = useState<WorkRun[]>([]);
   const [checks, setChecks] = useState<WorkRunCheck[]>([]);
   const [error, setError] = useState("");
@@ -97,14 +97,24 @@ export function WorkRunsPanel({ threadId }: { threadId: string }) {
     }
   }
 
-  if (!runs.length && !error) return null;
+  const PIN_STATUSES = new Set<WorkRunStatus>(["queued", "running", "failed", "interrupted"]);
+  const visibleRuns = compact
+    ? runs.filter((run) => PIN_STATUSES.has(run.status)).slice(0, 3)
+    : runs;
+
+  if (!visibleRuns.length && !error) return null;
+  if (compact && !visibleRuns.length) return null;
 
   return (
     <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">Execution attempts</p>
-          <p className="mt-1 text-[11px] text-zinc-500">Durable run history, recovery, and retry controls.</p>
+          <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">
+            {compact ? "Live run" : "Execution attempts"}
+          </p>
+          {!compact && (
+            <p className="mt-1 text-[11px] text-zinc-500">Durable run history, recovery, and retry controls.</p>
+          )}
         </div>
         <button type="button" onClick={() => { void load(); }} className="text-[11px] text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">
           Refresh
@@ -114,7 +124,7 @@ export function WorkRunsPanel({ threadId }: { threadId: string }) {
       {error && <p role="alert" className="mt-2 rounded-md bg-red-50 px-2 py-1.5 text-[11px] text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
       <ol className="mt-3 space-y-2">
-        {runs.map((run) => {
+        {visibleRuns.map((run) => {
           const runChecks = checks.filter((check) => check.run_id === run.id);
           const canCancel = run.status === "queued" || (run.status === "running" && !run.cancel_requested_at);
           const canRetry = (run.status === "failed" || run.status === "interrupted") && run.attempt < run.max_attempts;
@@ -134,7 +144,7 @@ export function WorkRunsPanel({ threadId }: { threadId: string }) {
                 {run.model || "default model"} · config {run.config_hash.slice(0, 8)}
               </p>
               {run.error_detail && <p className="mt-1 whitespace-pre-wrap break-words text-[11px] text-red-600 dark:text-red-400">{run.error_detail}</p>}
-              {runChecks.length > 0 && (
+              {!compact && runChecks.length > 0 && (
                 <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 dark:border-zinc-800">
                   {runChecks.map((check) => (
                     <li key={check.id} className="flex items-start gap-2 text-[10px]">
