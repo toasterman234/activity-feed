@@ -213,6 +213,13 @@ async function deliver() {
           `UPDATE notification_outbox SET status = 'dispatched', processed_at = $2 WHERE id = $1`,
           [msg.id, now],
         );
+        // Insert into in-app inbox
+        await client.query(
+          `INSERT INTO notification_inbox (id, user_id, outbox_id, read, dismissed, created_at)
+           VALUES ($1, $2, $3, false, false, $4)
+           ON CONFLICT DO NOTHING`,
+          [randomUUID(), USER_ID, msg.id, now],
+        ).catch(function() {});
       } else {
         skipped++;
       }
