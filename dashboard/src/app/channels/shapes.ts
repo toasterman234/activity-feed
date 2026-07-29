@@ -46,10 +46,57 @@ export function releaseMessageShape(): void {
 export interface ChannelRow { id: string; name: string; description: string; default_lifecycle: string | null; created_at: string }
 export interface MemberRow { id: string; channel_id: string; member_type: string; member_name: string; created_at: string }
 export interface MessageRow { id: string; channel_id: string; thread_id: string | null; author: string; body: string; created_at: string }
-export interface ThreadPlanRow { id: string; thread_id: string; title: string; status: string; sort_order: number; created_at: string; updated_at: string }
+export interface ThreadPlanRow {
+  id: string;
+  thread_id: string;
+  title: string;
+  status: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  stage_id?: string | null;
+}
 export interface WorkflowStepRow { id: string; thread_id: string; step_label: string; status: string; detail: string; created_at: string }
-export interface ThreadArtifactRow { id: string; thread_id: string; title: string; kind: string; content: string; version: number; created_at: string }
-export interface ThreadMetaRow { thread_id: string; channel_id: string; lifecycle: string; state: string; enabled_workflows: string; research_mode: string | null; priority: string | null; assignee: string | null; repo_id: string | null; labels: string | null; promoted_to: string | null; archived_at: string | null; updated_at: string }
+export interface ThreadArtifactRow {
+  id: string;
+  thread_id: string;
+  title: string;
+  kind: string;
+  content: string;
+  version: number;
+  created_at: string;
+  stage_id?: string | null;
+}
+export interface ThreadMetaRow {
+  thread_id: string;
+  channel_id: string;
+  lifecycle: string;
+  state: string;
+  enabled_workflows: string;
+  research_mode: string | null;
+  priority: string | null;
+  assignee: string | null;
+  repo_id: string | null;
+  labels: string | null;
+  promoted_to: string | null;
+  archived_at: string | null;
+  updated_at: string;
+  template_version?: number | null;
+  stage_started_at?: string | null;
+}
+export interface WorkflowEventRow {
+  id: string;
+  thread_id: string;
+  channel_id: string;
+  template_id: string;
+  template_version: number;
+  event_type: string;
+  from_state: string | null;
+  to_state: string | null;
+  actor: string;
+  payload: string;
+  created_at: string;
+}
 export interface ThreadPromotionRow { id: string; thread_id: string; repo_path: string | null; status: string; error_detail: string | null; agent_provider: string | null; agent_model: string | null; progress: string | null; created_at: string; completed_at: string | null }
 export interface StageInteractionRow {
   id: string;
@@ -133,6 +180,8 @@ export interface ThreadExtras {
   /** Live agent activity trace (thinking/tool/status), ordered oldest→newest.
    *  Rides this existing poll — NOT a held Electric shape (ADR-003). */
   activity: ActivityEventRow[];
+  /** Durable workflow stage events for cockpit + History (polled, ADR-003). */
+  workflowEvents: WorkflowEventRow[];
   /** Graph Continuity: events + decisions + observations + proposals for this thread. */
   graphEvents: GraphEventRow[];
   graphDecisions: GraphDecisionRow[];
@@ -157,6 +206,7 @@ const EMPTY_CONTINUITY: ContinuitySummary = {
 export function useThreadExtras(threadId: string): ThreadExtras {
   const [data, setData] = useState<Omit<ThreadExtras, "refresh">>({
     plans: [], steps: [], artifacts: [], meta: null, promotion: null, interactions: [], activity: [],
+    workflowEvents: [],
     graphEvents: [], graphDecisions: [], graphObservations: [], graphProposals: [], continuity: EMPTY_CONTINUITY,
   });
 
@@ -179,6 +229,7 @@ export function useThreadExtras(threadId: string): ThreadExtras {
         promotion: promoRows.sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null,
         interactions: (next.interactions || []) as StageInteractionRow[],
         activity: (next.activity || []) as ActivityEventRow[],
+        workflowEvents: (next.workflowEvents || []) as WorkflowEventRow[],
         graphEvents: (next.graphEvents || []) as GraphEventRow[],
         graphDecisions: (next.graphDecisions || []) as GraphDecisionRow[],
         graphObservations: (next.graphObservations || []) as GraphObservationRow[],

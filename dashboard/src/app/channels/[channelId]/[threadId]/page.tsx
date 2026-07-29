@@ -28,6 +28,7 @@ import { ThreadConversationTab } from "../../ThreadConversationTab";
 import { ThreadOverviewTab } from "../../ThreadOverviewTab";
 import { ThreadTabs, type ThreadTabId } from "../../ThreadTabs";
 import { ThreadWorkTab } from "../../ThreadWorkTab";
+import { ThreadHistoryTab } from "../../ThreadHistoryTab";
 
 function uuid(): string {
   return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
@@ -720,7 +721,7 @@ function ThreadContent({
           <ThreadTabs
             active={activeTab}
             onChange={setActiveTab}
-            counts={{ work: workCount, artifacts: artifactCount }}
+            counts={{ work: workCount, artifacts: artifactCount, history: extras.workflowEvents.length }}
           />
 
           {activeTab === "conversation" && (
@@ -794,6 +795,10 @@ function ThreadContent({
 
           {activeTab === "artifacts" && (
             <ThreadArtifactsTab artifacts={latestArtifacts} />
+          )}
+
+          {activeTab === "history" && (
+            <ThreadHistoryTab events={extras.workflowEvents} />
           )}
 
           {showPromoteDialog && (
