@@ -15,8 +15,8 @@ import { type MentionOption } from "../../MentionInput";
 import { parseMentions } from "../../../../lib/mentions";
 import { LIFECYCLES, DEFAULT_LIFECYCLE, defaultEnabledWorkflows, stageModules } from "../../lifecycles";
 import { RESEARCH_MODES, DEFAULT_RESEARCH_MODE } from "../../researchModes";
-import { GuideBar } from "../../GuideBar";
 import { WorkflowCockpit } from "../../WorkflowCockpit";
+import { StageActionBar } from "../../StageActionBar";
 import { DoNowBanner } from "../../DoNowBanner";
 import { deriveThreadAttention } from "../../attentionGuide";
 import { StageReviewWorkspace } from "../../StageReviewWorkspace";
@@ -603,6 +603,31 @@ function ThreadContent({
             />
           )}
 
+          {lifecyclePicked && meta && lc && (
+            <StageActionBar
+              lifecycleKey={lifecycleKey}
+              currentState={currentState}
+              enabledWorkflows={enabledWorkflows}
+              channelId={channelId}
+              threadId={threadId}
+              isArchived={isArchived}
+              plans={plans}
+              artifacts={extras.artifacts}
+              steps={steps}
+              onDone={async () => { await extras.refresh(); }}
+              onPromote={() => {
+                openPromoteDialog();
+              }}
+              onScrollToExecution={
+                executionHandoff
+                  ? () => {
+                      document.getElementById("execution-handoff-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  : undefined
+              }
+            />
+          )}
+
           {!lifecyclePicked && (
             <div className="flex items-center gap-2 rounded-lg border border-dashed border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800 dark:bg-blue-950">
               <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Suggestion</span>
@@ -631,45 +656,17 @@ function ThreadContent({
           )}
 
 
-          {attention && !isArchived && (
+          {attention && !isArchived && attention.need === "triage" && (
             <DoNowBanner
               guide={attention}
               onCta={() => {
-                if (attention.need === "triage") {
-                  setFocusTriage(true);
-                  setTriageAnchor((n) => n + 1);
-                  document.getElementById("issue-triage")?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  return;
-                }
-                if (attention.need === "review" || attention.need === "verify") {
-                  document.getElementById("do-now-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  return;
-                }
-                document.getElementById("do-now")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                setFocusTriage(true);
+                setTriageAnchor((n) => n + 1);
+                document.getElementById("issue-triage")?.scrollIntoView({ behavior: "smooth", block: "center" });
               }}
             />
           )}
 
-          {lifecyclePicked && lc && !isArchived && (
-            <GuideBar
-              lifecycleKey={lifecycleKey}
-              currentState={currentState}
-              enabledWorkflows={enabledWorkflows}
-              channelId={channelId}
-              threadId={threadId}
-              onDone={async () => { await extras.refresh(); }}
-              onPromote={() => {
-                openPromoteDialog();
-              }}
-              onScrollToExecution={
-                executionHandoff
-                  ? () => {
-                      document.getElementById("execution-handoff-workspace")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }
-                  : undefined
-              }
-            />
-          )}
 
           {guidedReview && !isArchived && (
             <div id="do-now-workspace">
@@ -772,16 +769,13 @@ function ThreadContent({
               promoteAnyway={promoteAnyway}
               promotedTo={meta?.promoted_to || null}
               repoId={meta?.repo_id || null}
-              channelId={channelId}
               threadId={threadId}
-              disabledAdvance={advancing}
               promotionFailed={promotionFailed}
               showPromoteDialog={showPromoteDialog}
               onAcceptSuggestedLifecycle={() => { void handleLifecycleChange(suggestedLifecycle); }}
               onLifecycleChange={(nextLifecycle) => { void handleLifecycleChange(nextLifecycle); }}
               onResearchModeChange={(modeId) => { void handleResearchModeChange(modeId); }}
               onToggleWorkflow={(wfId) => { void toggleWorkflow(wfId); }}
-              onAdvanceDone={handleAdvanceDone}
               onPromoteClick={() => {
                 openPromoteDialog();
               }}

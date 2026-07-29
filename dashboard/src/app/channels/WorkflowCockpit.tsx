@@ -3,8 +3,8 @@
 import {
   LIFECYCLES,
   mainPathOrder,
-  type StageRequirement,
 } from "./lifecycles";
+import { requirementStatus } from "./stageReadiness";
 import type {
   ActivityEventRow,
   ThreadArtifactRow,
@@ -22,30 +22,6 @@ const KIND_TONE: Record<string, string> = {
   done: "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200",
   dead: "border-red-300 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-200",
 };
-
-function requirementStatus(
-  requirement: StageRequirement,
-  currentState: string,
-  plans: ThreadPlanRow[],
-  artifacts: ThreadArtifactRow[],
-  steps: WorkflowStepRow[],
-) {
-  const stagePlans = plans.filter((item) => !item.stage_id || item.stage_id === currentState);
-  const stageArtifacts = artifacts.filter((item) => !item.stage_id || item.stage_id === currentState);
-  if (requirement.source === "task") {
-    return stagePlans.length >= 2 && stagePlans.every((item, index) =>
-      item.title.trim().length >= 8 && item.sort_order === index
-    );
-  }
-  if (requirement.source === "artifact") return stageArtifacts.length > 0;
-  if (requirement.source === "gate") {
-    return steps.some((step) => step.status === "done" && (
-      step.step_label.toLowerCase().includes(requirement.id.replace(/-/g, " ")) ||
-      step.step_label.toLowerCase().includes(requirement.label.toLowerCase())
-    ));
-  }
-  return false;
-}
 
 export function WorkflowCockpit({
   lifecycleKey,

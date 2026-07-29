@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { AdvanceStateButtons } from "./AdvanceStateButtons";
 import { LIFECYCLES } from "./lifecycles";
 import { PromoteStatusPanel } from "./PromoteStatusPanel";
 import { RESEARCH_MODES } from "./researchModes";
@@ -24,16 +23,13 @@ export type ThreadOverviewTabProps = {
   promoteAnyway: boolean;
   promotedTo: string | null;
   repoId: string | null;
-  channelId: string;
   threadId: string;
-  disabledAdvance: boolean;
   promotionFailed: boolean;
   showPromoteDialog: boolean;
   onAcceptSuggestedLifecycle: () => void;
   onLifecycleChange: (nextLifecycle: string) => void;
   onResearchModeChange: (modeId: string) => void;
   onToggleWorkflow: (workflowId: string) => void;
-  onAdvanceDone: () => Promise<void> | void;
   onPromoteClick: () => void;
   onRetryPromote: () => void;
   onEditPromotePath: () => void;
@@ -57,16 +53,13 @@ export function ThreadOverviewTab({
   promoteAnyway,
   promotedTo,
   repoId,
-  channelId,
   threadId,
-  disabledAdvance,
   promotionFailed,
   showPromoteDialog,
   onAcceptSuggestedLifecycle,
   onLifecycleChange,
   onResearchModeChange,
   onToggleWorkflow,
-  onAdvanceDone,
   onPromoteClick,
   onRetryPromote,
   onEditPromotePath,
@@ -77,7 +70,8 @@ export function ThreadOverviewTab({
   const lc = LIFECYCLES[lifecycleKey];
   const isTerminal = lc?.states[currentState]?.terminal === true;
   const canPromote = !isPromoting && !promotionFailed && !isPromoted && !isArchived;
-  const showPromoteButton = canPromote && (isTerminal || promoteAnyway);
+  // Terminal promote CTA lives on StageActionBar; Overview only keeps promote-anyway override.
+  const showPromoteButton = canPromote && promoteAnyway && !isTerminal;
   const showPromoteAnywayHint = canPromote && !isTerminal && !promoteAnyway;
 
   return (
@@ -176,16 +170,6 @@ export function ThreadOverviewTab({
 
             <StateFlow lifecycleKey={lifecycleKey} currentState={currentState} />
 
-            {!isArchived && (
-              <AdvanceStateButtons
-                lifecycleKey={lifecycleKey}
-                currentState={currentState}
-                channelId={channelId}
-                threadId={threadId}
-                disabled={disabledAdvance}
-                onDone={onAdvanceDone}
-              />
-            )}
           </div>
         </details>
       )}

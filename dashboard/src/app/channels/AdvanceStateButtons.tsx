@@ -1,3 +1,4 @@
+/** @deprecated Unmounted — StageActionBar owns advance/run CTAs. Kept as reference. */
 "use client";
 
 import { useState } from "react";
