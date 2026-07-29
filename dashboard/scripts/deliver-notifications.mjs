@@ -7,12 +7,6 @@
  *
  * Designed to run as a systemd timer (every 30s) or one-shot process.
  * Usage: node scripts/deliver-notifications.mjs
- *
- * Environment:
- *   ACTIVITY_DB_URL — Postgres connection (default: postgres://activity:activity@localhost:5433/activity_log)
- *   VAPID_PUBLIC_KEY — raw 65-byte uncompressed EC point (base64url)
- *   VAPID_PRIVATE_KEY — raw 32-byte scalar (base64url)
- *   VAPID_SUBJECT — mailto: URL (default: mailto:admin@bcharney.com)
  */
 
 import pg from "pg";
@@ -26,16 +20,17 @@ const connectionString =
 
 const USER_ID = "operator";
 
-async function loadWebPush(): Promise<typeof import("web-push")> {
+async function loadWebPush() {
   try {
-    return await import("web-push");
+    const mod = await import("web-push");
+    return mod.default || mod;
   } catch {
-    console.error("[notifications] web-push not installed; run: npm install web-push");
+    console.error("[notifications] web-push not installed");
     process.exit(1);
   }
 }
 
-function getVapidSubject(): string {
+function getVapidSubject() {
   return process.env.VAPID_SUBJECT || "mailto:admin@bcharney.com";
 }
 
@@ -46,16 +41,14 @@ async function deliver() {
   try {
     await client.connect();
 
-    // Check VAPID config
-    const publicKey = process.env.VAPID_PUBLIC_KEY;
-    const privateKey = process.env.VAPID_PRIVATE_KEY;
-    if (!publicKey || !privateKey) {
+    const pubKey = process.env.VAPID_PUBLIC_KEY;
+    const privKey = process.env.VAPID_PRIVATE_KEY;
+    if (!pubKey || !privKey) {
       console.log("[notifications] VAPID not configured — skipping delivery");
       return;
     }
-    webpush.setVapidDetails(getVapidSubject(), publicKey, privateKey);
+    webpush.setVapidDetails(getVapidSubject(), pubKey, privKey);
 
-    // 1. Get pending messages (max 20 per run)
     const pending = await client.query(
       `SELECT id, event, urgency, thread_id, channel_id, title, body, app_url,
               source_event_id, actor, status, created_at
@@ -72,7 +65,6 @@ async function deliver() {
 
     console.log(`[notifications] processing ${pending.rows.length} pending message(s)`);
 
-    // 2. Load global + event-type preferences for the user
     const prefs = await client.query(
       `SELECT scope, scope_value, enabled, delivery_mode,
               quiet_hours_start, quiet_hours_end
@@ -81,25 +73,34 @@ async function deliver() {
       [USER_ID],
     );
 
-    const globalEnabled = Boolean(
-      prefs.rows.find(
-        (r: any) => r.scope === "global" && r.scope_value == null && r.enabled,
-      )?.enabled ?? true, // default: enabled if no global record
-    );
+    const globalPref = prefs.rows.find(function(r) {
+      return r.scope === "global" && r.scope_value == null;
+    });
+    const globalEnabled = globalPref ? globalPref.enabled : true;
 
-    // Build event-type enabled map
-    const eventEnabled: Record<string, boolean> = {};
+    const eventEnabled = {};
     for (const row of prefs.rows) {
       if (row.scope === "event_type" && row.scope_value) {
         eventEnabled[row.scope_value] = row.enabled;
       }
-      // Also handle explicit global disable
-      if (row.scope === "global" && row.scope_value == null) {
-        // captured above
-      }
     }
 
-    // 3. Load all active subscriptions
+    // Check quiet hours
+    const qStart = globalPref?.quiet_hours_start;
+    const qEnd = globalPref?.quiet_hours_end;
+    let inQuietHours = false;
+    if (qStart && qEnd) {
+      const now = new Date();
+      const nowMins = now.getUTCHours() * 60 + now.getUTCMinutes();
+      const sParts = qStart.split(":").map(Number);
+      const eParts = qEnd.split(":").map(Number);
+      const startMins = sParts[0] * 60 + sParts[1];
+      const endMins = eParts[0] * 60 + eParts[1];
+      inQuietHours = startMins < endMins
+        ? (nowMins >= startMins && nowMins < endMins)
+        : (nowMins >= startMins || nowMins < endMins);
+    }
+
     const subs = await client.query(
       `SELECT id, endpoint, p256dh, auth, device_name
          FROM notification_subscriptions
@@ -108,7 +109,6 @@ async function deliver() {
     );
 
     if (subs.rows.length === 0) {
-      // No subscriptions — mark all pending as skipped
       for (const msg of pending.rows) {
         await client.query(
           `UPDATE notification_outbox SET status = 'skipped', processed_at = $2 WHERE id = $1`,
@@ -121,7 +121,6 @@ async function deliver() {
 
     console.log(`[notifications] ${subs.rows.length} subscription(s) registered`);
 
-    // 4. Process each message
     const now = new Date().toISOString();
     let dispatched = 0;
     let skipped = 0;
@@ -129,8 +128,7 @@ async function deliver() {
     let failed = 0;
 
     for (const msg of pending.rows) {
-      // Check preferences
-      const evEnabled = eventEnabled[msg.event] ?? true; // default: enabled
+      const evEnabled = eventEnabled[msg.event] !== undefined ? eventEnabled[msg.event] : true;
       if (!globalEnabled || !evEnabled) {
         await client.query(
           `UPDATE notification_outbox SET status = 'preference_blocked', processed_at = $2 WHERE id = $1`,
@@ -140,30 +138,11 @@ async function deliver() {
         continue;
       }
 
-      // Check quiet hours (simplified — UTC only for now)
-      const quietStart = prefs.rows.find(
-        (r: any) => r.scope === "global" && r.scope_value == null && r.quiet_hours_start,
-      )?.quiet_hours_start;
-      const quietEnd = prefs.rows.find(
-        (r: any) => r.scope === "global" && r.scope_value == null && r.quiet_hours_end,
-      )?.quiet_hours_end;
-      if (quietStart && quietEnd) {
-        const nowTime = new Date();
-        const nowMinutes = nowTime.getUTCHours() * 60 + nowTime.getUTCMinutes();
-        const [startH, startM] = (quietStart as string).split(":").map(Number);
-        const [endH, endM] = (quietEnd as string).split(":").map(Number);
-        const startMin = startH * 60 + startM;
-        const endMin = endH * 60 + endM;
-        const inQuietHours = startMin < endMin
-          ? nowMinutes >= startMin && nowMinutes < endMin
-          : nowMinutes >= startMin || nowMinutes < endMin; // overnight range
-        if (inQuietHours) {
-          skipped++;
-          continue; // leave as pending for next run after quiet hours
-        }
+      if (inQuietHours) {
+        skipped++;
+        continue;
       }
 
-      // Dispatch to each subscription
       let anySent = false;
       for (const sub of subs.rows) {
         const deliveryId = randomUUID();
@@ -181,7 +160,7 @@ async function deliver() {
               data: {
                 app_url: msg.app_url,
                 urgency: msg.urgency,
-                tag: `msg-${msg.id}`,
+                tag: "msg-" + msg.id,
                 thread_id: msg.thread_id,
                 event: msg.event,
               },
@@ -194,7 +173,6 @@ async function deliver() {
             [deliveryId, msg.id, sub.id, now],
           );
 
-          // Update last_used_at
           await client.query(
             `UPDATE notification_subscriptions SET last_used_at = $2 WHERE id = $1`,
             [sub.id, now],
@@ -202,16 +180,14 @@ async function deliver() {
 
           anySent = true;
           dispatched++;
-        } catch (error: unknown) {
+        } catch (error) {
           const errMsg = error instanceof Error ? error.message : String(error);
-
-          // Check for expired/invalid subscriptions
           const isGone =
             errMsg.includes("unsubscribed") ||
             errMsg.includes("expired") ||
             errMsg.includes("NotRegistered") ||
             errMsg.includes("InvalidToken") ||
-            (error as any)?.statusCode === 410;
+            (error.statusCode === 410);
 
           await client.query(
             `INSERT INTO notification_deliveries (id, outbox_id, subscription_id, attempt, status, error_detail, created_at, completed_at)
@@ -232,7 +208,6 @@ async function deliver() {
         }
       }
 
-      // Mark outbox as dispatched if at least one delivery attempted
       if (anySent) {
         await client.query(
           `UPDATE notification_outbox SET status = 'dispatched', processed_at = $2 WHERE id = $1`,
@@ -247,14 +222,14 @@ async function deliver() {
       `[notifications] done: dispatched=${dispatched} failed=${failed} blocked=${blocked} skipped=${skipped}`,
     );
   } catch (error) {
-    console.error("[notifications] delivery error:", (error as Error).message);
+    console.error("[notifications] delivery error:", error.message);
     throw error;
   } finally {
     await client.end();
   }
 }
 
-deliver().catch((error) => {
-  console.error("[notifications] fatal:", (error as Error).message);
+deliver().catch(function(error) {
+  console.error("[notifications] fatal:", error.message);
   process.exit(1);
 });
