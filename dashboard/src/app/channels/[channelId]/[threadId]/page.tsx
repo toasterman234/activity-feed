@@ -195,7 +195,12 @@ function ThreadContent({
   // Heal issue metadata (default owner, infer repo) on first load
   useEffect(() => {
     if (!extras.meta || healed) return;
-    if (extras.meta.lifecycle !== "issue" || extras.meta.state !== "open") return;
+    if (extras.meta.lifecycle !== "issue" || extras.meta.state !== "open") {
+      setHealed(true);
+      return;
+    }
+    // Wait for threadMsg to be available for title-based repo inference
+    if (!threadMsg) return;
     fetch("/api/repos")
       .then((r) => r.json())
       .then((d) => {
@@ -210,15 +215,15 @@ function ThreadContent({
           repos: list,
         });
         if (!patch) return;
-        writeChannelRow("thread_meta", {
+        return writeChannelRow("thread_meta", {
           thread_id: threadId,
           channel_id: channelId,
           ...patch,
           updated_at: new Date().toISOString(),
         }).then(() => extras.refresh()).catch(() => {});
       })
-      .catch(() => {});
-    setHealed(true);
+      .finally(() => setHealed(true))
+      .catch(() => setHealed(true));
   }, [extras.meta, healed, threadId, channelId, threadMsg?.body]);
 
   // Default to the Work tab for approved plans so the execution handoff
