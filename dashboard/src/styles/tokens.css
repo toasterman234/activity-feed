@@ -1,1 +1,131 @@
-../../../../open-design/design-systems/activity-dashboard/tokens.css
+/* design-systems/activity-dashboard/tokens.css
+   Activity Dashboard PWA — dark-first, zinc palette, system fonts.
+   Follows _schema/tokens.schema.ts.
+
+   Light/dark raw pairs (--*-light / --*-dark) stay stable so consumers
+   (Tailwind shade bridges, tooling) can address either mode. Semantic
+   tokens (--bg, --fg, …) resolve to the active mode. */
+
+:root {
+  /* --- Palette (raw pairs) --- */
+  --bg-light: #ffffff;
+  --bg-dark: #0a0a0a;
+  --surface-light: #ffffff;
+  --surface-dark: #09090b;
+  --elevated-light: #fafafa;
+  --elevated-dark: #09090b;
+  --fg-light: #18181b;
+  --fg-dark: #ededed;
+  --fg-2-light: #27272a;
+  --fg-2-dark: #e4e4e7;
+  --muted-light: #71717a;
+  --muted-dark: #a1a1aa;
+  --disabled-light: #a1a1aa;
+  --disabled-dark: #71717a;
+  --border-light: #e4e4e7;
+  --border-dark: #27272a;
+  --border-soft-light: #f4f4f5;
+  --border-soft-dark: #27272a;
+  --accent-light: #2563eb;
+  --accent-dark: #60a5fa;
+  --accent-hover-light: #1d4ed8;
+  --accent-hover-dark: #93bbfd;
+  --accent-on: #ffffff;
+  --tab-active-bg-light: #18181b;
+  --tab-active-bg-dark: #f4f4f5;
+  --tab-active-fg-light: #ffffff;
+  --tab-active-fg-dark: #18181b;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warn: #f59e0b;
+
+  /* --- Palette (semantic / active mode) --- */
+  --bg: var(--bg-light);
+  --surface: var(--surface-light);
+  --elevated: var(--elevated-light);
+  --fg: var(--fg-light);
+  --fg-2: var(--fg-2-light);
+  --muted: var(--muted-light);
+  --disabled: var(--disabled-light);
+  --border: var(--border-light);
+  --border-soft: var(--border-soft-light);
+  --accent: var(--accent-light);
+  --accent-hover: var(--accent-hover-light);
+  --tab-active-bg: var(--tab-active-bg-light);
+  --tab-active-fg: var(--tab-active-fg-light);
+
+  /* --- Typography --- */
+  --font-body: Arial, Helvetica, sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --text-xs: 0.688rem;
+  --text-sm: 0.813rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 1.875rem;
+  --leading-body: 1.5;
+  --leading-tight: 1.25;
+  --tracking-display: -0.01em;
+  --meta: 0.625rem;
+
+  /* --- Spacing --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  /* --- Radius --- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-pill: 9999px;
+
+  /* --- Layout --- */
+  --container-max: 64rem;
+  --container-gutter-phone: 0.75rem;
+  --container-gutter-tablet: 1rem;
+  --container-gutter-desktop: 1.5rem;
+  --section-y-phone: 0.5rem;
+  --section-y-tablet: 0.75rem;
+  --section-y-desktop: 1rem;
+  --bottom-nav-height: 3.5rem;
+
+  /* --- Elevation --- */
+  --elev-flat: none;
+  --elev-raised: none;
+  --elev-ring: 0 0 0 1px var(--border);
+
+  /* --- Motion --- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-base: 150ms;
+  --motion-fast: 100ms;
+
+  /* --- Focus --- */
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: var(--bg-dark);
+    --surface: var(--surface-dark);
+    --elevated: var(--elevated-dark);
+    --fg: var(--fg-dark);
+    --fg-2: var(--fg-2-dark);
+    --muted: var(--muted-dark);
+    --disabled: var(--disabled-dark);
+    --border: var(--border-dark);
+    --border-soft: var(--border-soft-dark);
+    --accent: var(--accent-dark);
+    --accent-hover: var(--accent-hover-dark);
+    --tab-active-bg: var(--tab-active-bg-dark);
+    --tab-active-fg: var(--tab-active-fg-dark);
+  }
+}

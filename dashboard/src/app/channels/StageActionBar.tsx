@@ -225,7 +225,11 @@ export function StageActionBar({
       ? `Advance to ${nextLabel}`
       : "Advance";
 
+  const advanceBlocked = incompleteLabels.length > 0;
+  const primaryEnabled = !advanceBlocked && (hasPromptAtNext || !!mainNext);
+
   const onPrimary = () => {
+    if (!primaryEnabled) return;
     if (hasPromptAtNext) {
       void runAgentAdvance();
       return;
@@ -247,7 +251,8 @@ export function StageActionBar({
             <button
               type="button"
               onClick={onPrimary}
-              disabled={!hasPromptAtNext && !mainNext}
+              disabled={!primaryEnabled}
+              title={advanceBlocked ? `Blocked until: ${incompleteLabels.join(", ")}` : undefined}
               className="rounded-md border border-zinc-300 bg-zinc-50 px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
             >
               {primaryLabel}
