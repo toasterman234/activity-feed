@@ -9,6 +9,7 @@ type SwapTarget = "proxy" | "pi" | "all";
 interface StatusData {
   proxy: { running: boolean; keySuffix: string; error?: string };
   pi: { keySuffix: string };
+  iii?: { keySuffix: string; error?: string };
   models: string[];
   lastSwap: string | null;
 }
@@ -188,6 +189,20 @@ function StatusTab({
       </div>
 
       <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">iii Harness</span>
+          {status.iii?.error && (
+            <span className="text-[10px] text-zinc-400">{status.iii.error}</span>
+          )}
+        </div>
+        {status.iii?.keySuffix ? (
+          <p className="mt-1.5 text-xs font-mono text-zinc-500 dark:text-zinc-400">{status.iii.keySuffix}</p>
+        ) : (
+          <p className="mt-1.5 text-xs text-zinc-400">No key configured</p>
+        )}
+      </div>
+
+      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="mb-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200">Available Models ({status.models.length})</p>
         {Object.entries(modelGroups)
           .sort(([a], [b]) => a.localeCompare(b))
@@ -229,6 +244,9 @@ function SwapTab({
     <div className="space-y-4">
       <div>
         <label className="mb-1 block text-[10px] uppercase tracking-wider text-zinc-400">Target</label>
+        <p className="mb-1.5 text-[10px] text-zinc-400">
+          Pi / All also push the key to the Mac Mini over SSH so Paseo picks it up.
+        </p>
         <div className="flex overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
           {(["proxy", "pi", "all"] as const).map((t) => (
             <button
@@ -265,7 +283,7 @@ function SwapTab({
       {swapResult && (
         <div className={`rounded-lg border p-3 text-sm ${swapResult.ok ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300" : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"}`}>
           {swapResult.ok
-            ? `Swapped ${swapTarget === "proxy" ? "CC Proxy" : swapTarget === "pi" ? "Pi Agent" : "All (proxy + pi + CLI + ax-plane)"} → ${swapResult.suffix}`
+            ? `Swapped ${swapTarget === "proxy" ? "CC Proxy (this host)" : swapTarget === "pi" ? "Pi fleet (OVH + Mac)" : "All machines (pi + CLI + iii + proxy)"} → ${swapResult.suffix}`
             : swapResult.error}
         </div>
       )}

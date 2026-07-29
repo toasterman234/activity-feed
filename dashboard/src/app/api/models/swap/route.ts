@@ -70,47 +70,25 @@ export async function POST(req: Request) {
     }
   }
 
-  if (target === "all") {
-    // Delegate to cc-swap-all.sh which updates proxy + pi + CLI + ax-control-plane
+  if (target === "all" || target === "pi") {
+    // Delegate to cc-swap-all.sh which updates local consumers and fans out over SSH
+    // (OVH ↔ Mac Mini). "pi" uses the same fleet script so paseo/pi stays in sync
+    // on every machine; script is idempotent when already current.
     try {
-      execSync(
+      const out = execSync(
         `"${homedir()}/.openclaw/service-env/cc-swap-all.sh" "${key}"`,
-        { timeout: 30000, encoding: "utf-8" }
+        { timeout: 90000, encoding: "utf-8" }
       );
-      return NextResponse.json({ ok: true, target: "all", suffix });
+      return NextResponse.json({
+        ok: true,
+        target,
+        suffix,
+        log: String(out || "").trim().split("\n").slice(-12),
+      });
     } catch (e: any) {
+      const detail = [e.stdout, e.stderr, e.message].filter(Boolean).join("\n");
       return NextResponse.json(
-        { ok: false, error: e.stderr || e.message || String(e) },
-        { status: 500 }
-      );
-    }
-  }
-
-  if (target === "pi") {
-    // Swap Pi key
-    try {
-      const auth = JSON.parse(readFileSync(PI_AUTH_FILE, "utf-8"));
-
-      // Backup
-      copyFileSync(PI_AUTH_FILE, PI_AUTH_FILE.replace(".json", ".json.bak-ccswap"));
-
-      // Update
-      const cc = (auth.commandcode = auth.commandcode || {});
-      cc.type = "oauth";
-      cc.access = key;
-      cc.refresh = key;
-      cc.expires = 2099431038159;
-
-      const tmp = PI_AUTH_FILE.replace(".json", ".json.tmp");
-      writeFileSync(tmp, JSON.stringify(auth, null, 2) + "\n");
-      chmodSync(tmp, 0o600);
-      writeFileSync(PI_AUTH_FILE, JSON.stringify(auth, null, 2) + "\n");
-      chmodSync(PI_AUTH_FILE, 0o600);
-
-      return NextResponse.json({ ok: true, target: "pi", suffix });
-    } catch (e) {
-      return NextResponse.json(
-        { ok: false, error: String(e) },
+        { ok: false, error: detail || String(e) },
         { status: 500 }
       );
     }
