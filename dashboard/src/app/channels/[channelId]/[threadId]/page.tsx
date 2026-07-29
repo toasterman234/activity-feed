@@ -683,6 +683,7 @@ function ThreadContent({
               channelId={channelId}
               meta={meta}
               plans={plans}
+              currentState={currentState}
               onRefresh={async () => { await extras.refresh(); }}
             />
           )}
