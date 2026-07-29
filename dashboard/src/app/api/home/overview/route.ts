@@ -247,15 +247,9 @@ function threadAttentionGuide(row: {
     hasActiveReviewProposal: row.hasActiveReviewProposal,
   });
   if (guide) return { nextStep: guide.nextStep, why: guide.why };
-  if (row.reason === "issue_needs_triage") {
-    return {
-      why: "Open issue is unscoped (missing owner or repo).",
-      nextStep: "Open the issue → assign an owner and link a repo, then triage.",
-    };
-  }
   return {
-    why: "Waiting on you.",
-    nextStep: "Open the thread and follow the Do this now banner.",
+    why: "This thread needs your attention.",
+    nextStep: "Open the thread to see what's needed.",
   };
 }
 
@@ -298,7 +292,6 @@ export async function GET() {
                   WHEN tm.state = 'review' THEN 'review'
                   WHEN tm.state = 'blocked' THEN 'blocked'
                   WHEN tm.lifecycle = 'issue' AND tm.state = 'resolved' THEN 'review'
-                  ELSE 'issue_needs_triage'
                 END AS reason,
                 EXISTS (
                   SELECT 1 FROM thread_stage_interactions si
@@ -316,11 +309,6 @@ export async function GET() {
               lp.status = 'failed_required_gate'
               OR tm.state IN ('review', 'blocked')
               OR (tm.lifecycle = 'issue' AND tm.state = 'resolved')
-              OR (
-                tm.lifecycle = 'issue'
-                AND tm.state = 'open'
-                AND (tm.repo_id IS NULL OR COALESCE(tm.assignee, '') = '')
-              )
             )
           ORDER BY CASE
             WHEN lp.status = 'failed_required_gate' THEN 0
