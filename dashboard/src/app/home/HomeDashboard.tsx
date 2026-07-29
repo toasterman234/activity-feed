@@ -26,6 +26,56 @@ function relativeTime(iso: string | null | undefined): string {
   return new Date(iso).toLocaleDateString();
 }
 
+function basename(p: string | null | undefined): string {
+  if (!p) return "";
+  const parts = p.split("/");
+  return parts[parts.length - 1] || p;
+}
+
+function applyOriginLines(
+  rows: AttentionRow[],
+  channels: Array<{ channelId: string; channelName: string }>,
+): AttentionRow[] {
+  const channelMap = new Map<string, string>();
+  for (const ch of channels) {
+    channelMap.set(ch.channelId, ch.channelName);
+  }
+  return rows.map((row) => {
+    if (row.originLine) return row;
+    const chName =
+      row.channelName || (row.channelId ? channelMap.get(row.channelId) : null);
+
+    if (row.source === "initiative") {
+      const parts = ["Evidence initiative"];
+      if (row.mapId) parts.push(`map ${row.mapId.slice(0, 8)}`);
+      if (row.planPath) parts.push(basename(row.planPath));
+      if (chName) parts.push(`# ${chName}`);
+      else if (row.channelId) parts.push(`ch ${row.channelId.slice(0, 8)}`);
+      return {
+        ...row,
+        originLine: parts.join(" · "),
+        originKind: "evidence-initiative",
+      };
+    }
+    if (row.source === "inbox") {
+      const kind = row.meta?.split(" · ")[0] || "Inbox";
+      return {
+        ...row,
+        originLine: chName ? `${kind} · # ${chName}` : kind,
+        originKind: "graph-inbox",
+      };
+    }
+    if (row.source === "channel") {
+      return {
+        ...row,
+        originLine: chName ? `# ${chName}` : undefined,
+        originKind: "channel-thread",
+      };
+    }
+    return row;
+  });
+}
+
 function stateBadge(state: string | null | undefined) {
   switch (state) {
     case "review":
@@ -109,6 +159,13 @@ type AttentionRow = {
   age: string;
   why?: string;
   nextStep?: string;
+  // Origin context
+  originKind?: "evidence-initiative" | "channel-thread" | "graph-inbox";
+  originLine?: string;
+  mapId?: string | null;
+  planPath?: string | null;
+  channelId?: string | null;
+  channelName?: string | null;
 };
 
 type ContinuitySnapshot = {
@@ -177,6 +234,8 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
           evidence_map_id: string | null;
           title: string;
           status: string;
+          channel_id: string | null;
+          thread_id: string | null;
           updated_at?: string;
           plan_path?: string | null;
         }> = evidence.initiatives || [];
@@ -212,6 +271,9 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
               age,
               why: topFinding || "Evidence checks failing.",
               nextStep: "Open initiative detail → fix failing findings, then re-check.",
+              mapId: init.evidence_map_id,
+              planPath: init.plan_path || null,
+              channelId: init.channel_id,
             });
           } else if (ready) {
             readyRows.push({
@@ -223,8 +285,11 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
               title: init.title,
               meta: "Checks pass",
               age,
-              why: "Evidence checks pass but graph status is not shipped yet.",
-              nextStep: "Open Continuity → Promote to shipped.",
+              why: `Checks pass; graph status is ${init.status} (not shipped).`,
+              nextStep: "Open initiative → review plan/evidence → Mark shipped.",
+              mapId: init.evidence_map_id,
+              planPath: init.plan_path || null,
+              channelId: init.channel_id,
             });
           } else if (hasOpen) {
             // Tracked open work is planned follow-up, not a human gate.
@@ -239,6 +304,9 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
               age,
               why: topFinding || "Tracked open work remains.",
               nextStep: "Open initiative detail → work the open items when you choose this track.",
+              mapId: init.evidence_map_id,
+              planPath: init.plan_path || null,
+              channelId: init.channel_id,
             });
           } else if (init.status === "active" || init.status === "open") {
             inMotionInitiatives.push({
@@ -250,6 +318,9 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
               title: init.title,
               meta: init.plan_path || "Tracked initiative",
               age,
+              mapId: init.evidence_map_id,
+              planPath: init.plan_path || null,
+              channelId: init.channel_id,
             });
           }
         }
@@ -266,6 +337,8 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
             age: relativeTime(d.created_at),
             why: "A graph decision is waiting for accept/reject.",
             nextStep: "Open Continuity → Inbox → accept or reject this decision.",
+            channelId: d.channel_id,
+            channelName: d.channel_name,
           });
         }
         for (const p of inbox.proposals || []) {
@@ -280,6 +353,8 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
             age: relativeTime(p.created_at),
             why: "A capability proposal is waiting for review.",
             nextStep: "Open Continuity → Inbox → apply or reject this proposal.",
+            channelId: p.channel_id,
+            channelName: p.channel_name,
           });
         }
         for (const m of inbox.memoryCandidates || []) {
@@ -294,6 +369,8 @@ function useContinuitySnapshot(): ContinuitySnapshot | null {
             age: relativeTime(m.created_at),
             why: "A memory candidate is waiting for accept/reject.",
             nextStep: "Open Continuity → Inbox → accept or reject this memory.",
+            channelId: m.channel_id,
+            channelName: m.channel_name,
           });
         }
 
@@ -433,15 +510,22 @@ function AttentionList({ rows }: { rows: AttentionRow[] }) {
             </span>
             <span className="ml-auto shrink-0 text-[10px] text-zinc-400">{row.age}</span>
           </div>
-          <p className="mt-0.5 truncate text-[10px] text-zinc-400">
-            {row.source === "initiative"
-              ? "Continuity"
-              : row.source === "inbox"
-                ? "Inbox"
-                : "Channels"}
-            {" · "}
-            {row.why || row.meta}
-          </p>
+          {row.originLine ? (
+            <p className="mt-0.5 truncate text-[10px] text-zinc-400">{row.originLine}</p>
+          ) : (
+            <p className="mt-0.5 truncate text-[10px] text-zinc-400">
+              {row.source === "initiative"
+                ? "Continuity"
+                : row.source === "inbox"
+                  ? "Inbox"
+                  : "Channels"}
+              {" · "}
+              {row.why || row.meta}
+            </p>
+          )}
+          {row.originLine && row.why && (
+            <p className="mt-0.5 truncate text-[10px] text-zinc-400">{row.why}</p>
+          )}
           {row.nextStep && (
             <p className="mt-0.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-300">
               Next: {row.nextStep}
@@ -482,6 +566,8 @@ function NeedsAttentionPanel({
         age: relativeTime(item.createdAt),
         why: item.why || item.errorDetail || "Promotion/gate failed.",
         nextStep: item.nextStep || "Open the thread → GuideBar → resolve the failed gate.",
+        channelName: item.channelName,
+        channelId: item.channelId,
       });
     }
     for (const item of data.topNeedsMe) {
@@ -502,11 +588,22 @@ function NeedsAttentionPanel({
         age: relativeTime(item.updatedAt),
         why: item.why || `Waiting on ${item.reason.replace(/_/g, " ")}.`,
         nextStep: item.nextStep || "Open the thread and follow Do this now.",
+        channelName: item.channelName,
+        channelId: item.channelId,
       });
     }
 
     return merged.sort((a, b) => a.priority - b.priority || a.title.localeCompare(b.title));
   }, [data, continuity]);
+
+  const annotatedRows = useMemo(
+    () => applyOriginLines(rows, data.channels),
+    [rows, data.channels],
+  );
+  const annotatedReady = useMemo(
+    () => applyOriginLines(readyRows, data.channels),
+    [readyRows, data.channels],
+  );
 
   return (
     <Card
@@ -524,14 +621,17 @@ function NeedsAttentionPanel({
         Human gates: review/approval, blockers, failed gates, evidence fails, inbox.
       </p>
       <div id="needs-attention">
-        <AttentionList rows={rows} />
+        <AttentionList rows={annotatedRows} />
         {readyRows.length > 0 && (
           <>
             <div className="my-3 border-t border-zinc-100 dark:border-zinc-800" />
-            <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
+            <p className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
               Ready to promote
             </p>
-            <AttentionList rows={readyRows.slice(0, 5)} />
+            <p className="mb-1.5 text-[10px] text-zinc-400">
+              Evidence initiatives with green checks that aren&apos;t marked shipped yet.
+            </p>
+            <AttentionList rows={annotatedReady.slice(0, 5)} />
           </>
         )}
       </div>
@@ -616,9 +716,16 @@ function InMotionPanel({
         ? `${item.latestStep.status} · ${displayStepLabel(item.latestStep.label)}`
         : `# ${item.channelName}`,
       age: "",
+      channelName: item.channelName,
+      channelId: item.channelId,
     })),
     ...(continuity?.inMotionInitiatives || []).slice(0, 4),
   ];
+
+  const annotatedRows = useMemo(
+    () => applyOriginLines(rows, data.channels),
+    [rows, data.channels],
+  );
 
   return (
     <Card
@@ -633,7 +740,7 @@ function InMotionPanel({
         {rows.length === 0 ? (
           <Empty text="Nothing actively moving." />
         ) : (
-          <AttentionList rows={rows.slice(0, 8)} />
+          <AttentionList rows={annotatedRows.slice(0, 8)} />
         )}
       </div>
     </Card>

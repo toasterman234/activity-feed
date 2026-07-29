@@ -163,10 +163,103 @@ export default function InitiativeDetailPage() {
             }}
             className="shrink-0 rounded-md bg-zinc-900 px-2.5 py-1.5 text-[11px] font-medium text-white disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
           >
-            {acting ? "…" : "Promote to shipped"}
+            {acting ? "…" : "Mark shipped (evidence)"}
           </button>
         )}
       </div>
+
+      {init.status !== "shipped" && (
+        <p className="text-[10px] text-zinc-400">
+          Marks this initiative <strong>shipped</strong> in Continuity after evidence checks pass. This is not thread
+          &ldquo;Promote to project.&rdquo;
+        </p>
+      )}
+
+      {/* Origin strip — shows BEFORE What this is */}
+      <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Origin</h3>
+        <dl className="mt-2 space-y-1.5 text-[11px] text-zinc-600 dark:text-zinc-300">
+          <div>
+            <dt className="inline text-zinc-400">Kind · </dt>
+            <dd className="inline">Evidence / graph initiative</dd>
+          </div>
+          {links.mapId && (
+            <div>
+              <dt className="inline text-zinc-400">Evidence map · </dt>
+              <dd className="inline font-mono">{links.mapId}</dd>
+            </div>
+          )}
+          {links.planPath && (
+            <div>
+              <dt className="inline text-zinc-400">Plan · </dt>
+              <dd className="inline font-mono">
+                {links.planPath}
+                {plan?.exists ? "" : " (missing on disk)"}
+              </dd>
+            </div>
+          )}
+          {plan?.statusLine && (
+            <div>
+              <dt className="inline text-zinc-400">Status · </dt>
+              <dd className="inline">{plan.statusLine}</dd>
+            </div>
+          )}
+          {links.threadHref ? (
+            <div>
+              <dt className="inline text-zinc-400">Source thread · </dt>
+              <dd className="inline">
+                <Link href={links.threadHref} className="underline">
+                  Open thread
+                </Link>
+              </dd>
+            </div>
+          ) : links.channelHref ? (
+            <div>
+              <dt className="inline text-zinc-400">Channel · </dt>
+              <dd className="inline">
+                <Link href={links.channelHref} className="underline">
+                  {init.channel_id}
+                </Link>
+              </dd>
+            </div>
+          ) : null}
+          <div>
+            <dt className="inline text-zinc-400">Created · </dt>
+            <dd className="inline">
+              {fmt(init.created_at)} by {init.created_by}
+            </dd>
+          </div>
+          <div>
+            <dt className="inline text-zinc-400">Updated · </dt>
+            <dd className="inline">{fmt(init.updated_at)}</dd>
+          </div>
+          {init.shipped_at && (
+            <div>
+              <dt className="inline text-zinc-400">Shipped · </dt>
+              <dd className="inline">
+                {fmt(init.shipped_at)} by {init.shipped_by}
+              </dd>
+            </div>
+          )}
+          <div>
+            <dt className="inline text-zinc-400">Expected (checker) · </dt>
+            <dd className="inline">{mapEntry?.expectedStatus || check?.expectedStatus || "—"}</dd>
+          </div>
+          {blockers > 0 && (
+            <div className="mt-1 text-amber-700 dark:text-amber-300">
+              ⚠ {blockers} active decision(s) blocking promote
+            </div>
+          )}
+        </dl>
+        {plan?.excerpt && (
+          <details className="mt-2">
+            <summary className="cursor-pointer text-[10px] text-zinc-400">Plan excerpt</summary>
+            <pre className="mt-1 max-h-40 overflow-auto rounded-lg bg-zinc-50 p-2 text-[10px] leading-relaxed text-zinc-600 dark:bg-zinc-950 dark:text-zinc-400">
+              {plan.excerpt}
+            </pre>
+          </details>
+        )}
+      </section>
 
       {error && (
         <pre className="whitespace-pre-wrap rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
@@ -191,79 +284,10 @@ export default function InitiativeDetailPage() {
             Checks pass — admit this as shipped in the graph.
           </p>
           <p className="mt-1 text-[12px] text-amber-900/80 dark:text-amber-100/80">
-            <span className="font-semibold">Next:</span> Tap <span className="font-semibold">Promote to shipped</span> above.
+            <span className="font-semibold">Next:</span> Tap <span className="font-semibold">Mark shipped (evidence)</span> above.
           </p>
         </div>
       )}
-
-      <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">What this is</h3>
-        <dl className="mt-2 space-y-1.5 text-[11px] text-zinc-600 dark:text-zinc-300">
-          <div>
-            <dt className="inline text-zinc-400">Map id · </dt>
-            <dd className="inline font-mono">{links.mapId || "—"}</dd>
-          </div>
-          <div>
-            <dt className="inline text-zinc-400">Expected (checker) · </dt>
-            <dd className="inline">{mapEntry?.expectedStatus || check?.expectedStatus || "—"}</dd>
-          </div>
-          <div>
-            <dt className="inline text-zinc-400">Created · </dt>
-            <dd className="inline">
-              {fmt(init.created_at)} by {init.created_by}
-            </dd>
-          </div>
-          <div>
-            <dt className="inline text-zinc-400">Updated · </dt>
-            <dd className="inline">{fmt(init.updated_at)}</dd>
-          </div>
-          {init.shipped_at && (
-            <div>
-              <dt className="inline text-zinc-400">Shipped · </dt>
-              <dd className="inline">
-                {fmt(init.shipped_at)} by {init.shipped_by}
-              </dd>
-            </div>
-          )}
-          {blockers > 0 && (
-            <div className="text-amber-700 dark:text-amber-300">{blockers} active decision(s) blocking promote</div>
-          )}
-        </dl>
-      </section>
-
-      <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Links back to</h3>
-        <ul className="mt-2 space-y-1.5 text-[11px]">
-          <li className="text-zinc-600 dark:text-zinc-300">
-            Plan:{" "}
-            <span className="font-mono text-zinc-800 dark:text-zinc-200">{links.planPath || "none"}</span>
-            {plan && !plan.exists ? " (missing on disk)" : null}
-          </li>
-          {links.threadHref ? (
-            <li>
-              <Link href={links.threadHref} className="underline">
-                Channel thread
-              </Link>
-            </li>
-          ) : links.channelHref ? (
-            <li>
-              <Link href={links.channelHref} className="underline">
-                Channel {init.channel_id}
-              </Link>
-            </li>
-          ) : (
-            <li className="text-zinc-400">No channel/thread linked (ops-level initiative)</li>
-          )}
-        </ul>
-        {plan?.statusLine && (
-          <p className="mt-2 text-[11px] text-zinc-500">Plan signal: {plan.statusLine}</p>
-        )}
-        {plan?.excerpt && (
-          <pre className="mt-2 max-h-40 overflow-auto rounded-lg bg-zinc-50 p-2 text-[10px] leading-relaxed text-zinc-600 dark:bg-zinc-950 dark:text-zinc-400">
-            {plan.excerpt}
-          </pre>
-        )}
-      </section>
 
       {(mapEntry?.requireAll?.length || mapEntry?.forbidAll?.length || mapEntry?.openItems?.length) && (
         <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
