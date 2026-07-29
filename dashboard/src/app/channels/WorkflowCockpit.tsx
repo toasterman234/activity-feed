@@ -57,7 +57,7 @@ export function WorkflowCockpit({
   const activeRun = activity.some((event) => event.status === "running");
   const requirements = stage.requirements || [];
   const completeRequirements = requirements.filter((requirement) =>
-    requirementStatus(requirement, currentState, plans, artifacts, steps)
+    requirementStatus(requirement, lifecycleKey, currentState, plans, artifacts, steps)
   ).length;
   const stageArtifacts = artifacts.filter((item) => !item.stage_id || item.stage_id === currentState);
   const stagePlans = plans.filter((item) => !item.stage_id || item.stage_id === currentState);
@@ -137,7 +137,7 @@ export function WorkflowCockpit({
           ) : (
             <ul className="mt-2 space-y-2">
               {requirements.map((requirement) => {
-                const complete = requirementStatus(requirement, currentState, plans, artifacts, steps);
+                const complete = requirementStatus(requirement, lifecycleKey, currentState, plans, artifacts, steps);
                 return (
                   <li key={requirement.id} className="flex items-start gap-2 text-xs">
                     <span className={`mt-px grid h-4 w-4 shrink-0 place-items-center rounded-full border text-[9px] ${

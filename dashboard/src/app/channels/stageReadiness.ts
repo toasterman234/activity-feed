@@ -1,20 +1,24 @@
 import type { StageRequirement } from "./lifecycles";
-import { LIFECYCLES } from "./lifecycles";
+import { LIFECYCLES, mainPathOrder } from "./lifecycles";
 import type { ThreadArtifactRow, ThreadPlanRow, WorkflowStepRow } from "./shapes";
 
 export function requirementStatus(
   requirement: StageRequirement,
+  lifecycleKey: string,
   currentState: string,
   plans: ThreadPlanRow[],
   artifacts: ThreadArtifactRow[],
   steps: WorkflowStepRow[],
 ): boolean {
-  const stagePlans = plans.filter((item) => !item.stage_id || item.stage_id === currentState);
+  const lc = LIFECYCLES[lifecycleKey];
+  const mainPath = lc ? mainPathOrder(lc) : [];
+  const currentIndex = mainPath.indexOf(currentState);
+  // Allow plans tagged to current state, any prior state on the main path, or untagged.
+  const planAllowlist = new Set(currentIndex >= 0 ? mainPath.slice(0, currentIndex + 1) : [currentState]);
+  const stagePlans = plans.filter((item) => !item.stage_id || planAllowlist.has(item.stage_id));
   const stageArtifacts = artifacts.filter((item) => !item.stage_id || item.stage_id === currentState);
   if (requirement.source === "task") {
-    return stagePlans.length >= 2 && stagePlans.every((item, index) =>
-      item.title.trim().length >= 8 && item.sort_order === index
-    );
+    return stagePlans.filter((item) => item.title.trim().length >= 8).length >= 1;
   }
   if (requirement.source === "artifact") return stageArtifacts.length > 0;
   if (requirement.source === "gate") {
@@ -38,7 +42,7 @@ export function stageReadiness(
   const requirements = stage?.requirements || [];
   const incompleteLabels = requirements
     .filter((req) => !req.optional)
-    .filter((req) => !requirementStatus(req, currentState, plans, artifacts, steps))
+    .filter((req) => !requirementStatus(req, lifecycleKey, currentState, plans, artifacts, steps))
     .map((req) => req.label);
   return { incompleteLabels };
 }
