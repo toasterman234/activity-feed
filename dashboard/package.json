@@ -19,7 +19,10 @@
     "check:plans": "node scripts/check-plan-status.mjs",
     "init:initiatives": "node scripts/init-graph-initiatives.mjs",
     "init:iii-tasks": "node scripts/init-iii-tasks.mjs",
-    "init:iii-binds": "node scripts/init-iii-binds.mjs"
+    "init:iii-binds": "node scripts/init-iii-binds.mjs",
+    "init:notifications": "node scripts/init-notifications.mjs",
+    "rollback:notifications": "node scripts/rollback-notifications.mjs",
+    "gen:vapid": "node scripts/gen-vapid-keys.mjs"
   },
   "dependencies": {
     "@durable-streams/client": "^0.2.6",
