@@ -115,6 +115,16 @@ export const LIFECYCLES: Record<string, Lifecycle> = {
         ],
         "outputs": [
           "Verification results"
+        ],
+        "modules": [
+          {
+            "id": "verify-checks",
+            "type": "verification",
+            "label": "Run verification",
+            "config": {
+              "workflows": ["unit-tests", "typecheck", "lint"]
+            }
+          }
         ]
       },
       "blocked": {

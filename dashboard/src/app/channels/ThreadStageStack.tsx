@@ -4,8 +4,9 @@ import { LIFECYCLES, mainPathOrder, stageModules } from "./lifecycles";
 import { StageReviewWorkspace } from "./StageReviewWorkspace";
 import { ExecutionHandoffWorkspace } from "./ExecutionHandoffWorkspace";
 import { CodingExecutionWorkspace } from "./CodingExecutionWorkspace";
+import { VerificationWorkspace } from "./VerificationWorkspace";
 import { WorkflowStageModules } from "./WorkflowStageModules";
-import type { ThreadMetaRow, ThreadPlanRow, ThreadArtifactRow, StageInteractionRow, ActivityEventRow } from "./shapes";
+import type { ThreadMetaRow, ThreadPlanRow, ThreadArtifactRow, StageInteractionRow, ActivityEventRow, WorkflowStepRow } from "./shapes";
 
 export function ThreadStageStack({
   lifecycleKey,
@@ -13,6 +14,8 @@ export function ThreadStageStack({
   meta,
   channelId,
   threadId,
+  enabledWorkflows,
+  steps,
   plans,
   artifacts,
   interactions,
@@ -27,6 +30,8 @@ export function ThreadStageStack({
   meta: ThreadMetaRow;
   channelId: string;
   threadId: string;
+  enabledWorkflows: string[];
+  steps: WorkflowStepRow[];
   plans: ThreadPlanRow[];
   artifacts: ThreadArtifactRow[];
   interactions: StageInteractionRow[];
@@ -46,6 +51,7 @@ export function ThreadStageStack({
   const currentStageModules = stageModules(lifecycleKey, currentState);
   const guidedReview = currentStageModules.find((module) => module.type === "guided-review");
   const executionHandoff = currentStageModules.find((module) => module.type === "execution-handoff");
+  const verification = currentStageModules.find((module) => module.type === "verification");
   const showCodingWorkspace =
     lifecycleKey === "coding" &&
     (currentState === "drafted" || currentState === "running") &&
@@ -99,9 +105,21 @@ export function ThreadStageStack({
           />
         )}
 
+        {verification && !isArchived && (
+          <VerificationWorkspace
+            threadId={threadId}
+            channelId={channelId}
+            lifecycleKey={lifecycleKey}
+            currentState={currentState}
+            enabledWorkflows={enabledWorkflows}
+            steps={steps}
+            onRefresh={onRefresh}
+          />
+        )}
+
         {/* Catch-all: any module type not handled above (task-list, guided-interview, etc.) */}
         {currentStageModules.filter(
-          (module) => module.type !== "guided-review" && module.type !== "execution-handoff",
+          (module) => module.type !== "guided-review" && module.type !== "execution-handoff" && module.type !== "verification",
         ).length > 0 && !isArchived && (
           <WorkflowStageModules
             lifecycleKey={lifecycleKey}

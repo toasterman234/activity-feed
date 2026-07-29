@@ -668,6 +668,8 @@ function ThreadContent({
               meta={meta}
               channelId={channelId}
               threadId={threadId}
+              enabledWorkflows={enabledWorkflows}
+              steps={steps}
               plans={plans}
               artifacts={extras.artifacts}
               interactions={extras.interactions}
