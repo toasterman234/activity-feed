@@ -28,6 +28,36 @@ export async function getBind(sessionId: string): Promise<IiiBind | null> {
   return rowToBind(row);
 }
 
+export type IiiBindSummary = IiiBind & {
+  open_tasks: number;
+  task_count: number;
+};
+
+export async function listBinds(opts: { limit?: number } = {}): Promise<IiiBindSummary[]> {
+  const limitRaw = opts.limit ?? 50;
+  const limit = Number.isFinite(limitRaw) ? Math.min(200, Math.max(1, Math.floor(limitRaw))) : 50;
+  const res = await pool.query(
+    `SELECT b.session_id, b.thread_id, b.channel_id, b.repo_id, b.title, b.created_at, b.updated_at,
+            COALESCE(c.task_count, 0)::int AS task_count,
+            COALESCE(c.open_tasks, 0)::int AS open_tasks
+       FROM iii_session_binds b
+       LEFT JOIN LATERAL (
+         SELECT COUNT(*)::int AS task_count,
+                COUNT(*) FILTER (WHERE tp.status = 'todo')::int AS open_tasks
+           FROM thread_plans tp
+          WHERE tp.thread_id = b.thread_id
+       ) c ON true
+      ORDER BY b.updated_at DESC
+      LIMIT $1`,
+    [limit],
+  );
+  return res.rows.map((row) => ({
+    ...rowToBind(row),
+    task_count: Number(row.task_count) || 0,
+    open_tasks: Number(row.open_tasks) || 0,
+  }));
+}
+
 function rowToBind(row: Record<string, unknown>, createdThread = false): IiiBind {
   const threadId = String(row.thread_id);
   const channelId = String(row.channel_id);
