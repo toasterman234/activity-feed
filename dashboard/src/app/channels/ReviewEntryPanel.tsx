@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { advanceThread } from "./advanceThread";
 
 interface ReviewEntryPanelProps {
   threadId: string;
@@ -21,20 +22,12 @@ export function ReviewEntryPanel({
   const startShipReview = async () => {
     setBusy(true);
     setError(null);
-    try {
-      const res = await fetch("/api/channels/transition", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, channelId, toState: "verified" }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `Transition failed (${res.status})`);
-      await onRefresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusy(false);
+    const result = await advanceThread({ threadId, channelId, mode: "transition", toState: "verified" });
+    if (!result.ok) {
+      setError(result.error || "Failed");
     }
+    setBusy(false);
+    await onRefresh();
   };
 
   return (

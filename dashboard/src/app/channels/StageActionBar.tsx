@@ -8,6 +8,7 @@ import {
   type NextStepSummary,
 } from "./lifecycles";
 import { stageReadiness } from "./stageReadiness";
+import { advanceThread } from "./advanceThread";
 import type { ThreadArtifactRow, ThreadPlanRow, WorkflowStepRow } from "./shapes";
 
 const CONFIRM_KINDS = new Set(["done", "dead", "proven"]);
@@ -114,63 +115,37 @@ export function StageActionBar({
 
   const runAgentAdvance = async () => {
     setBarState({ kind: "working" });
-    try {
-      const res = await fetch("/api/channels/advance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, channelId }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setBarState({
-          kind: "error",
-          reason: data.error || `Failed (${res.status})`,
-          retry: () => { void runAgentAdvance(); },
-        });
-        return;
-      }
-      setBarState({ kind: "idle" });
-      await onDone();
-    } catch (e) {
+    const result = await advanceThread({ threadId, channelId, mode: "agent" });
+    if (!result.ok) {
       setBarState({
         kind: "error",
-        reason: String(e),
+        reason: result.error || "Failed",
         retry: () => { void runAgentAdvance(); },
       });
+      return;
     }
+    setBarState({ kind: "idle" });
+    await onDone();
   };
 
   const transitionTo = async (toState: string) => {
     const target = lc.states[toState];
     if (target && CONFIRM_KINDS.has(target.kind)) {
       const label = target.label || toState;
-      if (!window.confirm(`Move thread to “${label}”?`)) return;
+      if (!window.confirm(`Move thread to "${label}"?`)) return;
     }
     setBarState({ kind: "working" });
-    try {
-      const res = await fetch("/api/channels/transition", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, channelId, toState, actor: "you" }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setBarState({
-          kind: "error",
-          reason: data.error || `Failed (${res.status})`,
-          retry: () => { void transitionTo(toState); },
-        });
-        return;
-      }
-      setBarState({ kind: "idle" });
-      await onDone();
-    } catch (e) {
+    const result = await advanceThread({ threadId, channelId, mode: "transition", toState });
+    if (!result.ok) {
       setBarState({
         kind: "error",
-        reason: String(e),
+        reason: result.error || "Failed",
         retry: () => { void transitionTo(toState); },
       });
+      return;
     }
+    setBarState({ kind: "idle" });
+    await onDone();
   };
 
   const secondaryStates = mainNext

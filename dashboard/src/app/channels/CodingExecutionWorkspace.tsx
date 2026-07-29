@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ThreadPlanRow } from "./shapes";
 import type { ThreadMetaRow } from "./shapes";
+import { advanceThread } from "./advanceThread";
 
 function planList(value: string): string[] {
   try {
@@ -53,20 +54,12 @@ export function CodingExecutionWorkspace({
   const advance = async () => {
     setBusy(true);
     setAdvanceError(null);
-    try {
-      const res = await fetch("/api/channels/advance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, channelId }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `Advance failed (${res.status})`);
-      await onRefresh();
-    } catch (err) {
-      setAdvanceError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusy(false);
+    const result = await advanceThread({ threadId, channelId, mode: "agent" });
+    if (!result.ok) {
+      setAdvanceError(result.error || "Failed");
     }
+    setBusy(false);
+    await onRefresh();
   };
 
   const sourcePlanThreadId = (() => {

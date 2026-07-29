@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LIFECYCLES } from "./lifecycles";
+import { advanceThread } from "./advanceThread";
 import type { WorkflowStepRow } from "./shapes";
 
 interface VerificationWorkspaceProps {
@@ -60,20 +61,12 @@ export function VerificationWorkspace({
   const runChecks = async () => {
     setBusy(true);
     setError(null);
-    try {
-      const res = await fetch("/api/channels/advance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId, channelId }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `Advance failed (${res.status})`);
-      await onRefresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusy(false);
+    const result = await advanceThread({ threadId, channelId, mode: "agent" });
+    if (!result.ok) {
+      setError(result.error || "Failed");
     }
+    setBusy(false);
+    await onRefresh();
   };
 
   if (isArchived) return null;
