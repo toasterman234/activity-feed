@@ -147,6 +147,24 @@ export async function upsertBind(input: UpsertBindInput): Promise<IiiBind> {
   let title = input.title === undefined || input.title === null ? null : String(input.title).trim() || null;
   let createdThread = false;
 
+  // Idempotent: if already bound and caller did not ask to retarget, keep the thread.
+  const existing = await getBind(sessionId);
+  if (existing && !threadId) {
+    if (title || repoId !== null) {
+      await pool.query(
+        `UPDATE iii_session_binds
+            SET title = COALESCE($2, title),
+                repo_id = COALESCE($3, repo_id),
+                updated_at = $4
+          WHERE session_id = $1`,
+        [sessionId, title, repoId, now],
+      );
+    }
+    const bind = await getBind(sessionId);
+    if (!bind) throw new Error("bind read failed");
+    return bind;
+  }
+
   if (threadId) {
     const meta = await threadExists(threadId);
     if (!meta) throw Object.assign(new Error("thread not found"), { code: "not_found" });
