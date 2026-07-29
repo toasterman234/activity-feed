@@ -6,6 +6,8 @@ import BottomNav from "./bottom-nav";
 import SWUpdatePrompt from "./sw-update-prompt";
 import InstallPrompt from "./install-prompt";
 import PerfMonitors from "./perf-monitors";
+import ThemeSwitcher from "./theme-switcher";
+import ProtoThemePicker from "@/components/ProtoThemePicker";
 
 export const metadata: Metadata = {
   title: "Activity",
@@ -40,7 +42,34 @@ export default function RootLayout({
     <html
       lang="en"
       className="h-full antialiased"
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  // 1. Restore persistent theme from localStorage
+                  var theme = localStorage.getItem('data-theme');
+                  if (theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                  }
+                  // 2. Restore prototype theme from sessionStorage (theme-lab live apply)
+                  var proto = sessionStorage.getItem('__proto_theme');
+                  if (proto) {
+                    var data = JSON.parse(proto);
+                    var vars = data.vars;
+                    for (var key in vars) {
+                      document.documentElement.style.setProperty(key, vars[key]);
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full bg-background text-foreground font-sans pb-[calc(var(--bottom-nav-height)+1rem+env(safe-area-inset-bottom))]">
         <ReactScan />
         <PerfMonitors />
@@ -48,6 +77,8 @@ export default function RootLayout({
         <BottomNav />
         <SWUpdatePrompt />
         <InstallPrompt />
+        <ThemeSwitcher />
+        {process.env.NODE_ENV === "development" && <ProtoThemePicker />}
       </body>
     </html>
   );
