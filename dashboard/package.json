@@ -14,9 +14,11 @@
     "dev:unsafe-3000": "next dev -p 3000",
     "deploy:ovh": "bash scripts/deploy-ovh.sh",
     "rollback:ovh": "bash scripts/rollback-ovh.sh",
+    "gen:themes": "npx ts-node themes/generate.ts",
     "doctor:pi": "bash scripts/pi-execution-doctor.sh",
     "check:plans": "node scripts/check-plan-status.mjs",
-    "init:initiatives": "node scripts/init-graph-initiatives.mjs"
+    "init:initiatives": "node scripts/init-graph-initiatives.mjs",
+    "init:iii-tasks": "node scripts/init-iii-tasks.mjs"
   },
   "dependencies": {
     "@durable-streams/client": "^0.2.6",
