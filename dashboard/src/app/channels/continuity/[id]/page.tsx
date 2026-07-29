@@ -229,6 +229,11 @@ export default function InitiativeDetailPage() {
               {fmt(init.created_at)} by {init.created_by}
             </dd>
           </div>
+          {!links.channelHref && !links.threadHref && (
+            <p className="mt-1 text-[10px] text-zinc-400">
+              Not tied to a channel thread — tracked from the evidence map / plan.
+            </p>
+          )}
           <div>
             <dt className="inline text-zinc-400">Updated · </dt>
             <dd className="inline">{fmt(init.updated_at)}</dd>
