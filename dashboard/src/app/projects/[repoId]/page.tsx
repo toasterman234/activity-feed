@@ -130,7 +130,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
   }, [repoId]);
 
   if (loading) {
-    return <Shell><p className="text-sm text-zinc-400">Loading project…</p></Shell>;
+    return <Shell><p className="text-sm text-muted">Loading project…</p></Shell>;
   }
 
   if (err || !data) {
@@ -144,16 +144,16 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
   return (
     <Shell>
       <div className="space-y-4">
-        <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-lg border border-border bg-card p-3 dark:border-border dark:bg-background">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{repo.name}</h1>
-              <p className="mt-1 break-all font-mono text-[11px] text-zinc-500">{repo.path}</p>
-              <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-zinc-500">
+              <h1 className="text-base font-semibold text-foreground text-foreground">{repo.name}</h1>
+              <p className="mt-1 break-all font-mono text-[11px] text-muted-foreground">{repo.path}</p>
+              <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-muted-foreground">
                 <span className={`rounded px-1.5 py-0.5 ${repo.exists_on_disk ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300" : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300"}`}>
                   {repo.exists_on_disk ? "repo exists on host" : "repo path missing on host"}
                 </span>
-                <span className={`rounded px-1.5 py-0.5 ${repo.scaffold_detected ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"}`}>
+                <span className={`rounded px-1.5 py-0.5 ${repo.scaffold_detected ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" : "bg-muted/30 text-muted-foreground bg-muted/40 dark:text-muted"}`}>
                   {repo.scaffold_detected ? "AIWG scaffold detected" : "No AIWG scaffold detected"}
                 </span>
               </div>
@@ -164,12 +164,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
                 repoId={repo.id}
                 label="New work thread"
                 forceNew={true}
-                className="rounded border border-zinc-200 px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+                className="rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-background disabled:opacity-50 dark:border-border dark:text-muted"
               />
               {activeThread && (
                 <Link
                   href={`/channels/${activeThread.channel_id}/${activeThread.thread_id}`}
-                  className="rounded border border-zinc-200 px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300"
+                  className="rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-background dark:border-border dark:text-muted"
                 >
                   Open active thread
                 </Link>
@@ -177,7 +177,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
               {source && (
                 <Link
                   href={`/channels/${source.channel_id}/${source.thread_id}`}
-                  className="rounded border border-zinc-200 px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300"
+                  className="rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-background dark:border-border dark:text-muted"
                 >
                   Open source thread
                 </Link>
@@ -187,7 +187,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
                   href={repo.git_remote}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded border border-zinc-200 px-2 py-1 text-[10px] text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300"
+                  className="rounded border border-border px-2 py-1 text-[10px] text-muted-foreground hover:bg-background dark:border-border dark:text-muted"
                 >
                   Remote
                 </a>
@@ -195,7 +195,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
             </div>
           </div>
 
-          <dl className="mt-3 grid gap-2 text-[11px] text-zinc-600 dark:text-zinc-300 sm:grid-cols-2">
+          <dl className="mt-3 grid gap-2 text-[11px] text-muted-foreground dark:text-muted sm:grid-cols-2">
             <Meta label="Created" value={fmt(repo.created_at)} />
             <Meta label="Project phase" value={projectPhase.label} />
             <Meta label="Active thread" value={activeThread ? activeThread.title : "None"} />
@@ -205,25 +205,25 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
           </dl>
         </section>
 
-        <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">Project phase</h2>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
+        <section className="rounded-lg border border-border bg-card p-3 dark:border-border dark:bg-background">
+          <h2 className="text-sm font-medium text-foreground text-foreground">Project phase</h2>
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground">
             <span className="rounded bg-blue-50 px-1.5 py-0.5 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
               {projectPhase.label}
             </span>
             <span>{projectPhase.reason}</span>
           </div>
-          <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-300">
+          <p className="mt-2 text-xs text-muted-foreground dark:text-muted">
             Recommended next move: <span className="font-medium">{projectPhase.recommended_action}</span>
           </p>
         </section>
 
         <ProjectQuickWorkComposer repoId={repo.id} hasActiveThread={!!activeThread} />
 
-        <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">Current agent status</h2>
+        <section className="rounded-lg border border-border bg-card p-3 dark:border-border dark:bg-background">
+          <h2 className="text-sm font-medium text-foreground text-foreground">Current agent status</h2>
           {currentRun ? (
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground">
               <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
                 running
               </span>
@@ -235,7 +235,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
               <span>· {fmt(currentRun.created_at)}</span>
             </div>
           ) : (
-            <p className="mt-2 text-[10px] text-zinc-400">No agent currently running for this project.</p>
+            <p className="mt-2 text-[10px] text-muted">No agent currently running for this project.</p>
           )}
         </section>
 
@@ -295,11 +295,11 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
             ) : (
               <ul className="space-y-2">
                 {artifacts.map((artifact) => (
-                  <li key={artifact.id} className="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                  <li key={artifact.id} className="rounded border border-border p-2 dark:border-border">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">{artifact.title}</p>
-                        <p className="mt-1 text-[10px] text-zinc-500">
+                        <p className="text-sm font-medium text-foreground text-foreground">{artifact.title}</p>
+                        <p className="mt-1 text-[10px] text-muted-foreground">
                           {artifact.kind} · v{artifact.version} · from {artifact.thread_title}
                         </p>
                       </div>
@@ -320,13 +320,13 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
           ) : (
             <ul className="space-y-2">
               {promotions.map((promotion) => (
-                <li key={promotion.id} className="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+                <li key={promotion.id} className="rounded border border-border p-2 dark:border-border">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <Link href={`/channels/${promotion.channel_id}/${promotion.thread_id}`} className="text-sm font-medium text-zinc-800 hover:underline dark:text-zinc-100">
+                      <Link href={`/channels/${promotion.channel_id}/${promotion.thread_id}`} className="text-sm font-medium text-foreground hover:underline text-foreground">
                         {promotion.thread_title}
                       </Link>
-                      <p className="mt-1 text-[10px] text-zinc-500">
+                      <p className="mt-1 text-[10px] text-muted-foreground">
                         {promotion.status}
                         {promotion.repo_path ? ` · ${promotion.repo_path}` : ""}
                       </p>
@@ -334,7 +334,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
                         <p className="mt-1 text-[10px] text-red-500">{promotion.error_detail}</p>
                       )}
                     </div>
-                    <span className="text-[10px] text-zinc-400">{fmt(promotion.created_at)}</span>
+                    <span className="text-[10px] text-muted">{fmt(promotion.created_at)}</span>
                   </div>
                 </li>
               ))}
@@ -348,12 +348,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
+    <div className="min-h-screen bg-background dark:bg-background pb-16">
       <header className="sticky top-0 z-10 border-b border-border bg-card/95 backdrop-blur pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2">
           <div>
-            <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Project</h1>
-            <p className="text-[10px] text-zinc-400">AIWG-aware project view. Work still happens in threads.</p>
+            <h1 className="text-sm font-semibold text-foreground text-foreground">Project</h1>
+            <p className="text-[10px] text-muted">AIWG-aware project view. Work still happens in threads.</p>
           </div>
           <Link href="/projects" className="text-xs text-blue-600 dark:text-blue-400">
             Projects
@@ -367,9 +367,9 @@ function Shell({ children }: { children: ReactNode }) {
 
 function Panel({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
-    <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
-      <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">{title}</h2>
-      {subtitle && <p className="mt-0.5 text-[10px] text-zinc-400">{subtitle}</p>}
+    <section className="rounded-lg border border-border bg-card p-3 dark:border-border dark:bg-background">
+      <h2 className="text-sm font-medium text-foreground text-foreground">{title}</h2>
+      {subtitle && <p className="mt-0.5 text-[10px] text-muted">{subtitle}</p>}
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -378,21 +378,21 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-zinc-400">{label}</dt>
-      <dd className="mt-0.5 text-zinc-700 dark:text-zinc-200">{value}</dd>
+      <dt className="text-muted">{label}</dt>
+      <dd className="mt-0.5 text-foreground/80 text-foreground">{value}</dd>
     </div>
   );
 }
 
 function DocCard({ doc }: { doc: Doc }) {
   return (
-    <details className="rounded border border-zinc-200 p-2 dark:border-zinc-800">
-      <summary className="cursor-pointer list-none text-sm font-medium text-zinc-800 dark:text-zinc-100">
+    <details className="rounded border border-border p-2 dark:border-border">
+      <summary className="cursor-pointer list-none text-sm font-medium text-foreground text-foreground">
         {doc.name}
-        <span className="ml-2 text-[10px] font-normal text-zinc-400">{fmt(doc.updated_at)}</span>
+        <span className="ml-2 text-[10px] font-normal text-muted">{fmt(doc.updated_at)}</span>
       </summary>
-      <p className="mt-1 break-all font-mono text-[10px] text-zinc-400">{doc.path}</p>
-      <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-zinc-50 p-2 text-[11px] text-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">{doc.content}</pre>
+      <p className="mt-1 break-all font-mono text-[10px] text-muted">{doc.path}</p>
+      <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded bg-background p-2 text-[11px] text-foreground/80 dark:bg-background dark:text-muted">{doc.content}</pre>
     </details>
   );
 }
@@ -414,7 +414,7 @@ function ThreadGroup({
 }) {
   return (
     <div>
-      <h3 className="mb-2 text-[10px] font-medium uppercase tracking-wide text-zinc-400">{title}</h3>
+      <h3 className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted">{title}</h3>
       {threads.length === 0 ? (
         <Empty text={emptyText} />
       ) : (
@@ -422,11 +422,11 @@ function ThreadGroup({
           {threads.map((thread) => {
             const isPrimary = thread.thread_id === primaryThreadId;
             return (
-              <li key={thread.thread_id} className="rounded border border-zinc-200 p-2 dark:border-zinc-800">
+              <li key={thread.thread_id} className="rounded border border-border p-2 dark:border-border">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Link href={`/channels/${thread.channel_id}/${thread.thread_id}`} className="text-sm font-medium text-zinc-800 hover:underline dark:text-zinc-100">
+                      <Link href={`/channels/${thread.channel_id}/${thread.thread_id}`} className="text-sm font-medium text-foreground hover:underline text-foreground">
                         {thread.title}
                       </Link>
                       {isPrimary && (
@@ -435,12 +435,12 @@ function ThreadGroup({
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-[10px] text-zinc-500">
+                    <p className="mt-1 text-[10px] text-muted-foreground">
                       {thread.lifecycle} · {thread.state}{thread.archived_at ? " · archived" : ""}
                     </p>
                   </div>
                   <div className="shrink-0 space-y-1 text-right">
-                    <span className="block text-[10px] text-zinc-400">{fmt(thread.updated_at)}</span>
+                    <span className="block text-[10px] text-muted">{fmt(thread.updated_at)}</span>
                     {showActions && (
                       <div className="flex flex-wrap justify-end gap-1">
                         {!isPrimary && (
@@ -511,7 +511,7 @@ function ThreadActionButton({
               setBusy(false);
             });
         }}
-        className="rounded border border-zinc-200 px-1.5 py-0.5 text-[10px] text-zinc-600 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+        className="rounded border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-background disabled:opacity-50 dark:border-border dark:text-muted"
       >
         {busy ? "…" : label}
       </button>
@@ -521,5 +521,5 @@ function ThreadActionButton({
 }
 
 function Empty({ text }: { text: string }) {
-  return <p className="text-xs text-zinc-400">{text}</p>;
+  return <p className="text-xs text-muted">{text}</p>;
 }

@@ -40,8 +40,8 @@
   --color-zinc-500: var(--muted);
   --color-zinc-600: var(--fg-2);
   --color-zinc-700: var(--fg-2);
-  --color-zinc-800: var(--border);
-  --color-zinc-900: var(--surface);
+  --color-zinc-800: var(--fg);
+  --color-zinc-900: var(--fg);
   --color-zinc-950: var(--bg);
 
   --color-blue-400: var(--accent);
