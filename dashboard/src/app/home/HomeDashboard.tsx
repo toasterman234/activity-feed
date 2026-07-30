@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useHomeOverview, type HomeOverview } from "./useHomeOverview";
+import {
+  PageShell,
+  StatusChip,
+  Badge,
+  Card,
+  CardContent,
+  DividedList,
+  DividedRow,
+  cx,
+  type UiTone,
+} from "@/components/ui";
+import { HomeKanbanBoard, type HomeKanbanCard } from "./HomeKanbanBoard";
 
-function displayStepLabel(label: string): string {
-  if (/^@\w+ responding$/i.test(label)) return "Agent working";
-  if (/guidebar advance/i.test(label)) return "Stage advance";
-  return label;
-}
+// ── helpers ──
 
 function relativeTime(iso: string | null | undefined): string {
   if (!iso) return "—";
@@ -26,897 +33,157 @@ function relativeTime(iso: string | null | undefined): string {
   return new Date(iso).toLocaleDateString();
 }
 
-function basename(p: string | null | undefined): string {
-  if (!p) return "";
-  const parts = p.split("/");
-  return parts[parts.length - 1] || p;
+function stateTone(state: string): UiTone {
+  const s = state.toLowerCase();
+  if (s === "in_progress" || s === "running") return "active";
+  if (s === "review") return "wait";
+  if (s === "blocked" || s === "failed" || s === "fail") return "danger";
+  if (s === "resolved" || s === "shipped" || s === "verified") return "good";
+  if (s === "approved") return "primary";
+  return "open";
 }
 
-function applyOriginLines(
-  rows: AttentionRow[],
-  channels: Array<{ channelId: string; channelName: string }>,
-): AttentionRow[] {
-  const channelMap = new Map<string, string>();
-  for (const ch of channels) {
-    channelMap.set(ch.channelId, ch.channelName);
-  }
-  return rows.map((row) => {
-    if (row.originLine) return row;
-    const chName =
-      row.channelName || (row.channelId ? channelMap.get(row.channelId) : null);
-
-    if (row.source === "initiative") {
-      const parts = ["Evidence initiative"];
-      if (row.mapId) parts.push(`map ${row.mapId.slice(0, 8)}`);
-      if (row.planPath) parts.push(basename(row.planPath));
-      if (chName) parts.push(`# ${chName}`);
-      else if (row.channelId) parts.push(`ch ${row.channelId.slice(0, 8)}`);
-      return {
-        ...row,
-        originLine: parts.join(" · "),
-        originKind: "evidence-initiative",
-      };
-    }
-    if (row.source === "inbox") {
-      const kind = row.meta?.split(" · ")[0] || "Inbox";
-      return {
-        ...row,
-        originLine: chName ? `${kind} · # ${chName}` : kind,
-        originKind: "graph-inbox",
-      };
-    }
-    if (row.source === "channel") {
-      return {
-        ...row,
-        originLine: chName ? `# ${chName}` : undefined,
-        originKind: "channel-thread",
-      };
-    }
-    return row;
-  });
+function toneForRow(kind: string, state: string): UiTone {
+  if (kind === "failed") return "danger";
+  if (kind === "approved") return "primary";
+  return stateTone(state);
 }
 
-function stateBadge(state: string | null | undefined) {
-  switch (state) {
-    case "review":
-    case "blocked":
-    case "fail":
-    case "ready":
-      return "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300";
-    case "running":
-    case "testing":
-    case "searching":
-    case "synthesizing":
-    case "in_progress":
-    case "triaged":
-    case "drafting":
-    case "open":
-    case "inbox":
-      return "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300";
-    case "verified":
-    case "resolved":
-    case "shipped":
-      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
-    case "failed":
-      return "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
-    default:
-      return "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
-  }
-}
+// ── section heading ──
 
-function Card({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
-  return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{title}</h2>
-        {action}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function Empty({ text }: { text: string }) {
-  return <p className="text-[11px] text-zinc-400">{text}</p>;
-}
-
-function CountPill({
+function SectionHeading({
+  tone,
   label,
-  value,
-  href,
-  tone = "neutral",
+  count,
 }: {
+  tone: "amber" | "muted" | "neutral";
   label: string;
-  value: string | number;
-  href: string;
-  tone?: "neutral" | "warn" | "danger" | "good";
-}) {
-  const toneClass =
-    tone === "warn"
-      ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300"
-      : tone === "danger"
-        ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-        : tone === "good"
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
-          : "border-zinc-200 bg-white text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300";
-
-  return (
-    <Link href={href} className={`rounded-lg border px-2 py-1 text-center ${toneClass}`}>
-      <div className="text-[10px] uppercase tracking-wide opacity-75">{label}</div>
-      <div className="text-sm font-semibold leading-tight">{value}</div>
-    </Link>
-  );
-}
-
-type AttentionRow = {
-  key: string;
-  source: "channel" | "initiative" | "inbox";
-  priority: number;
-  href: string;
-  badge: string;
-  title: string;
-  meta: string;
-  age: string;
-  why?: string;
-  nextStep?: string;
-  // Origin context
-  originKind?: "evidence-initiative" | "channel-thread" | "graph-inbox";
-  originLine?: string;
-  mapId?: string | null;
-  planPath?: string | null;
-  channelId?: string | null;
-  channelName?: string | null;
-};
-
-type ContinuitySnapshot = {
-  failing: number;
-  open: number;
-  ready: number;
-  shipped: number;
-  pendingInbox: number;
-  attentionRows: AttentionRow[];
-  readyRows: AttentionRow[];
-  inMotionInitiatives: AttentionRow[];
-};
-
-type InboxPayload = {
-  decisions?: Array<{
-    id: string;
-    statement: string;
-    channel_id: string;
-    thread_id: string | null;
-    channel_name: string | null;
-    created_at: string;
-  }>;
-  proposals?: Array<{
-    id: string;
-    hypothesis: string;
-    channel_id: string;
-    thread_id: string | null;
-    channel_name: string | null;
-    created_at: string;
-  }>;
-  memoryCandidates?: Array<{
-    id: string;
-    text: string;
-    channel_id: string;
-    thread_id: string | null;
-    channel_name: string | null;
-    created_at: string;
-  }>;
-};
-
-function useContinuitySnapshot(): ContinuitySnapshot | null {
-  const [snap, setSnap] = useState<ContinuitySnapshot | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [evidenceRes, inboxRes] = await Promise.all([
-          fetch("/api/ops/evidence", { cache: "no-store" }),
-          fetch("/api/channels/graph-inbox", { cache: "no-store" }),
-        ]);
-        if (!evidenceRes.ok) return;
-        const evidence = await evidenceRes.json();
-        const inbox: InboxPayload = inboxRes.ok ? await inboxRes.json() : {};
-        if (cancelled) return;
-
-        const results: Array<{
-          id: string;
-          title: string;
-          ok: boolean;
-          findings: Array<{ severity: string; message: string }>;
-        }> = evidence.evidence?.results || [];
-        const byMap = new Map(results.map((r) => [r.id, r]));
-        const initiatives: Array<{
-          id: string;
-          evidence_map_id: string | null;
-          title: string;
-          status: string;
-          channel_id: string | null;
-          thread_id: string | null;
-          updated_at?: string;
-          plan_path?: string | null;
-        }> = evidence.initiatives || [];
-
-        const attentionRows: AttentionRow[] = [];
-        const readyRows: AttentionRow[] = [];
-        const inMotionInitiatives: AttentionRow[] = [];
-
-        for (const init of initiatives) {
-          const map = init.evidence_map_id ? byMap.get(init.evidence_map_id) : undefined;
-          const findings = (map?.findings || []).filter(
-            (f) => f.severity === "fail" || f.severity === "warn" || f.severity === "open",
-          );
-          const gateOk = map ? map.ok : true;
-          const hasFail = !gateOk || findings.some((f) => f.severity === "fail");
-          const hasOpen = findings.some((f) => f.severity === "open" || f.severity === "warn");
-          const ready = init.status !== "shipped" && gateOk;
-          const topFinding = findings[0]?.message;
-          const href = `/channels/continuity/${init.id}`;
-          const age = relativeTime(init.updated_at);
-
-          if (init.status === "shipped") continue;
-
-          if (hasFail) {
-            attentionRows.push({
-              key: `init-fail-${init.id}`,
-              source: "initiative",
-              priority: 10,
-              href,
-              badge: "fail",
-              title: init.title,
-              meta: topFinding || "Evidence checks failing",
-              age,
-              why: topFinding || "Evidence checks failing.",
-              nextStep: "Open initiative detail → fix failing findings, then re-check.",
-              mapId: init.evidence_map_id,
-              planPath: init.plan_path || null,
-              channelId: init.channel_id,
-            });
-          } else if (ready) {
-            readyRows.push({
-              key: `init-ready-${init.id}`,
-              source: "initiative",
-              priority: 40,
-              href,
-              badge: "ready",
-              title: init.title,
-              meta: "Checks pass",
-              age,
-              why: `Checks pass; graph status is ${init.status} (not shipped).`,
-              nextStep: "Open initiative → review plan/evidence → Mark shipped.",
-              mapId: init.evidence_map_id,
-              planPath: init.plan_path || null,
-              channelId: init.channel_id,
-            });
-          } else if (hasOpen) {
-            // Tracked open work is planned follow-up, not a human gate.
-            inMotionInitiatives.push({
-              key: `init-open-${init.id}`,
-              source: "initiative",
-              priority: 35,
-              href,
-              badge: "open",
-              title: init.title,
-              meta: topFinding || "Open items remain",
-              age,
-              why: topFinding || "Tracked open work remains.",
-              nextStep: "Open initiative detail → work the open items when you choose this track.",
-              mapId: init.evidence_map_id,
-              planPath: init.plan_path || null,
-              channelId: init.channel_id,
-            });
-          } else if (init.status === "active" || init.status === "open") {
-            inMotionInitiatives.push({
-              key: `init-motion-${init.id}`,
-              source: "initiative",
-              priority: 50,
-              href,
-              badge: init.status,
-              title: init.title,
-              meta: init.plan_path || "Tracked initiative",
-              age,
-              mapId: init.evidence_map_id,
-              planPath: init.plan_path || null,
-              channelId: init.channel_id,
-            });
-          }
-        }
-
-        for (const d of inbox.decisions || []) {
-          attentionRows.push({
-            key: `inbox-d-${d.id}`,
-            source: "inbox",
-            priority: 15,
-            href: "/channels/continuity/inbox",
-            badge: "inbox",
-            title: d.statement,
-            meta: `Decision · ${d.channel_name ? `# ${d.channel_name}` : "graph"}`,
-            age: relativeTime(d.created_at),
-            why: "A graph decision is waiting for accept/reject.",
-            nextStep: "Open Continuity → Inbox → accept or reject this decision.",
-            channelId: d.channel_id,
-            channelName: d.channel_name,
-          });
-        }
-        for (const p of inbox.proposals || []) {
-          attentionRows.push({
-            key: `inbox-p-${p.id}`,
-            source: "inbox",
-            priority: 16,
-            href: "/channels/continuity/inbox",
-            badge: "inbox",
-            title: p.hypothesis,
-            meta: `Proposal · ${p.channel_name ? `# ${p.channel_name}` : "graph"}`,
-            age: relativeTime(p.created_at),
-            why: "A capability proposal is waiting for review.",
-            nextStep: "Open Continuity → Inbox → apply or reject this proposal.",
-            channelId: p.channel_id,
-            channelName: p.channel_name,
-          });
-        }
-        for (const m of inbox.memoryCandidates || []) {
-          attentionRows.push({
-            key: `inbox-m-${m.id}`,
-            source: "inbox",
-            priority: 17,
-            href: "/channels/continuity/inbox",
-            badge: "inbox",
-            title: m.text,
-            meta: `Memory · ${m.channel_name ? `# ${m.channel_name}` : "graph"}`,
-            age: relativeTime(m.created_at),
-            why: "A memory candidate is waiting for accept/reject.",
-            nextStep: "Open Continuity → Inbox → accept or reject this memory.",
-            channelId: m.channel_id,
-            channelName: m.channel_name,
-          });
-        }
-
-        const ready = initiatives.filter((init) => {
-          if (init.status === "shipped") return false;
-          if (!init.evidence_map_id) return true;
-          const row = byMap.get(init.evidence_map_id);
-          return row ? !!row.ok : false;
-        }).length;
-
-        setSnap({
-          failing: Number(evidence.summary?.failing || 0),
-          open: Number(evidence.summary?.open || 0),
-          ready,
-          shipped: Number(evidence.summary?.shipped || 0),
-          pendingInbox: Number(evidence.summary?.pendingInbox || 0),
-          attentionRows,
-          readyRows,
-          inMotionInitiatives,
-        });
-      } catch {
-        /* non-critical */
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return snap;
-}
-
-function HomeHeader({
-  generatedAt,
-  error,
-  onRefresh,
-}: {
-  generatedAt: string;
-  error: string | null;
-  onRefresh: () => void;
+  count: number;
 }) {
   return (
-    <header className="rounded-xl border border-zinc-200 bg-white/95 p-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">Home</p>
-          <h1 className="mt-0.5 text-base font-semibold text-zinc-900 dark:text-zinc-100">
-            Where things stand
-          </h1>
-          <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-            What needs you vs. what's in motion.
-          </p>
-        </div>
-        <button
-          onClick={onRefresh}
-          className="shrink-0 rounded-md border border-zinc-200 px-2.5 py-1.5 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-        >
-          Refresh
-        </button>
-      </div>
-      <p className="mt-2 text-[10px] text-zinc-400">Updated {relativeTime(generatedAt)}</p>
-      {error && (
-        <p className="mt-1 text-[10px] text-amber-600 dark:text-amber-400">
-          Refresh failed. Showing last good snapshot.
-        </p>
-      )}
-    </header>
-  );
-}
-
-function StatusStrip({
-  counts,
-  continuity,
-}: {
-  counts: HomeOverview["summaryCounts"];
-  continuity: ContinuitySnapshot | null;
-}) {
-  const attention =
-    counts.needsMe +
-    counts.failed +
-    (continuity?.failing || 0) +
-    (continuity?.open || 0) +
-    (continuity?.pendingInbox || 0);
-
-  return (
-    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-      <CountPill
-        label="Needs you"
-        value={attention}
-        href="#needs-attention"
-        tone={attention > 0 ? "warn" : "good"}
-      />
-      <CountPill
-        label="Active"
-        value={counts.active}
-        href="#in-motion"
-        tone={counts.active > 0 ? "good" : "neutral"}
-      />
-      <CountPill
-        label="Unread"
-        value={counts.unread}
-        href="/channels"
-        tone={counts.unread > 0 ? "warn" : "neutral"}
-      />
-      <CountPill
-        label="Agents"
-        value={counts.agentsDown ? "down" : "up"}
-        href="/ops/config?tab=models"
-        tone={counts.agentsDown ? "warn" : "good"}
-      />
+    <div className="flex items-center gap-2 mb-2">
+      <h2
+        className={cx(
+          "text-[10px] font-semibold uppercase tracking-wider",
+          tone === "amber"
+            ? "text-amber-600 dark:text-amber-400"
+            : "text-muted-foreground",
+        )}
+      >
+        {label}
+      </h2>
+      <div className="h-3 w-px bg-border" />
+      <span className="text-[10px] text-muted-foreground">{count} items</span>
     </div>
   );
 }
 
-function AttentionList({ rows }: { rows: AttentionRow[] }) {
-  const visible = rows.slice(0, 10);
-  const hidden = Math.max(0, rows.length - visible.length);
+// ── accent row wrapper ──
 
-  if (visible.length === 0) {
-    return <Empty text="Nothing needs you right now." />;
-  }
-
-  return (
-    <div className="space-y-1.5">
-      {visible.map((row) => (
-        <Link
-          key={row.key}
-          href={row.href}
-          className="block rounded-lg border border-zinc-100 px-2.5 py-2 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/60"
-        >
-          <div className="flex items-center gap-2">
-            <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${stateBadge(row.badge)}`}>
-              {row.badge}
-            </span>
-            <span className="truncate text-[11px] font-medium text-zinc-800 dark:text-zinc-200">
-              {row.title}
-            </span>
-            <span className="ml-auto shrink-0 text-[10px] text-zinc-400">{row.age}</span>
-          </div>
-          {row.originLine ? (
-            <p className="mt-0.5 truncate text-[10px] text-zinc-400">{row.originLine}</p>
-          ) : (
-            <p className="mt-0.5 truncate text-[10px] text-zinc-400">
-              {row.source === "initiative"
-                ? "Continuity"
-                : row.source === "inbox"
-                  ? "Inbox"
-                  : "Channels"}
-              {" · "}
-              {row.why || row.meta}
-            </p>
-          )}
-          {row.originLine && row.why && (
-            <p className="mt-0.5 truncate text-[10px] text-zinc-400">{row.why}</p>
-          )}
-          {row.nextStep && (
-            <p className="mt-0.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-300">
-              Next: {row.nextStep}
-            </p>
-          )}
-        </Link>
-      ))}
-      {hidden > 0 && (
-        <p className="text-[10px] text-zinc-400">
-          +{hidden} more — open Continuity or Channels
-        </p>
-      )}
-    </div>
-  );
-}
-
-function NeedsAttentionPanel({
-  data,
-  continuity,
+function AccentRow({
+  tone,
+  href,
+  children,
 }: {
-  data: HomeOverview;
-  continuity: ContinuitySnapshot | null;
+  tone: UiTone;
+  href: string;
+  children: React.ReactNode;
 }) {
-  const readyRows = continuity?.readyRows || [];
-
-  const rows = useMemo(() => {
-    const merged: AttentionRow[] = [...(continuity?.attentionRows || [])];
-
-    for (const item of data.needsAttention.failedPromotions) {
-      merged.push({
-        key: `failed-${item.threadId}-${item.createdAt}`,
-        source: "channel",
-        priority: 12,
-        href: `/channels/${item.channelId}/${item.threadId}?need=gate`,
-        badge: "failed",
-        title: item.progress || item.errorDetail || "Promotion failed",
-        meta: `# ${item.channelName}`,
-        age: relativeTime(item.createdAt),
-        why: item.why || item.errorDetail || "Promotion/gate failed.",
-        nextStep: item.nextStep || "Open the thread → GuideBar → resolve the failed gate.",
-        channelName: item.channelName,
-        channelId: item.channelId,
-      });
-    }
-    for (const item of data.topNeedsMe) {
-      const need = item.need || (
-        item.reason === "review" ? "review"
-        : item.reason === "blocked" ? "blocked"
-        : item.reason === "failed_required_gate" ? "gate"
-        : "triage"
-      );
-      merged.push({
-        key: `need-${item.threadId}`,
-        source: "channel",
-        priority: item.state === "blocked" ? 11 : item.reason === "review" ? 18 : 22,
-        href: `/channels/${item.channelId}/${item.threadId}?need=${need}`,
-        badge: item.state,
-        title: item.title,
-        meta: `# ${item.channelName}`,
-        age: relativeTime(item.updatedAt),
-        why: item.why || `Waiting on ${item.reason.replace(/_/g, " ")}.`,
-        nextStep: item.nextStep || "Open the thread and follow Do this now.",
-        channelName: item.channelName,
-        channelId: item.channelId,
-      });
-    }
-
-    return merged.sort((a, b) => a.priority - b.priority || a.title.localeCompare(b.title));
-  }, [data, continuity]);
-
-  const annotatedRows = useMemo(
-    () => applyOriginLines(rows, data.channels),
-    [rows, data.channels],
-  );
-  const annotatedReady = useMemo(
-    () => applyOriginLines(readyRows, data.channels),
-    [readyRows, data.channels],
-  );
-
   return (
-    <Card
-      title="Needs you"
-      action={
-        <Link
-          href="/channels/continuity?filter=attention"
-          className="text-[10px] font-medium text-blue-600 dark:text-blue-400"
-        >
-          Continuity
-        </Link>
-      }
-    >
-      <p className="mb-2 text-[10px] text-zinc-400">
-        Human gates: review/approval, blockers, failed gates, evidence fails, inbox.
-      </p>
-      <div id="needs-attention">
-        <AttentionList rows={annotatedRows} />
-        {readyRows.length > 0 && (
-          <>
-            <div className="my-3 border-t border-zinc-100 dark:border-zinc-800" />
-            <p className="mb-0.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
-              Ready to promote
-            </p>
-            <p className="mb-1.5 text-[10px] text-zinc-400">
-              Evidence initiatives with green checks that aren&apos;t marked shipped yet.
-            </p>
-            <AttentionList rows={annotatedReady.slice(0, 5)} />
-          </>
-        )}
-      </div>
-    </Card>
+    <DividedRow href={href} accent={tone}>
+      {children}
+    </DividedRow>
   );
 }
 
-
-function ReadyToExecutePanel({ plans }: { plans: HomeOverview["approvedPlans"] }) {
-  if (!plans || plans.length === 0) return null;
-
-  return (
-    <Card
-      title="Ready to execute"
-      action={
-        <Link
-          href="/channels"
-          className="text-[10px] font-medium text-blue-600 dark:text-blue-400"
-        >
-          Channels
-        </Link>
-      }
-    >
-      <p className="mb-2 text-[10px] text-zinc-400">
-        Approved plans waiting on a repo link and an assignee before execution.
-      </p>
-      <div className="space-y-1.5">
-        {plans.slice(0, 5).map((plan) => (
-          <Link
-            key={plan.threadId}
-            href={`/channels/${plan.channelId}/${plan.threadId}`}
-            className="block rounded-lg border border-zinc-100 px-2.5 py-2 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/60"
-          >
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                approved
-              </span>
-              <span className="truncate text-[11px] font-medium text-zinc-800 dark:text-zinc-200">
-                {plan.title}
-              </span>
-              <span className="ml-auto shrink-0 text-[10px] text-zinc-400">{relativeTime(plan.approvedAt)}</span>
-            </div>
-            <p className="mt-0.5 text-[10px] text-zinc-400">
-              # {plan.channelName}
-              {plan.taskCount > 0 ? ` · ${plan.taskCount} task${plan.taskCount === 1 ? "" : "s"}` : ""}
-              {plan.activeExecutionCount > 0 ? " · → execution exists" : (
-                <>
-                  {plan.repoName ? ` · ${plan.repoName}` : plan.repoId ? " · repo linked" : ""}
-                  {!plan.repoId && !plan.repoName ? " · ⚠ no repo" : ""}
-                  {!plan.assignee ? " · ⚠ no assignee" : ` · @${plan.assignee}`}
-                </>
-              )}
-            </p>
-          </Link>
-        ))}
-        {plans.length > 5 && (
-          <p className="text-[10px] text-zinc-400">
-            +{plans.length - 5} more — open Channels
-          </p>
-        )}
-      </div>
-    </Card>
-  );
-}
-
-function InMotionPanel({
-  data,
-  continuity,
-}: {
-  data: HomeOverview;
-  continuity: ContinuitySnapshot | null;
-}) {
-  const rows: AttentionRow[] = [
-    ...data.topActive.map((item) => ({
-      key: `active-${item.threadId}`,
-      source: "channel" as const,
-      priority: 10,
-      href: `/channels/${item.channelId}/${item.threadId}`,
-      badge: item.state,
-      title: item.title,
-      meta: item.latestStep
-        ? `${item.latestStep.status} · ${displayStepLabel(item.latestStep.label)}`
-        : `# ${item.channelName}`,
-      age: "",
-      channelName: item.channelName,
-      channelId: item.channelId,
-    })),
-    ...(continuity?.inMotionInitiatives || []).slice(0, 4),
-  ];
-
-  const annotatedRows = useMemo(
-    () => applyOriginLines(rows, data.channels),
-    [rows, data.channels],
-  );
-
-  return (
-    <Card
-      title="In motion"
-      action={
-        <Link href="/channels" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
-          Channels
-        </Link>
-      }
-    >
-      <div id="in-motion">
-        {rows.length === 0 ? (
-          <Empty text="Nothing actively moving." />
-        ) : (
-          <AttentionList rows={annotatedRows.slice(0, 8)} />
-        )}
-      </div>
-    </Card>
-  );
-}
-
-function SystemPanel({ data }: { data: HomeOverview }) {
-  return (
-    <Card
-      title="System"
-      action={
-        <Link href="/ops/config?tab=models" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
-          Models
-        </Link>
-      }
-    >
-      <div className="space-y-2">
-        <div className="rounded-lg border border-zinc-100 px-2.5 py-2 dark:border-zinc-800">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] font-medium text-zinc-800 dark:text-zinc-200">Agents</span>
-            <span
-              className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
-                data.agents.runtimeOk
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                  : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-              }`}
-            >
-              {data.summaryCounts.agentsDown ? "down" : "up"}
-            </span>
-          </div>
-          <p className="mt-0.5 truncate text-[10px] text-zinc-400">
-            {data.agents.runtimeOk
-              ? `${data.agents.liveAgents.length} live agent${data.agents.liveAgents.length === 1 ? "" : "s"}`
-              : "Paseo unavailable"}
-          </p>
-        </div>
-        <div className="rounded-lg border border-zinc-100 px-2.5 py-2 dark:border-zinc-800">
-          <div className="mb-1 flex items-center justify-between gap-2">
-            <span className="text-[11px] font-medium text-zinc-800 dark:text-zinc-200">Pulse</span>
-            <Link href="/channels" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
-              Channels
-            </Link>
-          </div>
-          <div className="space-y-1">
-            {data.topPulse.length === 0 ? (
-              <Empty text="No channel pulse." />
-            ) : (
-              data.topPulse.map((channel) => {
-                const summary =
-                  channel.unreadCount > 0
-                    ? `unread ${channel.unreadCount}`
-                    : channel.states.wait > 0
-                      ? `wait ${channel.states.wait}`
-                      : channel.states.active > 0
-                        ? `active ${channel.states.active}`
-                        : channel.states.start > 0
-                          ? `open ${channel.states.start}`
-                          : "quiet";
-                return (
-                  <Link
-                    key={channel.channelId}
-                    href={`/channels/${channel.channelId}`}
-                    className="block truncate text-[10px] text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-                  >
-                    # {channel.channelName} · {summary}
-                  </Link>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function AgentHealthCard() {
-  const [health, setHealth] = useState<{
-    successRate: string;
-    driftRate: string;
-    total: number;
-  } | null>(null);
-
-  const fetchHealth = useCallback(async () => {
-    try {
-      const r = await fetch("/api/agent-runs/overview", { cache: "no-store" });
-      if (!r.ok) return;
-      const d = await r.json();
-      let total = 0;
-      let success = 0;
-      let drifted = 0;
-      for (const outcomes of Object.values(d.bySourceOutcome || {}) as Record<string, number>[]) {
-        for (const [outcome, count] of Object.entries(outcomes)) {
-          const n = Number(count) || 0;
-          total += n;
-          if (outcome === "success") success += n;
-          if (outcome === "drifted") drifted += n;
-        }
-      }
-      if (total > 0) {
-        setHealth({
-          successRate: `${Math.round((success / total) * 100)}%`,
-          driftRate: `${Math.round((drifted / total) * 100)}%`,
-          total,
-        });
-      }
-    } catch {
-      /* silent */
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchHealth();
-  }, [fetchHealth]);
-
-  if (!health) return null;
-
-  const successTone =
-    parseInt(health.successRate, 10) >= 70
-      ? "good"
-      : parseInt(health.successRate, 10) >= 50
-        ? "warn"
-        : "danger";
-  const driftTone =
-    parseInt(health.driftRate, 10) <= 15
-      ? "good"
-      : parseInt(health.driftRate, 10) <= 30
-        ? "warn"
-        : "danger";
-
-  return (
-    <Card
-      title="Agent health"
-      action={
-        <Link href="/ops/runs" className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
-          Runs
-        </Link>
-      }
-    >
-      <div className="flex gap-2">
-        <CountPill label="Success" value={health.successRate} href="/ops/runs" tone={successTone} />
-        <CountPill
-          label="Drift"
-          value={health.driftRate}
-          href="/ops/runs?tab=Runs&outcome=drifted"
-          tone={driftTone}
-        />
-        <CountPill label="Runs" value={health.total} href="/ops/runs" tone="neutral" />
-      </div>
-    </Card>
-  );
-}
+// ── HOME DASHBOARD (post-promote density + hybrid Channels) ──
 
 export default function HomeDashboard() {
-  const { data, error, loading, refresh } = useHomeOverview();
-  const continuity = useContinuitySnapshot();
+  const { data, loading, error, refresh } = useHomeOverview();
+  const [view, setView] = useState<"list" | "board">("list");
+
+  // Build lookup maps for enrichment (all hooks MUST run before any conditional return)
+  const threadActivityById = useMemo(() => {
+    const m: Record<string, HomeOverview["threadActivity"][number]> = {};
+    if (!data) return m;
+    for (const t of [...(data.topThreads || []), ...(data.threadActivity || [])]) {
+      if (!m[t.threadId] || (t.lastMessageAt || "") > (m[t.threadId].lastMessageAt || "")) {
+        m[t.threadId] = t;
+      }
+    }
+    return m;
+  }, [data]);
+
+  // Channels hybrid C: top channels by unread/recent, each with one nested recent thread
+  const channelGroups = useMemo(() => {
+    if (!data) return [];
+    const channels = data.topPulse || [];
+    const byChannel = new Map<string, {
+      ch: (typeof channels)[number];
+      bestThread: HomeOverview["threadActivity"][number] | null;
+    }>();
+    const sorted = [...channels].sort((a, b) => {
+      if ((b.unreadCount ?? 0) !== (a.unreadCount ?? 0)) return (b.unreadCount ?? 0) - (a.unreadCount ?? 0);
+      return (b.lastPulse?.createdAt || "").localeCompare(a.lastPulse?.createdAt || "");
+    });
+    for (const ch of sorted.slice(0, 6)) {
+      byChannel.set(ch.channelId, { ch, bestThread: null });
+    }
+    for (const t of [...(data.topThreads || []), ...(data.threadActivity || [])]) {
+      const entry = byChannel.get(t.channelId);
+      if (!entry) continue;
+      if (!entry.bestThread || (t.lastMessageAt || "") > (entry.bestThread.lastMessageAt || "")) {
+        entry.bestThread = t;
+      }
+    }
+    return [...byChannel.values()];
+  }, [data]);
+
+  // Build kanban cards from topThreads + threadActivity
+  const kanbanCards: HomeKanbanCard[] = useMemo(() => {
+    if (!data) return [];
+    const seen = new Set<string>();
+    const cards: HomeKanbanCard[] = [];
+    for (const t of [...(data.topThreads || []), ...(data.threadActivity || [])]) {
+      if (seen.has(t.threadId)) continue;
+      seen.add(t.threadId);
+      cards.push({
+        id: t.threadId,
+        threadId: t.threadId,
+        channelId: t.channelId,
+        channelName: t.channelName,
+        title: t.title,
+        state: t.state || "open",
+        assignee: t.assignee,
+        replyCount: t.replyCount,
+        lastAuthor: t.lastAuthor,
+        lastMessageAt: t.lastMessageAt,
+        updatedAt: t.updatedAt,
+      });
+    }
+    return cards;
+  }, [data]);
 
   if (loading && !data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <p className="text-sm text-zinc-400">Loading overview…</p>
+      <div className="min-h-screen bg-background flex items-center justify-center pb-16">
+        <p className="text-sm text-muted-foreground animate-pulse">
+          Loading…
+        </p>
       </div>
     );
   }
 
   if (error && !data) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-        <div className="max-w-md rounded-xl border border-red-200 bg-white p-4 text-center dark:border-red-900 dark:bg-zinc-900">
+      <div className="min-h-screen bg-background pb-16">
+        <div className="mx-auto max-w-lg px-4 py-16 text-center">
           <p className="text-sm font-medium text-red-600 dark:text-red-400">
-            Home overview failed to load
+            {error}
           </p>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{error}</p>
           <button
             onClick={() => void refresh()}
-            className="mt-3 rounded-md border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="mt-3 text-xs underline"
           >
             Retry
           </button>
@@ -927,41 +194,273 @@ export default function HomeDashboard() {
 
   if (!data) return null;
 
+  const failedPromotions = data?.needsAttention?.failedPromotions || [];
+  const needsMe = data?.topNeedsMe || [];
+  const active = data?.topActive || [];
+  const hasNeedsYou = failedPromotions.length > 0 || needsMe.length > 0;
+
   return (
-    <div className="min-h-screen bg-zinc-50 pb-16 dark:bg-zinc-950">
-      <div className="mx-auto max-w-5xl space-y-2 px-3 py-2 pt-[env(safe-area-inset-top,0px)]">
-        <HomeHeader
-          generatedAt={data.generatedAt}
-          error={error}
-          onRefresh={() => void refresh()}
-        />
-        {(data.summaryCounts.agentsDown || !data.agents.runtimeOk) && (
-          <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 dark:border-amber-800 dark:bg-amber-950">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">Agent runtime is down</p>
-                <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-200">
-                  {data.agents.recoveryHint || "Check agent configuration."}
-                </p>
-              </div>
-              <Link
-                href="/ops/config?tab=models"
-                className="shrink-0 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-100 dark:hover:bg-amber-800"
-              >
-                Open Models
-              </Link>
+    <PageShell maxWidth="max-w-5xl" className="pb-4">
+      {/* Agent runtime warning */}
+      {(data.summaryCounts.agentsDown || !data.agents.runtimeOk) && (
+        <div className="rounded-xl border border-amber-300/50 bg-amber-50/80 px-3 py-2.5 dark:border-amber-800 dark:bg-amber-950/80">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+                Agent runtime is down
+              </p>
+              <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-200">
+                {data.agents.recoveryHint || "Check agent configuration."}
+              </p>
             </div>
+            <Link
+              href="/ops/config?tab=models"
+              className="shrink-0 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-100 dark:hover:bg-amber-800"
+            >
+              Open Models
+            </Link>
           </div>
-        )}
-        <StatusStrip counts={data.summaryCounts} continuity={continuity} />
-        <NeedsAttentionPanel data={data} continuity={continuity} />
-        <ReadyToExecutePanel plans={data.approvedPlans} />
-        <div className="grid gap-2 sm:grid-cols-2">
-          <InMotionPanel data={data} continuity={continuity} />
-          <SystemPanel data={data} />
-          <AgentHealthCard />
+        </div>
+      )}
+
+      {/* Compact header */}
+      <div className="flex items-baseline justify-between">
+        <div>
+          <h1 className="text-lg font-bold tracking-tight">Activity</h1>
+          <p className="text-[10px] text-muted-foreground mt-0.5">
+            {active.length} active · {data?.summaryCounts?.unread ?? 0} unread ·{" "}
+            {data?.summaryCounts?.agentsDown ? "agents down" : "agents up"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-lg border border-border bg-card p-0.5">
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+                view === "list"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              List
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("board")}
+              className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+                view === "board"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Board
+            </button>
+          </div>
+          <button
+            onClick={() => void refresh()}
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            Refresh
+          </button>
         </div>
       </div>
-    </div>
+
+      {view === "board" ? (
+        <HomeKanbanBoard cards={kanbanCards} />
+      ) : (<>
+      {/* Needs You */}
+      {hasNeedsYou && (
+        <section>
+          <SectionHeading
+            tone="amber"
+            label="Needs You"
+            count={failedPromotions.length + needsMe.length}
+          />
+          <Card size="sm">
+            <CardContent className="!px-0">
+              <DividedList>
+                {failedPromotions.map((f) => (
+                  <AccentRow
+                    key={`fp-${f.threadId}`}
+                    tone="danger"
+                    href={`/channels/${f.channelId}/${f.threadId}?need=gate`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <StatusChip tone="danger">fail</StatusChip>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm truncate font-medium">
+                          {f.progress || "Promotion failed"}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                          # {f.channelName}
+                          {f.errorDetail ? ` — ${f.errorDetail}` : ""}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
+                        {relativeTime(f.createdAt)}
+                      </span>
+                    </div>
+                  </AccentRow>
+                ))}
+                {needsMe.map((n) => {
+                  const tone = toneForRow(n.reason, n.state);
+                  const badge = n.reason === "blocked" ? "blocked" : n.state;
+                  const need = n.need || (
+                    n.reason === "review" ? "review"
+                    : n.reason === "blocked" ? "blocked"
+                    : n.reason === "failed_required_gate" ? "gate"
+                    : "triage"
+                  );
+                  return (
+                    <AccentRow
+                      key={`nm-${n.threadId}`}
+                      tone={tone}
+                      href={`/channels/${n.channelId}/${n.threadId}?need=${need}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <StatusChip tone={tone}>{badge}</StatusChip>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm truncate font-medium">
+                            {n.title}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                            # {n.channelName}
+                            {n.why ? ` — ${n.why}` : ""}
+                          </p>
+                        </div>
+                        <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
+                          {relativeTime(n.updatedAt)}
+                        </span>
+                      </div>
+                    </AccentRow>
+                  );
+                })}
+              </DividedList>
+            </CardContent>
+          </Card>
+        </section>
+      )}
+
+      {/* In Motion — enriched with thread activity */}
+      <section>
+        <SectionHeading
+          tone="muted"
+          label="In Motion"
+          count={active.length}
+        />
+        <Card size="sm">
+          <CardContent className="!px-0">
+            <DividedList
+              empty={
+                active.length === 0 ? (
+                  <span className="text-xs text-muted-foreground">
+                    Nothing active.
+                  </span>
+                ) : undefined
+              }
+            >
+              {active.map((a) => {
+                const tone = stateTone(a.state);
+                const ta = threadActivityById[a.threadId];
+                // Build meta line: #channel · assignee · step-or-last-reply · time
+                const metaParts: string[] = [`# ${a.channelName}`];
+                if (ta?.assignee) metaParts.push(ta.assignee);
+                if (a.latestStep) {
+                  metaParts.push(`${a.latestStep.status} — ${a.latestStep.label}`);
+                } else if (ta?.lastAuthor) {
+                  metaParts.push(`${ta.lastAuthor} replied`);
+                }
+                if (ta?.lastMessageAt) metaParts.push(relativeTime(ta.lastMessageAt));
+                else if (ta?.updatedAt) metaParts.push(relativeTime(ta.updatedAt));
+
+                return (
+                  <AccentRow
+                    key={`im-${a.threadId}`}
+                    tone={tone}
+                    href={`/channels/${a.channelId}/${a.threadId}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <StatusChip tone={tone}>{a.state}</StatusChip>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm truncate font-medium">
+                          {a.title}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                          {metaParts.join(" · ")}
+                        </p>
+                      </div>
+                    </div>
+                  </AccentRow>
+                );
+              })}
+            </DividedList>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Channels — hybrid C: channel header + one nested recent thread */}
+      {channelGroups.length > 0 && (
+        <section>
+          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            Channels
+          </h2>
+          <Card size="sm">
+            <CardContent className="!px-0">
+              <DividedList>
+                {channelGroups.map(({ ch, bestThread }) => {
+                  const waitCount = (ch.states?.wait ?? 0) + (ch.states?.active ?? 0);
+                  return (
+                    <li key={ch.channelId}>
+                      {/* Channel header */}
+                      <Link
+                        href={`/channels/${ch.channelId}`}
+                        className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/60 transition-colors"
+                      >
+                        <span className={cx("text-sm font-semibold", ch.unreadCount > 0 && "text-foreground")}>
+                          # {ch.channelName}
+                        </span>
+                        {ch.unreadCount > 0 && (
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
+                          </Badge>
+                        )}
+                        {waitCount > 0 && (
+                          <span className="text-[10px] text-amber-600 dark:text-amber-400 tabular-nums">
+                            {waitCount} waiting
+                          </span>
+                        )}
+                        <span className="ml-auto text-[10px] text-muted-foreground">→</span>
+                      </Link>
+                      {/* Nested recent thread */}
+                      {bestThread ? (
+                        <Link
+                          href={`/channels/${bestThread.channelId}/${bestThread.threadId}`}
+                          className="flex items-center gap-2 px-4 py-2 pl-8 border-t border-border/50 hover:bg-muted/40 transition-colors"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs truncate">{bestThread.title}</p>
+                            <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                              {bestThread.replyCount > 0 ? `${bestThread.replyCount} repl${bestThread.replyCount === 1 ? "y" : "ies"}` : "No replies"}
+                              {bestThread.lastAuthor ? ` · ${bestThread.lastAuthor}` : ""}
+                              {bestThread.lastMessageAt ? ` · ${relativeTime(bestThread.lastMessageAt)}` : ""}
+                            </p>
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className="px-4 py-2 pl-8 border-t border-border/50">
+                          <p className="text-[10px] text-muted-foreground">No recent threads</p>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </DividedList>
+            </CardContent>
+          </Card>
+        </section>
+      )}
+      </>)}
+    </PageShell>
   );
 }

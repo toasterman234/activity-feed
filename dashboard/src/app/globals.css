@@ -14,6 +14,8 @@
   --color-fg: var(--fg);
   --color-fg-2: var(--fg-2);
   --color-muted: var(--muted);
+  /* muted-foreground: darker than muted for readability. fg-2 at 55% = ~zinc-600 in light mode */
+  --color-muted-foreground: color-mix(in srgb, var(--fg-2) 55%, transparent);
   --color-disabled: var(--disabled);
   --color-border: var(--border);
   --color-border-soft: var(--border-soft);

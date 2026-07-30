@@ -182,32 +182,16 @@ export interface ThreadExtras {
   activity: ActivityEventRow[];
   /** Durable workflow stage events for cockpit + History (polled, ADR-003). */
   workflowEvents: WorkflowEventRow[];
-  /** Graph Continuity: events + decisions + observations + proposals for this thread. */
-  graphEvents: GraphEventRow[];
-  graphDecisions: GraphDecisionRow[];
-  graphObservations: GraphObservationRow[];
-  graphProposals: GraphProposalRow[];
-  continuity: ContinuitySummary;
   /** Force an immediate refetch (call after a local write, e.g. plan toggle). */
   refresh: () => Promise<void>;
 }
 
 const THREAD_EXTRAS_POLL_MS = 3000;
 
-const EMPTY_CONTINUITY: ContinuitySummary = {
-  checkpoint: null,
-  activeDecisions: [],
-  acceptedMemory: [],
-  pendingDecisionCount: 0,
-  pendingProposalCount: 0,
-  pendingMemoryCount: 0,
-};
-
 export function useThreadExtras(threadId: string): ThreadExtras {
   const [data, setData] = useState<Omit<ThreadExtras, "refresh">>({
     plans: [], steps: [], artifacts: [], meta: null, promotion: null, interactions: [], activity: [],
     workflowEvents: [],
-    graphEvents: [], graphDecisions: [], graphObservations: [], graphProposals: [], continuity: EMPTY_CONTINUITY,
   });
 
   const refresh = useCallback(async () => {
@@ -239,11 +223,6 @@ export function useThreadExtras(threadId: string): ThreadExtras {
         interactions: (next.interactions || []) as StageInteractionRow[],
         activity: (next.activity || []) as ActivityEventRow[],
         workflowEvents: (next.workflowEvents || []) as WorkflowEventRow[],
-        graphEvents: (next.graphEvents || []) as GraphEventRow[],
-        graphDecisions: (next.graphDecisions || []) as GraphDecisionRow[],
-        graphObservations: (next.graphObservations || []) as GraphObservationRow[],
-        graphProposals: (next.graphProposals || []) as GraphProposalRow[],
-        continuity: (next.continuity as ContinuitySummary | undefined) || EMPTY_CONTINUITY,
       });
     } catch {
       /* transient poll failure — keep last data, next tick retries */

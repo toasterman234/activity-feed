@@ -55,8 +55,8 @@ const OUTCOME_BADGE: Record<string, { label: string; color: string }> = {
   partial: { label: "PARTIAL", color: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200" },
   failed: { label: "FAIL", color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
   drifted: { label: "DRIFT", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200" },
-  dead_end: { label: "DEAD", color: "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300" },
-  unknown: { label: "?", color: "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400" },
+  dead_end: { label: "DEAD", color: "bg-muted text-muted-foreground dark:bg-zinc-700 dark:text-muted-foreground" },
+  unknown: { label: "?", color: "bg-zinc-100 text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground" },
 };
 
 const SOURCE_COLORS: Record<string, string> = {
@@ -127,8 +127,8 @@ export default function RunsPage() {
   }, [fetchOverview]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[env(safe-area-inset-top,0px)]">
+    <div className="min-h-screen bg-background pb-16">
+      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto max-w-5xl px-3 pt-2">
           <div className="flex w-full">
             {TABS.map((t) => (
@@ -137,8 +137,8 @@ export default function RunsPage() {
                 onClick={() => setTab(t)}
                 className={`flex-1 min-w-0 px-0.5 py-1.5 text-[11px] font-medium rounded-md transition-colors ${
                   tab === t
-                    ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
-                    : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                    ? "bg-muted/60 text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t}
@@ -147,7 +147,7 @@ export default function RunsPage() {
           </div>
           <button
             onClick={fetchOverview}
-            className="absolute right-3 top-2.5 text-[10px] text-zinc-400 hover:text-zinc-600"
+            className="absolute right-3 top-2.5 text-[10px] text-muted-foreground hover:text-foreground"
           >
             Refresh
           </button>
@@ -177,7 +177,7 @@ function MetricsTab({
     return <p className="py-12 text-center text-sm text-red-400">{overviewErr}</p>;
   }
   if (!overview) {
-    return <p className="py-12 text-center text-sm text-zinc-400">Loading…</p>;
+    return <p className="py-12 text-center text-sm text-muted-foreground">Loading…</p>;
   }
 
   const totalRuns = overview.totals.reduce((s, t) => s + t.count, 0);
@@ -199,9 +199,9 @@ function MetricsTab({
     <div className="space-y-3">
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Total Runs</p>
-          <p className="text-2xl font-bold text-zinc-800 dark:text-zinc-200">{totalRuns}</p>
+        <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Total Runs</p>
+          <p className="text-2xl font-bold text-foreground">{totalRuns}</p>
         </div>
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-800 dark:bg-emerald-950">
           <p className="text-[10px] text-emerald-600 uppercase tracking-wider">Success</p>
@@ -221,8 +221,8 @@ function MetricsTab({
       </div>
 
       {/* Per-source breakdown */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mb-2">By Source</p>
+      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-xs font-semibold text-foreground mb-2">By Source</p>
         <div className="space-y-2">
           {overview.totals.map((t) => {
             const outcomes = outBySource[t.source] || {};
@@ -233,12 +233,12 @@ function MetricsTab({
             return (
               <div key={t.source}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${SOURCE_COLORS[t.source] || "bg-zinc-100 text-zinc-600"}`}>
+                  <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${SOURCE_COLORS[t.source] || "bg-muted/60 text-muted-foreground"}`}>
                     {t.source}
                   </span>
-                  <span className="text-[10px] text-zinc-400">{t.count} runs</span>
+                  <span className="text-[10px] text-muted-foreground">{t.count} runs</span>
                 </div>
-                <div className="mt-1 h-2 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden flex">
+                <div className="mt-1 h-2 rounded-full bg-muted overflow-hidden flex">
                   {srcSuccess > 0 && (
                     <div className="h-full bg-emerald-400" style={{ width: `${(srcSuccess / srcTotal) * 100}%` }} title={`${srcSuccess} success`} />
                   )}
@@ -249,7 +249,7 @@ function MetricsTab({
                     <div className="h-full bg-red-400" style={{ width: `${(srcFail / srcTotal) * 100}%` }} title={`${srcFail} failed/dead`} />
                   )}
                   {(outcomes["unknown"] || 0) > 0 && (
-                    <div className="h-full bg-zinc-400 dark:bg-zinc-500" style={{ width: `${((outcomes["unknown"] || 0) / srcTotal) * 100}%` }} title={`${outcomes["unknown"] || 0} unknown`} />
+                    <div className="h-full bg-muted dark:bg-muted/300" style={{ width: `${((outcomes["unknown"] || 0) / srcTotal) * 100}%` }} title={`${outcomes["unknown"] || 0} unknown`} />
                   )}
                 </div>
                 <div className="flex gap-2 mt-0.5 text-[10px]">
@@ -257,7 +257,7 @@ function MetricsTab({
                   <span className="text-orange-500">{fmtPct(srcDrift / srcTotal)} drift</span>
                   <span className="text-red-500">{fmtPct(srcFail / srcTotal)} fail</span>
                   {(outcomes["unknown"] || 0) > 0 && (
-                    <span className="text-zinc-400">{fmtPct((outcomes["unknown"] || 0) / srcTotal)} ?</span>
+                    <span className="text-muted-foreground">{fmtPct((outcomes["unknown"] || 0) / srcTotal)} ?</span>
                   )}
                 </div>
               </div>
@@ -267,14 +267,14 @@ function MetricsTab({
       </div>
 
       {/* Weekly trends — sparkline-style bars per source */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Weekly Trends</p>
+      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-xs font-semibold text-foreground mb-2">Weekly Trends</p>
         {Object.entries(overview.weeklyTrends).map(([source, weeks]) => {
           const latest = weeks[0];
           return (
             <div key={source} className="mb-2 last:mb-0">
               <div className="flex items-center justify-between text-[10px] mb-1">
-                <span className="font-medium text-zinc-600 dark:text-zinc-400">{source}</span>
+                <span className="font-medium text-muted-foreground dark:text-muted-foreground">{source}</span>
                 {latest && (
                   <span>
                     <span className="text-emerald-500">{fmtPct(latest.successRate)} ok</span>
@@ -301,18 +301,18 @@ function MetricsTab({
       </div>
 
       {/* Top failing projects */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Top Failing Projects</p>
+      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-xs font-semibold text-foreground mb-2">Top Failing Projects</p>
         {overview.topFailing.length === 0 ? (
-          <p className="text-xs text-zinc-400">No projects with ≥3 runs and failures</p>
+          <p className="text-xs text-muted-foreground">No projects with ≥3 runs and failures</p>
         ) : (
           <div className="space-y-1.5">
             {overview.topFailing.map((p) => (
               <div key={p.project} className="flex items-center justify-between text-xs">
-                <span className="truncate flex-1 min-w-0 text-zinc-700 dark:text-zinc-300">{p.project}</span>
+                <span className="truncate flex-1 min-w-0 text-foreground">{p.project}</span>
                 <span className="ml-2 shrink-0 text-[10px]">
                   <span className="text-red-500">{p.fail} fail</span>
-                  <span className="text-zinc-400"> / {p.total} total</span>
+                  <span className="text-muted-foreground"> / {p.total} total</span>
                 </span>
               </div>
             ))}
@@ -321,22 +321,22 @@ function MetricsTab({
       </div>
 
       {/* Agent breakdown */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mb-2">By Agent</p>
+      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-xs font-semibold text-foreground mb-2">By Agent</p>
         <div className="space-y-1.5 max-h-60 overflow-y-auto">
           {overview.byAgent.map((a) => (
             <div key={`${a.agentId}-${a.source}`} className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <span className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${SOURCE_COLORS[a.source] || "bg-zinc-100 text-zinc-600"}`}>
+                <span className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${SOURCE_COLORS[a.source] || "bg-muted/60 text-muted-foreground"}`}>
                   {SOURCE_LABELS[a.source] || a.source}
                 </span>
-                <span className="truncate text-zinc-700 dark:text-zinc-300">{a.agentId}</span>
+                <span className="truncate text-foreground">{a.agentId}</span>
               </div>
               <span className="ml-2 shrink-0 text-[10px]">
                 <span className="text-emerald-500">{a.success} ok</span>
                 {a.drift > 0 && <span className="text-orange-500"> · {a.drift} drift</span>}
                 {a.fail > 0 && <span className="text-red-500"> · {a.fail} fail</span>}
-                <span className="text-zinc-400"> / {a.total}</span>
+                <span className="text-muted-foreground"> / {a.total}</span>
               </span>
             </div>
           ))}
@@ -344,19 +344,19 @@ function MetricsTab({
       </div>
 
       {/* Judged status */}
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Judgment Status</p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-xs font-semibold text-foreground mb-2">Judgment Status</p>
+        <p className="text-xs text-muted-foreground dark:text-muted-foreground">
           {overview.judged.total} judged runs:{" "}
-          <span className="text-zinc-700 dark:text-zinc-300 font-medium">
+          <span className="text-foreground font-medium">
             {overview.judged.bySource["hook"] ?? 0} hook
           </span>
           {" · "}
-          <span className="text-zinc-700 dark:text-zinc-300 font-medium">
+          <span className="text-foreground font-medium">
             {overview.judged.bySource["auto_judge"] ?? 0} auto
           </span>
           {" · "}
-          <span className="text-zinc-700 dark:text-zinc-300 font-medium">
+          <span className="text-foreground font-medium">
             {overview.judged.bySource["human"] ?? 0} human
           </span>
         </p>
@@ -407,9 +407,9 @@ export function RunsTab() {
       {/* Filters */}
       <div className="flex flex-wrap gap-1.5 items-end">
         <div>
-          <label className="text-[10px] text-zinc-400 block">Source</label>
+          <label className="text-[10px] text-muted-foreground block">Source</label>
           <select value={source} onChange={(e) => { setSource(e.target.value); setOffset(0); }}
-            className="rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+            className="rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground">
             <option value="">All</option>
             <option value="claude-code">Claude Code</option>
             <option value="pi">Pi</option>
@@ -420,9 +420,9 @@ export function RunsTab() {
           </select>
         </div>
         <div>
-          <label className="text-[10px] text-zinc-400 block">Outcome</label>
+          <label className="text-[10px] text-muted-foreground block">Outcome</label>
           <select value={outcome} onChange={(e) => { setOutcome(e.target.value); setOffset(0); }}
-            className="rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+            className="rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground">
             <option value="">All</option>
             <option value="success">Success</option>
             <option value="drifted">Drifted</option>
@@ -432,17 +432,17 @@ export function RunsTab() {
           </select>
         </div>
         <div>
-          <label className="text-[10px] text-zinc-400 block">Project</label>
+          <label className="text-[10px] text-muted-foreground block">Project</label>
           <input
             type="text"
             value={project}
             onChange={(e) => { setProject(e.target.value); setOffset(0); }}
             placeholder="filter…"
-            className="w-28 rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-xs text-zinc-700 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+            className="w-28 rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
           />
         </div>
         <button onClick={fetchRuns}
-          className="rounded-md border border-zinc-200 px-2 py-0.5 text-[10px] text-zinc-500 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+          className="rounded-md border border-border px-2 py-0.5 text-[10px] text-muted-foreground hover:text-foreground dark:border-zinc-700 dark:text-muted-foreground dark:hover:text-zinc-200">
           Apply
         </button>
       </div>
@@ -452,33 +452,33 @@ export function RunsTab() {
       {/* Table */}
       {data && (
         <>
-          <div className="text-[10px] text-zinc-400">
+          <div className="text-[10px] text-muted-foreground">
             {data.total} runs · showing {data.rows.length}
           </div>
-          <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+          <div className="rounded-lg border border-border bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {data.rows.map((row) => (
                 <div key={row.id}>
                   <button onClick={() => toggle(row.id)}
-                    className="w-full text-left px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 flex items-center gap-2 min-w-0">
+                    className="w-full text-left px-3 py-2 hover:bg-muted/30 dark:hover:bg-zinc-800/60 flex items-center gap-2 min-w-0">
                     <span className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${OUTCOME_BADGE[row.outcome]?.color || OUTCOME_BADGE.unknown.color}`}>
                       {OUTCOME_BADGE[row.outcome]?.label || "?"}
                     </span>
-                    <span className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${SOURCE_COLORS[row.source] || "bg-zinc-100 text-zinc-600"}`}>
+                    <span className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-semibold ${SOURCE_COLORS[row.source] || "bg-muted/60 text-muted-foreground"}`}>
                       {SOURCE_LABELS[row.source] || row.source}
                     </span>
-                    <span className="truncate text-xs text-zinc-700 dark:text-zinc-300 flex-1 min-w-0">
+                    <span className="truncate text-xs text-foreground flex-1 min-w-0">
                       {row.headline || truncate(row.operation, 50) || truncate(row.summary, 50)}
                     </span>
-                    <span className="shrink-0 text-[10px] text-zinc-400">
+                    <span className="shrink-0 text-[10px] text-muted-foreground">
                       {row.drifted && <span className="text-orange-500 mr-1">↗</span>}
-                      {row.dead_end && <span className="text-zinc-400 mr-1">☠</span>}
+                      {row.dead_end && <span className="text-muted-foreground mr-1">☠</span>}
                       {fmtDate(row.started_at)}
                     </span>
-                    <span className="shrink-0 text-[10px] text-zinc-300">{expanded.has(row.id) ? "▾" : "▸"}</span>
+                    <span className="shrink-0 text-[10px] text-muted-foreground">{expanded.has(row.id) ? "▾" : "▸"}</span>
                   </button>
                   {expanded.has(row.id) && (
-                    <div className="px-3 pb-2 space-y-1 border-t border-zinc-50 dark:border-zinc-800 pt-2">
+                    <div className="px-3 pb-2 space-y-1 border-t border-border pt-2">
                       <Detail label="ID" value={row.id} />
                       <Detail label="Agent" value={row.agent_id || "—"} />
                       <Detail label="Project" value={row.project || "—"} />
@@ -502,11 +502,11 @@ export function RunsTab() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-1">
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1">
             <button
               onClick={() => setOffset(Math.max(0, offset - 50))}
               disabled={offset === 0}
-              className="px-2 py-0.5 rounded border border-zinc-200 disabled:opacity-30 dark:border-zinc-700"
+              className="px-2 py-0.5 rounded border border-border disabled:opacity-30 dark:border-zinc-700"
             >
               ← Prev
             </button>
@@ -516,7 +516,7 @@ export function RunsTab() {
             <button
               onClick={() => setOffset(offset + 50)}
               disabled={offset + 50 >= (data?.total || 0)}
-              className="px-2 py-0.5 rounded border border-zinc-200 disabled:opacity-30 dark:border-zinc-700"
+              className="px-2 py-0.5 rounded border border-border disabled:opacity-30 dark:border-zinc-700"
             >
               Next →
             </button>
@@ -530,8 +530,8 @@ export function RunsTab() {
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex text-[10px]">
-      <span className="text-zinc-400 w-24 shrink-0">{label}</span>
-      <span className="text-zinc-700 dark:text-zinc-300 break-all">{value}</span>
+      <span className="text-muted-foreground w-24 shrink-0">{label}</span>
+      <span className="text-foreground break-all">{value}</span>
     </div>
   );
 }

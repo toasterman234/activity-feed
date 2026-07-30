@@ -1,6 +1,7 @@
 "use client";
 
 import type { ThreadArtifactRow } from "./shapes";
+import { ArtifactContent } from "./ArtifactContent";
 
 export type ThreadArtifactsTabProps = {
   artifacts: ThreadArtifactRow[];
@@ -23,9 +24,9 @@ export function ThreadArtifactsTab({ artifacts }: ThreadArtifactsTabProps) {
             Artifact — {artifact.title}{" "}
             <span className="normal-case text-zinc-300 dark:text-zinc-600">({artifact.kind}{artifact.version > 1 ? `, v${artifact.version}` : ""})</span>
           </summary>
-          <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap rounded-md bg-zinc-50 p-2 text-[11px] text-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">
-            {artifact.content}
-          </pre>
+          <div className="mt-2">
+            <ArtifactContent kind={artifact.kind} content={artifact.content} />
+          </div>
         </details>
       ))}
     </div>

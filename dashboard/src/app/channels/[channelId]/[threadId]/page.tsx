@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -29,6 +29,31 @@ import { ThreadTabs, type ThreadTabId } from "../../ThreadTabs";
 import { ThreadWorkTab } from "../../ThreadWorkTab";
 import { WorkRunsPanel } from "../../WorkRunsPanel";
 import { ThreadHistoryTab } from "../../ThreadHistoryTab";
+import { Card, CardContent, StatusChip, cx, type UiTone } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 function uuid(): string {
   return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
@@ -64,8 +89,8 @@ export default function ThreadPage({ params }: { params: Promise<{ channelId: st
 
   if (!channelShape || !messageShape || !memberShape) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
-        <p className="text-sm text-zinc-400">{err || "Connecting…"}</p>
+      <div className="min-h-screen bg-background flex items-center justify-center pb-16">
+        <p className="text-sm text-muted-foreground animate-pulse">{err || "Connecting…"}</p>
       </div>
     );
   }
@@ -102,6 +127,7 @@ function ThreadContent({
   const [paseoOpts, setPaseoOpts] = useState<MentionOption[]>([]);
   const [sending, setSending] = useState(false);
   const [booted, setBooted] = useState(false);
+  const [healed, setHealed] = useState(false);
   // Promote dialog state
   const [showPromoteDialog, setShowPromoteDialog] = useState(false);
   const [promoteDestination, setPromoteDestination] = useState("");
@@ -110,6 +136,7 @@ function ThreadContent({
   const [promoteAnyway, setPromoteAnyway] = useState(false);
   const [dismissedPromotionId, setDismissedPromotionId] = useState<string | null>(null);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [activeTab, setActiveTab] = useState<ThreadTabId>("work");
   const [focusTriage, setFocusTriage] = useState(false);
@@ -222,7 +249,7 @@ function ThreadContent({
           state: extras.meta!.state,
           ...patch,
           updated_at: new Date().toISOString(),
-        }).then(() => extras.refresh()).catch(() => {});
+        }).then(() => { setHealed(true); return extras.refresh(); }).catch(() => {});
       })
       .catch(() => {});
   }, [extras.meta, healed, threadId, channelId, threadMsg?.body]);
@@ -433,10 +460,6 @@ function ThreadContent({
 
   const archiveThread = async (action: "archive" | "unarchive") => {
     if (archiving) return;
-    if (action === "archive") {
-      const ok = window.confirm("Archive this thread? It will leave Needs attention and channel lists. You can restore it later.");
-      if (!ok) return;
-    }
     setArchiving(true);
     try {
       const response = await fetch("/api/channels/archive-thread", {
@@ -500,17 +523,17 @@ function ThreadContent({
   // until redirect; meta (polled by threadId) still tells us the canonical home.
   if (extras.meta?.channel_id && extras.meta.channel_id !== channelId) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16 flex flex-col items-center justify-center gap-2">
-        <p className="text-sm text-zinc-400">Redirecting to new channel…</p>
+      <div className="min-h-screen bg-background pb-16 flex flex-col items-center justify-center gap-2">
+        <p className="text-sm text-muted-foreground animate-pulse">Redirecting to new channel…</p>
       </div>
     );
   }
 
   if (!channel || !threadMsg) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16 flex flex-col items-center justify-center gap-2">
-        <p className="text-sm text-zinc-400">Thread not found</p>
-        <Link href={`/channels/${channelId}`} className="text-xs text-blue-600 underline">
+      <div className="min-h-screen bg-background pb-16 flex flex-col items-center justify-center gap-2">
+        <p className="text-sm text-muted-foreground">Thread not found</p>
+        <Link href={`/channels/${channelId}`} className="text-xs text-primary underline">
           ← Back to channel
         </Link>
       </div>
@@ -541,78 +564,143 @@ function ThreadContent({
     }
   };
 
+  const titleText = (threadMsg?.body || "").split("\n")[0] || `Thread ${threadId.slice(0, 8)}`;
+
+  // Stage pills from workflow events (proto-10 visual pattern)
+  const stagePills = useMemo(() => {
+    const events = extras.workflowEvents;
+    if (!events || events.length === 0) return [];
+    const seen = new Set<string>();
+    const stages: { label: string; done: boolean; active: boolean }[] = [];
+    for (const ev of events) {
+      const label = ev.to_state || ev.from_state || "";
+      if (!label || seen.has(label)) continue;
+      seen.add(label);
+      const done = ev.event_type === "completed" || ev.event_type === "done";
+      stages.push({ label, done, active: !done && ev.to_state === currentState });
+    }
+    if (currentState && !stages.some((s) => s.label === currentState)) {
+      stages.push({ label: currentState, done: false, active: true });
+    }
+    return stages;
+  }, [extras.workflowEvents, currentState]);
+
+  // Proto-10 state → UiTone
+  function stateTone(state: string | null | undefined): UiTone {
+    if (!state) return "open";
+    const s = state.toLowerCase();
+    if (s === "in_progress" || s === "running") return "active";
+    if (s === "review") return "wait";
+    if (s === "blocked" || s === "failed" || s === "fail") return "danger";
+    if (s === "resolved" || s === "shipped" || s === "verified") return "good";
+    if (s === "approved") return "primary";
+    if (s === "drafted") return "open";
+    return "open";
+  }
+
   return (
-    <div className="min-h-screen bg-zinc-50 pb-16 dark:bg-zinc-950">
-      <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-zinc-200 bg-white/95 px-3 py-2 pt-[env(safe-area-inset-top,0px)] backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
-        <Link
-          href={`/channels/${channelId}`}
-          className="-ml-1 shrink-0 rounded-md px-2 py-1.5 text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-          aria-label="Back to channel"
-        >
-          ← Back
-        </Link>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-zinc-800 dark:text-zinc-200"># {channel.name}</p>
-          <p className="truncate text-[10px] text-zinc-400">Thread by {threadMsg.author}</p>
-        </div>
-        {!isArchived ? (
-          <>
-            <button
-              type="button"
-              onClick={() => setShowMoveDialog(true)}
-              className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-            >
-              Move…
-            </button>
-            <button
-              type="button"
-              disabled={archiving}
-              onClick={() => { void archiveThread("archive"); }}
-              className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-            >
-              {archiving ? "…" : "Archive"}
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            disabled={archiving}
-            onClick={() => { void archiveThread("unarchive"); }}
-            className="shrink-0 rounded-md border border-zinc-200 px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+    <div className="min-h-screen bg-background pb-16">
+      {/* Proto-10 compact header */}
+      <header className="sticky top-0 z-10 border-b border-border bg-card/95 px-3 py-2 pt-[env(safe-area-inset-top,0px)] backdrop-blur supports-[backdrop-filter]:bg-card/80">
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/channels/${channelId}`}
+            className="-ml-1 shrink-0 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+            aria-label="Back to channel"
           >
-            {archiving ? "…" : "Restore"}
-          </button>
+            ←
+          </Link>
+          <div className="min-w-0 flex-1">
+            <p className="text-[15px] font-bold truncate">{titleText}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              # {channel.name} · @{threadMsg.author} ·{" "}
+              <StatusChip tone={stateTone(currentState)}>{currentState}</StatusChip>
+            </p>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="shrink-0"
+              render={
+                <Button variant="outline" size="sm" className="h-7 px-2 text-[11px]" disabled={archiving} />
+              }
+            >
+              ⋯
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {!isArchived ? (
+                <>
+                  <DropdownMenuItem onClick={() => setShowMoveDialog(true)}>Move…</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowArchiveConfirm(true)}>Archive</DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={() => { void archiveThread("unarchive"); }}>
+                  {archiving ? "…" : "Restore"}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {/* Stage pills (proto-10 pattern) */}
+        {stagePills.length > 0 && (
+          <div className="flex gap-1 flex-wrap mt-2">
+            {stagePills.map((s, i) => {
+              const statusText = s.done ? "Completed" : s.active ? "In progress" : "Pending";
+              return (
+                <Tooltip key={i}>
+                  <TooltipTrigger
+                    render={
+                      <span
+                        className={cx(
+                          "inline-flex text-[9px] px-1.5 py-0.5 rounded-full font-medium",
+                          s.active && "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border border-sky-300 dark:border-sky-700",
+                          s.done && "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700",
+                          !s.active && !s.done && "bg-muted text-muted-foreground border border-border",
+                        )}
+                      />
+                    }
+                  >
+                    {s.label}
+                    {s.done ? " ✓" : s.active ? " →" : ""}
+                  </TooltipTrigger>
+                  <TooltipContent>{statusText}: {s.label}</TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
         )}
       </header>
 
       <div className="flex-1 overflow-y-auto px-3 py-3">
         <div className="mx-auto max-w-3xl space-y-3">
+          {/* Each logical section wrapped in Card for proto-10 visual consistency */}
           {isArchived && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-950">
-              <p className="text-xs text-amber-700 dark:text-amber-300">
-                {meta?.promoted_to
-                  ? "This thread was promoted to a project and is archived (read-only)."
-                  : "This thread is archived. It is hidden from Needs attention and channel lists."}
-              </p>
-              <div className="mt-1 flex flex-wrap gap-3">
-                {meta?.promoted_to && (
-                  <Link
-                    href="/projects"
-                    className="inline-block text-[11px] font-medium text-amber-800 underline dark:text-amber-200"
+            <Card size="sm">
+              <CardContent>
+                <p className="text-xs text-amber-700 dark:text-amber-300">
+                  {meta?.promoted_to
+                    ? "This thread was promoted to a project and is archived (read-only)."
+                    : "This thread is archived. It is hidden from Needs attention and channel lists."}
+                </p>
+                <div className="mt-1 flex flex-wrap gap-3">
+                  {meta?.promoted_to && (
+                    <Link
+                      href="/projects"
+                      className="inline-block text-[11px] font-medium text-amber-800 underline dark:text-amber-200"
+                    >
+                      Open Projects
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    disabled={archiving}
+                    onClick={() => { void archiveThread("unarchive"); }}
+                    className="text-[11px] font-medium text-amber-800 underline disabled:opacity-40 dark:text-amber-200"
                   >
-                    Open Projects
-                  </Link>
-                )}
-                <button
-                  type="button"
-                  disabled={archiving}
-                  onClick={() => { void archiveThread("unarchive"); }}
-                  className="text-[11px] font-medium text-amber-800 underline disabled:opacity-40 dark:text-amber-200"
-                >
-                  Restore thread
-                </button>
-              </div>
-            </div>
+                    Restore thread
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
           )}
           {lifecyclePicked && meta && lc && (
             <WorkflowCockpit
@@ -659,30 +747,39 @@ function ThreadContent({
           )}
 
           {!lifecyclePicked && (
-            <div className="flex items-center gap-2 rounded-lg border border-dashed border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800 dark:bg-blue-950">
-              <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Suggestion</span>
-              <span className="text-xs text-blue-700 dark:text-blue-300">
-                Looks like a {LIFECYCLES[suggestedLifecycle]?.label || "coding"} task — run it as a{" "}
-                {LIFECYCLES[suggestedLifecycle]?.label || "Coding"} flow?
-              </span>
-              <button
-                type="button"
-                onClick={() => { void handleLifecycleChange(suggestedLifecycle); }}
-                className="ml-auto shrink-0 rounded-md border border-blue-300 bg-white px-2.5 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
-              >
-                Accept
-              </button>
-              <select
-                defaultValue=""
-                onChange={(e) => { if (e.target.value) void handleLifecycleChange(e.target.value); }}
-                className="text-xs rounded border border-blue-200 bg-white px-2 py-0.5 text-zinc-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-zinc-400"
-              >
-                <option value="" disabled>Or pick…</option>
-                {Object.entries(LIFECYCLES).map(([key, lcDef]) => (
-                  <option key={key} value={key}>{lcDef.label}</option>
-                ))}
-              </select>
-            </div>
+            <Card size="sm">
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-medium uppercase tracking-wide text-blue-500">Suggestion</span>
+                  <span className="text-xs text-blue-700 dark:text-blue-300">
+                    Looks like a {LIFECYCLES[suggestedLifecycle]?.label || "coding"} task — run it as a{" "}
+                    {LIFECYCLES[suggestedLifecycle]?.label || "Coding"} flow?
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => { void handleLifecycleChange(suggestedLifecycle); }}
+                    className="ml-auto shrink-0 rounded-md border border-blue-300 bg-white px-2.5 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                  >
+                    Accept
+                  </button>
+                  <Select
+                    value={null}
+                    onValueChange={(value) => {
+                      if (typeof value === "string") void handleLifecycleChange(value);
+                    }}
+                  >
+                    <SelectTrigger size="sm" className="w-auto">
+                      <SelectValue placeholder="Or pick…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(LIFECYCLES).map(([key, lcDef]) => (
+                        <SelectItem key={key} value={key}>{lcDef.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
 
@@ -733,11 +830,6 @@ function ThreadContent({
             <ThreadConversationTab
               threadMsg={threadMsg}
               replies={replies}
-              graphEvents={extras.graphEvents}
-              graphDecisions={extras.graphDecisions}
-              graphObservations={extras.graphObservations}
-              graphProposals={extras.graphProposals}
-              continuity={extras.continuity}
               replyBody={replyBody}
               onReplyBodyChange={setReplyBody}
               onSubmitReply={() => { void postReply(replyBody); }}
@@ -803,45 +895,90 @@ function ThreadContent({
             <ThreadHistoryTab events={extras.workflowEvents} />
           )}
 
-          {showPromoteDialog && (
-            <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
-                {promotionFailed ? "Retry promote" : "Promote to Project"}
-              </p>
-              <p className="mb-2 text-xs text-zinc-500 dark:text-zinc-400">
-                Scaffold a standalone AIWG project from this thread’s messages, plans, and artifacts.
-                One-shot — no live sync back. You'll need to push to a remote manually.
-              </p>
-              <label className="mb-1 block text-[10px] text-zinc-400">Destination path</label>
-              <input
-                type="text"
-                value={promoteDestination}
-                onChange={(e) => setPromoteDestination(e.target.value)}
-                placeholder="~/Projects/my-project"
-                className="mb-2 w-full rounded border border-zinc-200 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                disabled={promoting}
-              />
-              {promoteError && (
-                <p className="mb-2 text-[10px] text-red-500">{promoteError}</p>
-              )}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => { void handlePromote(promoteDestination); }}
-                  disabled={!promoteDestination.trim() || promoting}
-                  className="rounded border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 disabled:opacity-40 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                >
-                  {promoting ? "Promoting…" : "Promote"}
-                </button>
-                <button
+          <Dialog
+            open={showPromoteDialog}
+            onOpenChange={(open) => {
+              if (!open) {
+                setShowPromoteDialog(false);
+                setPromoteError(null);
+              } else {
+                setShowPromoteDialog(true);
+              }
+            }}
+          >
+            <DialogContent className="sm:max-w-md" showCloseButton={!promoting}>
+              <DialogHeader>
+                <DialogTitle>{promotionFailed ? "Retry promote" : "Promote to Project"}</DialogTitle>
+                <DialogDescription>
+                  Scaffold a standalone AIWG project from this thread&apos;s messages, plans, and artifacts.
+                  One-shot — no live sync back. You&apos;ll need to push to a remote manually.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-2">
+                <label className="block text-[10px] text-muted-foreground">Destination path</label>
+                <Input
+                  type="text"
+                  value={promoteDestination}
+                  onChange={(e) => setPromoteDestination(e.target.value)}
+                  placeholder="~/Projects/my-project"
+                  className="text-xs"
+                  disabled={promoting}
+                />
+                {promoteError && (
+                  <p className="text-[10px] text-red-500">{promoteError}</p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => { setShowPromoteDialog(false); setPromoteError(null); }}
                   disabled={promoting}
-                  className="rounded border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-500 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400"
                 >
                   Cancel
-                </button>
-              </div>
-            </div>
-          )}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => { void handlePromote(promoteDestination); }}
+                  disabled={!promoteDestination.trim() || promoting}
+                  className="border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                >
+                  {promoting ? "Promoting…" : "Promote"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showArchiveConfirm} onOpenChange={setShowArchiveConfirm}>
+            <DialogContent className="sm:max-w-md" showCloseButton={!archiving}>
+              <DialogHeader>
+                <DialogTitle>Archive this thread?</DialogTitle>
+                <DialogDescription>
+                  It will leave Needs attention and channel lists. You can restore it later.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowArchiveConfirm(false)}
+                  disabled={archiving}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  disabled={archiving}
+                  onClick={() => {
+                    setShowArchiveConfirm(false);
+                    void archiveThread("archive");
+                  }}
+                >
+                  {archiving ? "Archiving…" : "Archive"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -938,15 +1075,10 @@ function IssueHeader({
   const prio = meta.priority || "none";
 
   return (
-    <div
-      className={`rounded-lg border bg-white p-3 dark:bg-zinc-900 ${
-        highlightMissing && (missingOwner || missingRepo)
-          ? "border-amber-400 dark:border-amber-700"
-          : "border-zinc-200 dark:border-zinc-800"
-      }`}
-    >
+    <Card size="sm">
+      <CardContent>
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Issue setup</p>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Issue setup</p>
         {!editing && (
           <button
             onClick={() => {
@@ -963,63 +1095,76 @@ function IssueHeader({
       </div>
 
       {highlightMissing && missingOwner && !editing && (
-        <p className="mb-2 text-[11px] text-amber-800 dark:text-amber-200">
+        <p className="mb-2 text-[11px] text-amber-700 dark:text-amber-300">
           Missing: owner. Tap edit to set it here.
         </p>
       )}
       {highlightMissing && missingRepo && !missingOwner && !editing && (
-        <p className="mb-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+        <p className="mb-2 text-[11px] text-muted-foreground">
           Link a repo when you're ready to run agents.
         </p>
       )}
 
       {editing ? (
         <div className="space-y-2">
-          <label className="block text-[10px] text-zinc-500">
+          <label className="block text-[10px] text-muted-foreground">
             Owner
-            <input
+            <Input
               autoFocus={missingOwner || forceEdit}
               value={editAssignee}
               onChange={(e) => setEditAssignee(e.target.value)}
               placeholder="you"
-              className={`mt-0.5 w-full rounded border px-2 py-1.5 text-xs dark:bg-zinc-800 dark:text-zinc-200 ${
-                !editAssignee.trim()
-                  ? "border-amber-400 dark:border-amber-600"
-                  : "border-zinc-200 dark:border-zinc-700"
-              }`}
+              className={cx(
+                "mt-0.5 h-8 text-xs",
+                !editAssignee.trim() ? "border-amber-400 dark:border-amber-600" : "",
+              )}
               disabled={saving}
             />
           </label>
-          <label className="block text-[10px] text-zinc-500">
+          <label className="block text-[10px] text-muted-foreground">
             Repo
-            <select
-              value={editRepoId}
-              onChange={(e) => setEditRepoId(e.target.value)}
-              className="mt-0.5 w-full rounded border border-zinc-200 px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+            <Select
+              value={editRepoId || "__none__"}
+              onValueChange={(value) => {
+                setEditRepoId(typeof value === "string" && value !== "__none__" ? value : "");
+              }}
               disabled={saving}
             >
-              <option value="">Select repo…</option>
-              {repos.map((repo) => (
-                <option key={repo.id} value={repo.id}>
-                  {repo.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger size="sm" className="mt-0.5 w-full">
+                <SelectValue>
+                  {editRepoId ? repos.find((repo) => repo.id === editRepoId)?.name || "Repo" : "Select repo…"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">Select repo…</SelectItem>
+                {repos.map((repo) => (
+                  <SelectItem key={repo.id} value={repo.id}>
+                    {repo.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
-          <label className="block text-[10px] text-zinc-500">
+          <label className="block text-[10px] text-muted-foreground">
             Priority
-            <select
+            <Select
               value={editPriority}
-              onChange={(e) => setEditPriority(e.target.value)}
-              className="mt-0.5 w-full rounded border border-zinc-200 px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+              onValueChange={(value) => {
+                if (typeof value === "string") setEditPriority(value);
+              }}
               disabled={saving}
             >
-              <option value="none">—</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
+              <SelectTrigger size="sm" className="mt-0.5 w-full">
+                <SelectValue>{prioLabels[editPriority] || editPriority}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">—</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
           </label>
           <div className="flex gap-2 pt-1">
             <button
@@ -1032,7 +1177,7 @@ function IssueHeader({
             <button
               onClick={() => setEditing(false)}
               disabled={saving}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-[11px] text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+              className="rounded-md border border-border px-3 py-1.5 text-[11px] text-muted-foreground"
             >
               Cancel
             </button>
@@ -1040,19 +1185,20 @@ function IssueHeader({
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${prioColors[prio]}`}>
+          <StatusChip tone={prio === "urgent" ? "danger" : prio === "high" ? "wait" : prio === "medium" ? "active" : "neutral"}>
             {prioLabels[prio]}
-          </span>
-          <span className={`text-[11px] ${missingOwner ? "font-medium text-amber-700 dark:text-amber-300" : "text-zinc-500"}`}>
+          </StatusChip>
+          <span className={cx("text-[11px]", missingOwner ? "font-medium text-amber-700 dark:text-amber-300" : "text-muted-foreground")}>
             {meta.assignee ? `@${meta.assignee}` : "No owner"}
           </span>
-          <span className={`text-[11px] ${missingRepo ? "font-medium text-amber-700 dark:text-amber-300" : "text-zinc-400"}`}>
+          <span className={cx("text-[11px]", missingRepo ? "font-medium text-amber-700 dark:text-amber-300" : "text-muted-foreground")}>
             {repoName ? `📁 ${repoName}` : "No repo"}
-            {repoPath && <span className="ml-1 font-mono text-zinc-300 dark:text-zinc-600">{repoPath}</span>}
+            {repoPath && <span className="ml-1 font-mono text-muted-foreground/60">{repoPath}</span>}
           </span>
         </div>
       )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 

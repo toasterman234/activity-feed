@@ -1,23 +1,25 @@
-# Progress Log: GuideBar — Guided Lifecycle Experience
+# Progress Log: Home usable
 
-Session-by-session log of what was done.
-
-## Session: 2026-07-26 — Phases 1–5 complete
+## Session: 2026-07-29
 
 ### Completed
-- Phase 1: `nextStepSummary()` + `walkOrder()` + `mainPathOrder()` in `lifecycles.ts`; deduplicated `walkOrder` in `StateFlow.tsx`; fixed agent→state hook in `trigger/route.ts` (now announces success AND failure)
-- Phase 2: Built `GuideBar.tsx` — 4 states (active, working, error, terminal), "Do it for me" button, promote-to-project in terminal state
-- Phase 3: Built `POST /api/channels/advance` — extracted shared `runAgentPrompt` lib, runs workflows→agent→transition, returns structured result
-- Phase 4: Auto-suggest lifecycle — channel default first, one-tap Accept button, compact dropdown as fallback
-- Phase 5: Reworked thread page layout — GuideBar pinned at top, old UI (lifecycle picker, workflows, StateFlow, AdvanceStateButtons) collapsed into single "Details" disclosure
+- Phase 0: Audit — read all 6 target files, documented findings
+- Phase 1: Demoted unscoped issues from "Needs you" (`overview/route.ts`)
+- Phase 2: Default owner + infer repo (new `issueMetaHeal.ts`, `attentionGuide.ts`, `page.tsx`)
+- Phase 3: Quieter chrome (DoNowBanner, IssueHeader, Home copy)
+- Deployed to OVH: `20260729T183116Z-c75c30cf7c46-56264`
 
-### Files changed/created
-- Modified: `src/app/channels/lifecycles.ts`, `StateFlow.tsx`, `trigger/route.ts`, `page.tsx`
-- Created: `src/app/channels/GuideBar.tsx`, `src/lib/runAgentPrompt.ts`, `src/app/api/channels/advance/route.ts`
+### Files changed
+- `src/app/api/home/overview/route.ts` — SQL CASE + WHERE + fallback copy
+- `src/app/channels/attentionGuide.ts` — triage only for missing owner
+- `src/app/channels/issueMetaHeal.ts` — NEW: heal helper
+- `src/app/channels/[channelId]/[threadId]/page.tsx` — heal effect, DoNowBanner condition, forceEdit logic, IssueHeader
+- `src/app/home/HomeDashboard.tsx` — Needs you description
 
 ### Test Results
-- `npx tsc --noEmit`: zero new errors (21 pre-existing in unrelated files)
-- `npx next build`: succeeded, zero build errors
+- TypeScript: no new errors (3 pre-existing in page.tsx unrelated)
+- Not deployed yet — QA pending on Ben's request
 
 ### Next Steps
-- Phase 6: Browser-check on OVH (click through happy path + edge cases) — **still pending** as of 2026-07-27
+- Run Phase 4 QA checklist on OVH
+- Update `PLAN-workflow-next.md` status row

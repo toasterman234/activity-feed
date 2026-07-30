@@ -34,7 +34,7 @@ function OpsConfigInner() {
 
   return (
     <div className="px-3 pb-4 pt-3 space-y-3">
-      <div className="flex gap-1 rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-900">
+      <div className="flex gap-1 rounded-lg bg-muted/60 p-0.5">
         {CONFIG_TABS.map((t) => (
           <button
             key={t}
@@ -42,8 +42,8 @@ function OpsConfigInner() {
             onClick={() => select(t)}
             className={`flex-1 rounded-md px-0.5 py-1.5 text-center text-[11px] font-medium transition-colors ${
               tab === t
-                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-zinc-100"
-                : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t}

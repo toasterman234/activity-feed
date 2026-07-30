@@ -23,6 +23,12 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
+  // Pin turbopack root so symlinks (like src/styles/tokens.css) resolve
+  // inside dashboard/ even when a parent lockfile exists.
+  turbopack: { root: '.' },
+  transpilePackages: ["@electric-circuits/client", "@electric-circuits/protocol"],
+  // Allow react-rewrite proxy to access dev resources
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
   // OVH's production build intermittently lost module resolution while several
   // static-generation / trace workers read the freshly installed Next package.
   // Keep this small personal PWA's build deterministic instead of parallel.
@@ -34,7 +40,6 @@ const nextConfig: NextConfig = {
   // Serwist's webpack plugin config is present even when `disable` is set
   // (it only skips SW generation at runtime) — Turbopack needs an explicit
   // (empty) config to know that's intentional and not a leftover mistake.
-  turbopack: {},
   // Next dev blocks cross-origin requests to dev resources (HMR, etc.) by
   // default. Phone/other-device access goes through the Tailscale hostname,
   // which is cross-origin from the dev server's perspective — allow it.
@@ -42,11 +47,9 @@ const nextConfig: NextConfig = {
   webpack: (config, { dev }) => {
     // react-scan is a dev-only profiler (ADR-002) whose ESM dist breaks the
     // production webpack bundle ("can't import named export 'version'").
-    // Stub it out of prod builds; `next dev` runs Turbopack and never hits
-    // this hook, so dev profiling is unaffected.
-    if (!dev) {
-      config.resolve.alias = { ...config.resolve.alias, "react-scan": false };
-    }
+    // React-scan's ESM dist breaks webpack in both dev and prod.
+    // Dev profiling is unaffected — react-scan injector runs in <head>.
+    config.resolve.alias = { ...config.resolve.alias, "react-scan": false };
     return config;
   },
   async rewrites() {

@@ -43,7 +43,7 @@ const SOURCE_COLORS: Record<string, string> = {
   git: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
   "claude-code": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
   pi: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  setup: "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400",
+  setup: "bg-zinc-200 text-foreground dark:bg-zinc-800 dark:text-muted-foreground",
 };
 
 // ── helpers ────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ const EXT_DOT_COLORS: Record<string, string> = {
 function extDotColor(ext: string): string { return EXT_DOT_COLORS[ext] ?? "bg-zinc-300 dark:bg-zinc-600"; }
 
 function DetailValue({ value }: { value: unknown }) {
-  if (value === null || value === undefined || value === "") return <span className="text-zinc-400 italic">—</span>;
+  if (value === null || value === undefined || value === "") return <span className="text-muted-foreground italic">—</span>;
   if (typeof value === "object") return <pre className="whitespace-pre-wrap break-words text-[11px] leading-snug">{JSON.stringify(value, null, 2)}</pre>;
   return <span className="whitespace-pre-wrap break-words">{String(value)}</span>;
 }
@@ -204,8 +204,8 @@ export default function Home() {
 
   if (!shape) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
-        <p className="text-sm text-zinc-400">{err || "Connecting…"}</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-sm text-muted-foreground">{err || "Connecting…"}</p>
       </div>
     );
   }
@@ -496,33 +496,33 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         </button>
       )}
       {opts?.thread && isMessage ? (
-        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border px-3 py-2 hover:brightness-95 transition-all dark:hover:brightness-110 ${selectMode?"pl-8":""} ${isUser?"border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40":"border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"}`}>
+        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border px-3 py-2 hover:brightness-95 transition-all dark:hover:brightness-110 ${selectMode?"pl-8":""} ${isUser?"border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40":"border-border bg-white dark:border-zinc-800 dark:bg-zinc-900"}`}>
           <div className="flex items-center gap-1.5 mb-1">
-            <span className={`text-[10px] font-semibold uppercase tracking-wide ${isUser?"text-blue-600 dark:text-blue-300":"text-zinc-500 dark:text-zinc-400"}`}>{isUser?"You":SOURCE_FULL[r.source]??r.source}</span>
-            <span className="text-[10px] text-zinc-400">{relativeTime(r.created_at)}</span>
+            <span className={`text-[10px] font-semibold uppercase tracking-wide ${isUser?"text-blue-600 dark:text-blue-300":"text-muted-foreground"}`}>{isUser?"You":SOURCE_FULL[r.source]??r.source}</span>
+            <span className="text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span>
           </div>
-          <p className="whitespace-pre-wrap break-words text-sm text-zinc-800 dark:text-zinc-200">{r.text||r.summary}</p>
+          <p className="whitespace-pre-wrap break-words text-sm text-foreground">{r.text||r.summary}</p>
         </button>
       ) : opts?.thread ? (
-        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-md border border-dashed border-zinc-200 bg-zinc-50 px-2.5 py-1 hover:bg-zinc-100 transition-colors dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>
-          <div className="flex items-center gap-2 min-w-0"><span className="shrink-0 text-[10px] text-zinc-400">⚙</span><span className="truncate text-[11px] text-zinc-500 dark:text-zinc-400 flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-zinc-400">{relativeTime(r.created_at)}</span></div>
+        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-md border border-dashed border-border bg-muted/30 px-2.5 py-1 hover:bg-zinc-100 transition-colors dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>
+          <div className="flex items-center gap-2 min-w-0"><span className="shrink-0 text-[10px] text-muted-foreground">⚙</span><span className="truncate text-[11px] text-muted-foreground flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span></div>
         </button>
       ) : (
-      <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border border-zinc-200 bg-white px-3 py-2.5 hover:bg-zinc-50 transition-colors dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>
+      <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border border-border bg-white px-3 py-2.5 hover:bg-muted/30 transition-colors dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>
         <div className="flex items-center gap-2 min-w-0">
-          <span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-zinc-700"}`}>{SOURCE_LABELS[r.source]??r.source}</span>
-          <span className="truncate text-sm text-zinc-800 dark:text-zinc-200 flex-1 min-w-0">{r.summary}</span>
-          <span className="shrink-0 text-[10px] text-zinc-400">{relativeTime(r.created_at)}</span>
+          <span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-foreground"}`}>{SOURCE_LABELS[r.source]??r.source}</span>
+          <span className="truncate text-sm text-foreground flex-1 min-w-0">{r.summary}</span>
+          <span className="shrink-0 text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span>
         </div>
         {r.files.length>0 && (
           <div className="mt-1.5 flex flex-wrap gap-1">
             {r.files.slice(0,8).map((f,i)=>(
-              <span key={i} className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-1.5 py-0.5 text-[10px] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+              <span key={i} className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-1.5 py-0.5 text-[10px] text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground">
                 <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${extDotColor(fileExt(f))}`} />
                 {fileBasename(f)}
               </span>
             ))}
-            {r.files.length>8 && <span className="text-[10px] text-zinc-400 self-center">+{r.files.length-8} more</span>}
+            {r.files.length>8 && <span className="text-[10px] text-muted-foreground self-center">+{r.files.length-8} more</span>}
           </div>
         )}
       </button>
@@ -533,10 +533,10 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         onPointerDown={e=>e.stopPropagation()}
         onClick={(e)=>{e.stopPropagation(); setToolbarFor(t=>t===r.id?null:r.id);}}
         title="Annotate"
-        className={`absolute right-2 top-2 z-10 flex items-center justify-center w-6 h-6 rounded-full text-xs shadow-sm transition-colors ${toolbarFor===r.id?"bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900":"bg-white/90 text-zinc-500 border border-zinc-200 dark:bg-zinc-900/90 dark:border-zinc-700 dark:text-zinc-400"}`}>
+        className={`absolute right-2 top-2 z-10 flex items-center justify-center w-6 h-6 rounded-full text-xs shadow-sm transition-colors ${toolbarFor===r.id?"bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900":"bg-white/90 text-muted-foreground border border-border dark:bg-zinc-900/90 dark:border-zinc-700 dark:text-muted-foreground"}`}>
         {toolbarFor===r.id?"✕":"🏷"}
       </button>}
-      {!selectMode&&toolbarFor===r.id&&<div data-annotate-ui className="absolute right-2 top-9 z-10 flex items-center gap-0.5 bg-white border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-700 rounded-md px-1 py-1 shadow-lg" onPointerDown={e=>e.stopPropagation()} onClick={e=>e.stopPropagation()}>
+      {!selectMode&&toolbarFor===r.id&&<div data-annotate-ui className="absolute right-2 top-9 z-10 flex items-center gap-0.5 bg-white border border-border dark:bg-zinc-900 dark:border-zinc-700 rounded-md px-1 py-1 shadow-lg" onPointerDown={e=>e.stopPropagation()} onClick={e=>e.stopPropagation()}>
         {/* One-tap save: tapping a verdict writes immediately. Long-press / right-click opens comment sheet. */}
         {VERDICTS.map(v=>(<button key={v.label}
           title={`${v.label} (tap to save)`}
@@ -546,36 +546,36 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           className="text-base p-1.5 active:scale-90 transition-transform touch-manipulation">{v.emoji}</button>))}
       </div>}
       {/* comment / collection sheet — fixed so it can't clip inside a thread card on mobile */}
-      {isJudging&&<div data-annotate-ui className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-50 mx-auto w-[min(100%,20rem)] rounded-xl border border-zinc-200 bg-white p-3 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900" onClick={e=>e.stopPropagation()}>
-        <div className="flex items-center gap-1.5 mb-2"><span className="text-sm">{VERDICTS.find(v=>v.label===judging.verdict)?.emoji}</span><span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 capitalize">{judging.verdict}</span></div>
-        <textarea value={judgeComment} onChange={e=>setJudgeComment(e.target.value)} placeholder="Comment (optional)…" rows={2} className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-800 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" autoFocus />
+      {isJudging&&<div data-annotate-ui className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-50 mx-auto w-[min(100%,20rem)] rounded-xl border border-border bg-white p-3 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900" onClick={e=>e.stopPropagation()}>
+        <div className="flex items-center gap-1.5 mb-2"><span className="text-sm">{VERDICTS.find(v=>v.label===judging.verdict)?.emoji}</span><span className="text-xs font-medium text-foreground capitalize">{judging.verdict}</span></div>
+        <textarea value={judgeComment} onChange={e=>setJudgeComment(e.target.value)} placeholder="Comment (optional)…" rows={2} className="w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-zinc-800 placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" autoFocus />
         {/* bucket picker */}
         <div className="mt-2">
-          <label className="text-[10px] text-zinc-400 uppercase tracking-wider">Collection</label>
+          <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Collection</label>
           {!showNewBucket ? (
             <div className="flex items-center gap-1 mt-0.5">
               <select value={judgeBucket} onChange={e => setJudgeBucket(e.target.value)}
-                className="flex-1 rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                className="flex-1 rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
                 {!collections.some(c => c.id === "inbox") && <option value="inbox">inbox</option>}
                 {collections.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
               </select>
               <button onClick={() => setShowNewBucket(true)} title="New collection"
-                className="rounded px-1.5 py-0.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 border border-zinc-200 dark:border-zinc-700">+</button>
+                className="rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground border border-border dark:border-zinc-700">+</button>
             </div>
           ) : (
             <div className="flex items-center gap-1 mt-0.5">
               <input type="text" value={newBucketName} onChange={e => setNewBucketName(e.target.value)}
                 placeholder="name…" autoFocus
-                className="flex-1 rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-xs text-zinc-700 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200" />
+                className="flex-1 rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200" />
               <button onClick={() => { if (newBucketName.trim()) { const id = newBucketName.trim().toLowerCase().replace(/\s+/g, "-"); setJudgeBucket(id); setShowNewBucket(false); setNewBucketName(""); } }}
                 className="rounded px-1.5 py-0.5 text-xs font-medium bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-800">Add</button>
               <button onClick={() => { setShowNewBucket(false); setNewBucketName(""); }}
-                className="text-[10px] text-zinc-400 hover:text-zinc-600">✕</button>
+                className="text-[10px] text-muted-foreground hover:text-muted-foreground">✕</button>
             </div>
           )}
         </div>
         <div className="flex gap-1.5 mt-2 justify-end">
-          <button onClick={()=>setJudging(null)} className="rounded px-2 py-0.5 text-[10px] text-zinc-400 hover:text-zinc-600">Cancel</button>
+          <button onClick={()=>setJudging(null)} className="rounded px-2 py-0.5 text-[10px] text-muted-foreground hover:text-muted-foreground">Cancel</button>
           <button onClick={()=>submitJudgment(r,judging.verdict,judgeComment,judgeBucket)} className="rounded px-3 py-1 text-xs font-medium bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-800">Save</button>
         </div>
       </div>}
@@ -583,7 +583,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
+    <div className="min-h-screen bg-background pb-16">
       {/* toast banner */}
       {toast && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-lg px-4 py-2 text-sm font-medium shadow-lg transition-all animate-in fade-in slide-in-from-top-2 ${toast.type === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
@@ -591,15 +591,15 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         </div>
       )}
       {/* sticky header: row 1 = tabs only (no scroll), row 2 = search + menu */}
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-10 border-b border-border bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-card/95 pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto max-w-5xl px-2 pt-1.5">
           {/* row 1: activity tabs, evenly spread, own row, no scroll */}
           <div className="flex w-full">
             {(["activity","projects","memory","runs","collections"] as TabId[]).map((id) => (
               <button key={id} onClick={() => setTab(id)}
-                className={`flex-1 min-w-0 px-0.5 py-1 text-[11px] font-medium rounded-md transition-colors truncate ${tab===id?"bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100":"text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"}`}>
+                className={`flex-1 min-w-0 px-0.5 py-1 text-[11px] font-medium rounded-md transition-colors truncate ${tab===id?"bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100":"text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground"}`}>
                 {id.charAt(0).toUpperCase()+id.slice(1)}
-                {id!=="collections" && <span className="ml-0.5 text-[9px] text-zinc-400">{tc[id]}</span>}
+                {id!=="collections" && <span className="ml-0.5 text-[9px] text-muted-foreground">{tc[id]}</span>}
               </button>
             ))}
           </div>
@@ -607,37 +607,37 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           {/* row 2: search + live count + menu */}
           {tab!=="collections" && <div className="flex items-center gap-2 py-1 flex-wrap">
             <input type="text" value={cs} onChange={e=>setCs(e.target.value)} placeholder={ph}
-              className="flex-1 min-w-0 rounded-md border border-zinc-200 bg-white px-2 py-0.5 text-xs text-zinc-800 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+              className="flex-1 min-w-0 rounded-md border border-border bg-white px-2 py-0.5 text-xs text-zinc-800 placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
 
-            <span className="text-[10px] text-zinc-400 shrink-0 hidden sm:inline"><span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500 mr-1"/>{visibleCount}</span>
+            <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:inline"><span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500 mr-1"/>{visibleCount}</span>
 
             {tab!=="projects"&&tab!=="memory"&&(
               <button onClick={() => { setSelectMode(!selectMode); setSelected(new Set()); }}
-                className={`rounded-md border px-1.5 py-0.5 text-[10px] transition-colors shrink-0 ${selectMode?"border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300":"border-zinc-200 text-zinc-400 hover:text-zinc-600 dark:border-zinc-700 dark:hover:text-zinc-300"}`}>
+                className={`rounded-md border px-1.5 py-0.5 text-[10px] transition-colors shrink-0 ${selectMode?"border-zinc-300 bg-zinc-100 text-foreground dark:border-zinc-600 dark:bg-zinc-800 dark:text-muted-foreground":"border-border text-muted-foreground hover:text-muted-foreground dark:border-zinc-700 dark:hover:text-muted-foreground"}`}>
                 {selectMode ? "Done" : "Select"}
               </button>
             )}
 
             <div className="relative shrink-0" ref={menuRef}>
               <button onClick={()=>setMenuOpen(!menuOpen)}
-                className={`rounded-md border px-1.5 py-0.5 text-xs transition-colors ${menuOpen?"border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300":"border-zinc-200 text-zinc-400 hover:text-zinc-600 dark:border-zinc-700 dark:hover:text-zinc-300"}`}>⋯</button>
+                className={`rounded-md border px-1.5 py-0.5 text-xs transition-colors ${menuOpen?"border-zinc-300 bg-zinc-100 text-foreground dark:border-zinc-600 dark:bg-zinc-800 dark:text-muted-foreground":"border-border text-muted-foreground hover:text-muted-foreground dark:border-zinc-700 dark:hover:text-muted-foreground"}`}>⋯</button>
               {menuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-zinc-200 bg-white p-2.5 shadow-lg dark:border-zinc-700 dark:bg-zinc-900 space-y-2.5 z-20">
+                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-border bg-white p-2.5 shadow-lg dark:border-zinc-700 dark:bg-zinc-900 space-y-2.5 z-20">
                   <div className="space-y-1">
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Sources</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sources</p>
                     <div className="flex flex-wrap gap-1">
-                      {SOURCES.map(s=>(<button key={s} onClick={()=>ts(s)} className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${enabledSources.has(s)?SOURCE_COLORS[s]??"bg-zinc-100 text-zinc-700":"bg-zinc-100 text-zinc-300 line-through dark:bg-zinc-800 dark:text-zinc-600"}`}>{SOURCE_LABELS[s]??s}</button>))}
+                      {SOURCES.map(s=>(<button key={s} onClick={()=>ts(s)} className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${enabledSources.has(s)?SOURCE_COLORS[s]??"bg-zinc-100 text-foreground":"bg-zinc-100 text-muted-foreground line-through dark:bg-zinc-800 dark:text-muted-foreground"}`}>{SOURCE_LABELS[s]??s}</button>))}
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Sort</p>
-                    <select value={sort} onChange={e=>setSort(e.target.value as any)} className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sort</p>
+                    <select value={sort} onChange={e=>setSort(e.target.value as any)} className="w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
                       <option value="newest">↓ Newest</option><option value="oldest">↑ Oldest</option><option value="source">By source</option>
                     </select>
                   </div>
                   {tab!=="projects"&&tab!=="memory"&&(<div className="space-y-1">
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Date</p>
-                    <select value={dateFilter} onChange={e=>setDateFilter(e.target.value as any)} className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Date</p>
+                    <select value={dateFilter} onChange={e=>setDateFilter(e.target.value as any)} className="w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
                       <option value="all">All time</option><option value="today">Today</option><option value="week">This week</option><option value="month">This month</option>
                     </select>
                   </div>)}
@@ -662,7 +662,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         lazyColl && lazyJdg ? (
           <CollectionsContent collShape={lazyColl} jdgShape={lazyJdg} actShape={shape} />
         ) : (
-          <p className="py-12 text-center text-sm text-zinc-400">Loading collections…</p>
+          <p className="py-12 text-center text-sm text-muted-foreground">Loading collections…</p>
         )
       ) : tab==="runs" ? (
         <div className="mx-auto max-w-5xl px-3 py-2">
@@ -674,78 +674,78 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         {tab==="memory"&&<div className="space-y-1.5">
           <div className="flex items-center gap-1.5 flex-wrap mb-1">
             {/* source filter — the main ask: distinguish/toggle Claude Code vs pi */}
-            <div className="flex rounded-full border border-zinc-200 dark:border-zinc-700 overflow-hidden shrink-0">
+            <div className="flex rounded-full border border-border dark:border-zinc-700 overflow-hidden shrink-0">
               {([
                 { id: "all" as const, label: `All ${memCounts["claude-code"]+memCounts.pi}` },
                 { id: "claude-code" as const, label: `CC ${memCounts["claude-code"]}` },
                 { id: "pi" as const, label: `PI ${memCounts.pi}` },
               ]).map(o=>(
                 <button key={o.id} onClick={()=>setMemSourceFilter(o.id)}
-                  className={`px-2 py-0.5 text-[10px] font-semibold transition-colors ${memSourceFilter===o.id?(o.id==="pi"?"bg-green-600 text-white":o.id==="claude-code"?"bg-purple-600 text-white":"bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900"):"bg-white text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400"}`}>
+                  className={`px-2 py-0.5 text-[10px] font-semibold transition-colors ${memSourceFilter===o.id?(o.id==="pi"?"bg-green-600 text-white":o.id==="claude-code"?"bg-purple-600 text-white":"bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900"):"bg-white text-muted-foreground dark:bg-zinc-900 dark:text-muted-foreground"}`}>
                   {o.label}
                 </button>
               ))}
             </div>
             <select value={memSort} onChange={e=>setMemSort(e.target.value as any)}
-              className="rounded-md border border-zinc-200 bg-white px-1.5 py-0.5 text-[10px] text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 shrink-0">
+              className="rounded-md border border-border bg-white px-1.5 py-0.5 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground shrink-0">
               <option value="newest">↓ Newest</option><option value="oldest">↑ Oldest</option><option value="most-active">Most active</option>
             </select>
             <button onClick={()=>setMemMessagesOnly(m=>!m)}
-              className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors shrink-0 ${memMessagesOnly?"bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200":"bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"}`}>
+              className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors shrink-0 ${memMessagesOnly?"bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200":"bg-zinc-100 text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground"}`}>
               {memMessagesOnly?"💬 Messages only":"⚙ Show tool calls"}
             </button>
           </div>
           {memSessions.slice(0,memShowCount).map(([sid,v])=>{
             const isMsg = (r: typeof v.rows[number]) => r.type==="claude.message"||r.type==="pi.message";
             const threadRows = memMessagesOnly ? v.rows.filter(isMsg) : v.rows;
-            return (<div key={sid} className={`rounded-lg border bg-white dark:bg-zinc-900 border-l-4 ${v.source==="pi"?"border-l-green-500":"border-l-purple-500"} border-zinc-200 dark:border-zinc-800`}>
+            return (<div key={sid} className={`rounded-lg border bg-card border-l-4 ${v.source==="pi"?"border-l-green-500":"border-l-purple-500"} border-border`}>
             <button onClick={()=>tx(sid)} className="w-full text-left px-3 py-1.5 flex items-center justify-between gap-2">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <span className={`shrink-0 rounded px-1 py-0.5 text-[9px] font-bold leading-none ${v.source==="pi"?"bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200":"bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"}`}>{v.source==="pi"?"PI":"CC"}</span>
-                  <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">{[...v.rows].reverse().find(r=>r.role==="user")?.summary||v.rows[0]?.summary||"session"}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{[...v.rows].reverse().find(r=>r.role==="user")?.summary||v.rows[0]?.summary||"session"}</p>
                 </div>
-                <p className="text-[10px] text-zinc-400 mt-0.5">{v.rows.length}e · {Object.entries(v.tc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t,c])=>`${t}:${c}`).join(" · ")} · {relativeTime(v.rows[0]?.created_at||"")}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{v.rows.length}e · {Object.entries(v.tc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t,c])=>`${t}:${c}`).join(" · ")} · {relativeTime(v.rows[0]?.created_at||"")}</p>
               </div>
-              <span className="shrink-0 text-xs text-zinc-400">{expanded.has(sid)?"▾":"▸"}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">{expanded.has(sid)?"▾":"▸"}</span>
             </button>
-            {expanded.has(sid)&&<div className="border-t border-zinc-100 dark:border-zinc-800 p-2 space-y-1.5">{threadRows.length>0?[...threadRows].sort((a,b)=>a.created_at.localeCompare(b.created_at)).map(r=>renderRow(r,{thread:true})):<p className="py-4 text-center text-xs text-zinc-400">No messages captured for this session (tool-only)</p>}</div>}
+            {expanded.has(sid)&&<div className="border-t border-zinc-100 dark:border-zinc-800 p-2 space-y-1.5">{threadRows.length>0?[...threadRows].sort((a,b)=>a.created_at.localeCompare(b.created_at)).map(r=>renderRow(r,{thread:true})):<p className="py-4 text-center text-xs text-muted-foreground">No messages captured for this session (tool-only)</p>}</div>}
           </div>);})}
-          {memSessions.length>memShowCount&&<button onClick={()=>setMemShowCount(c=>c+40)} className="w-full py-2 text-[10px] text-zinc-400 hover:text-zinc-600 text-center">show more ({memSessions.length-memShowCount} left) ▾</button>}
-          {memSessions.length===0&&<p className="py-12 text-center text-sm text-zinc-400">No matching sessions</p>}
+          {memSessions.length>memShowCount&&<button onClick={()=>setMemShowCount(c=>c+40)} className="w-full py-2 text-[10px] text-muted-foreground hover:text-muted-foreground text-center">show more ({memSessions.length-memShowCount} left) ▾</button>}
+          {memSessions.length===0&&<p className="py-12 text-center text-sm text-muted-foreground">No matching sessions</p>}
         </div>}
 
         {/* PROJECTS */}
         {tab==="projects"&&<>
           {/* project sort + threshold bar */}
           <div className="flex items-center gap-2 mb-2">
-            <select value={projSort} onChange={e=>setProjSort(e.target.value as any)} className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-[10px] text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+            <select value={projSort} onChange={e=>setProjSort(e.target.value as any)} className="rounded-md border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
               <option value="recent">Recent</option><option value="active">Most active</option><option value="az">A–Z</option>
             </select>
-            <select value={minEvents} onChange={e=>setMinEvents(Number(e.target.value))} className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-[10px] text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+            <select value={minEvents} onChange={e=>setMinEvents(Number(e.target.value))} className="rounded-md border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
               <option value={1}>All</option><option value={3}>≥3 events</option><option value={10}>≥10 events</option><option value={50}>≥50 events</option><option value={100}>≥100 events</option>
             </select>
-            <span className="text-[10px] text-zinc-400 ml-auto">{projGroups.length} of {projList.length} projects</span>
+            <span className="text-[10px] text-muted-foreground ml-auto">{projGroups.length} of {projList.length} projects</span>
           </div>
           {pinned.size>0 && <div className="mb-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-            {projGroups.filter(([p])=>pinned.has(p)).map(([p,e])=>(<div key={p} className="rounded-lg border border-amber-300 bg-white dark:bg-zinc-900 dark:border-amber-700">
-              <div className="px-2.5 py-1.5 border-b border-amber-100 dark:border-amber-900 flex items-center justify-between"><div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><button onClick={()=>{const n=new Set(pinned);n.delete(p);setPinned(n)}} className="shrink-0 text-xs text-amber-500">★</button><p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">{p}</p></div><p className="text-[10px] text-zinc-400 mt-0.5">{e.length}e · latest {relativeTime(e[0]?.created_at||"")}</p></div></div>
-              <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">{e.slice(0,2).map(r=>(<li key={r.id} onClick={()=>setDetailRow(r)} className="px-2.5 py-1.5 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/60">
-                <div className="flex items-center gap-2"><span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-zinc-700"}`}>{SOURCE_LABELS[r.source]??r.source}</span><span className="truncate text-xs text-zinc-700 dark:text-zinc-300 flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-zinc-400">{relativeTime(r.created_at)}</span></div>
+            {projGroups.filter(([p])=>pinned.has(p)).map(([p,e])=>(<div key={p} className="rounded-lg border border-amber-300 bg-card dark:border-amber-700">
+              <div className="px-2.5 py-1.5 border-b border-amber-100 dark:border-amber-900 flex items-center justify-between"><div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><button onClick={()=>{const n=new Set(pinned);n.delete(p);setPinned(n)}} className="shrink-0 text-xs text-amber-500">★</button><p className="text-sm font-medium text-foreground truncate">{p}</p></div><p className="text-[10px] text-muted-foreground mt-0.5">{e.length}e · latest {relativeTime(e[0]?.created_at||"")}</p></div></div>
+              <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">{e.slice(0,2).map(r=>(<li key={r.id} onClick={()=>setDetailRow(r)} className="px-2.5 py-1.5 cursor-pointer hover:bg-muted/30 dark:hover:bg-zinc-800/60">
+                <div className="flex items-center gap-2"><span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-foreground"}`}>{SOURCE_LABELS[r.source]??r.source}</span><span className="truncate text-xs text-foreground flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span></div>
               </li>))}</ul>
-              <button onClick={()=>document.getElementById(`proj-${p}`)?.scrollIntoView({behavior:"smooth",block:"start"})} className="w-full px-2.5 py-1 text-[10px] text-zinc-400 hover:text-zinc-600 text-center border-t border-zinc-50 dark:border-zinc-800">jump to full ▾</button>
+              <button onClick={()=>document.getElementById(`proj-${p}`)?.scrollIntoView({behavior:"smooth",block:"start"})} className="w-full px-2.5 py-1 text-[10px] text-muted-foreground hover:text-muted-foreground text-center border-t border-border">jump to full ▾</button>
             </div>))}
           </div>}
           <div className="space-y-1.5">
-          {projGroups.filter(([p])=>!pinned.has(p)).map(([p,e])=>(<div key={p} id={`proj-${p}`} className="rounded-lg border bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800">
-            <div className="px-3 py-1.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between"><div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><button onClick={()=>{const n=new Set(pinned);n.has(p)?n.delete(p):n.add(p);setPinned(n)}} className={`shrink-0 text-xs ${pinned.has(p)?"text-amber-500":"text-zinc-300 hover:text-amber-400"}`}>{pinned.has(p)?"★":"☆"}</button><p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">{p}</p><div className="flex gap-0.5 shrink-0">{([...(projSources[p]??[])] as string[]).sort().map(s=>(<span key={s} className={`rounded px-1 py-0 text-[9px] font-semibold leading-snug ${SOURCE_COLORS[s]??"bg-zinc-100 text-zinc-700"}`}>{SOURCE_LABELS[s]??s}</span>))}</div></div><p className="text-[10px] text-zinc-400 mt-0.5">{e.length}e · latest {relativeTime(e[0]?.created_at||"")}</p></div></div>
-            <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">{e.slice(0,expanded.has(p)?e.length:5).map(r=>(<li key={r.id} onClick={()=>setDetailRow(r)} className="px-3 py-2 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/60">
-              <div className="flex items-center gap-2"><span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-zinc-700"}`}>{SOURCE_LABELS[r.source]??r.source}</span><span className="truncate text-sm text-zinc-700 dark:text-zinc-300 flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-zinc-400">{relativeTime(r.created_at)}</span></div>
-              {r.files.length>0 && <div className="mt-1 flex flex-wrap gap-1">{r.files.slice(0,6).map((f,i)=>(<span key={i} className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-1.5 py-0.5 text-[10px] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${extDotColor(fileExt(f))}`} />{fileBasename(f)}</span>))}{r.files.length>6 && <span className="text-[10px] text-zinc-400 self-center">+{r.files.length-6} more</span>}</div>}
+          {projGroups.filter(([p])=>!pinned.has(p)).map(([p,e])=>(<div key={p} id={`proj-${p}`} className="rounded-lg border bg-card border-border">
+            <div className="px-3 py-1.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between"><div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><button onClick={()=>{const n=new Set(pinned);n.has(p)?n.delete(p):n.add(p);setPinned(n)}} className={`shrink-0 text-xs ${pinned.has(p)?"text-amber-500":"text-muted-foreground hover:text-amber-400"}`}>{pinned.has(p)?"★":"☆"}</button><p className="text-sm font-medium text-foreground truncate">{p}</p><div className="flex gap-0.5 shrink-0">{([...(projSources[p]??[])] as string[]).sort().map(s=>(<span key={s} className={`rounded px-1 py-0 text-[9px] font-semibold leading-snug ${SOURCE_COLORS[s]??"bg-zinc-100 text-foreground"}`}>{SOURCE_LABELS[s]??s}</span>))}</div></div><p className="text-[10px] text-muted-foreground mt-0.5">{e.length}e · latest {relativeTime(e[0]?.created_at||"")}</p></div></div>
+            <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">{e.slice(0,expanded.has(p)?e.length:5).map(r=>(<li key={r.id} onClick={()=>setDetailRow(r)} className="px-3 py-2 cursor-pointer hover:bg-muted/30 dark:hover:bg-zinc-800/60">
+              <div className="flex items-center gap-2"><span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-foreground"}`}>{SOURCE_LABELS[r.source]??r.source}</span><span className="truncate text-sm text-foreground flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span></div>
+              {r.files.length>0 && <div className="mt-1 flex flex-wrap gap-1">{r.files.slice(0,6).map((f,i)=>(<span key={i} className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-1.5 py-0.5 text-[10px] text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${extDotColor(fileExt(f))}`} />{fileBasename(f)}</span>))}{r.files.length>6 && <span className="text-[10px] text-muted-foreground self-center">+{r.files.length-6} more</span>}</div>}
             </li>))}</ul>
-            {e.length>5&&<button onClick={()=>tx(p)} className="w-full px-3 py-1.5 text-[10px] text-zinc-400 hover:text-zinc-600 text-center border-t border-zinc-50 dark:border-zinc-800">{expanded.has(p)?"collapse":`show all ${e.length} ▾`}</button>}
+            {e.length>5&&<button onClick={()=>tx(p)} className="w-full px-3 py-1.5 text-[10px] text-muted-foreground hover:text-muted-foreground text-center border-t border-border">{expanded.has(p)?"collapse":`show all ${e.length} ▾`}</button>}
           </div>))}
-          {projGroups.length===0&&<p className="py-12 text-center text-sm text-zinc-400">No matching projects</p>}
+          {projGroups.length===0&&<p className="py-12 text-center text-sm text-muted-foreground">No matching projects</p>}
           </div>
         </>}
 
@@ -755,7 +755,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-medium text-amber-800 dark:text-amber-200">{selected.size} selected</span>
               <select value={bulkBucket} onChange={e => setBulkBucket(e.target.value)}
-                className="rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-zinc-700 dark:border-amber-700 dark:bg-zinc-800 dark:text-zinc-300">
+                className="rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-amber-700 dark:bg-zinc-800 dark:text-muted-foreground">
                 {collections.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
               </select>
               {!bulkShowNew ? (
@@ -764,7 +764,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
                 <div className="flex items-center gap-1">
                   <input type="text" value={bulkNewName} onChange={e => setBulkNewName(e.target.value)}
                     placeholder="name…" autoFocus
-                    className="w-20 rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-zinc-700 placeholder:text-zinc-400" />
+                    className="w-20 rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground" />
                   <button onClick={() => { if (bulkNewName.trim()) { setBulkBucket(bulkNewName.trim().toLowerCase().replace(/\s+/g, "-")); setBulkShowNew(false); setBulkNewName(""); } }}
                     className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-amber-600 text-white">✓</button>
                   <button onClick={() => { setBulkShowNew(false); setBulkNewName(""); }} className="text-[10px] text-amber-400">✕</button>
@@ -793,7 +793,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
               }} className="rounded px-2 py-0.5 text-[10px] font-medium bg-amber-600 text-white">Save all</button>
             </div>
             <textarea value={bulkComment} onChange={e => setBulkComment(e.target.value)} placeholder="Bulk comment (optional)…" rows={1}
-              className="mt-1 w-full rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-zinc-700 placeholder:text-zinc-400 dark:border-amber-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" />
+              className="mt-1 w-full rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-amber-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" />
           </div>
         )}
 
@@ -802,15 +802,15 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           {selectMode && filtered.length > 0 && (
             <div className="mb-1 flex items-center gap-2">
               <button onClick={() => setSelected(new Set(filtered.map(r => r.id)))}
-                className="text-[10px] text-zinc-400 hover:text-zinc-600">Select all {filtered.length}</button>
+                className="text-[10px] text-muted-foreground hover:text-muted-foreground">Select all {filtered.length}</button>
               {selected.size > 0 && (
                 <button onClick={() => setSelected(new Set())}
-                  className="text-[10px] text-zinc-400 hover:text-zinc-600">Clear</button>
+                  className="text-[10px] text-muted-foreground hover:text-muted-foreground">Clear</button>
               )}
             </div>
           )}
           {filtered.length===0 ? (
-            <p className="py-12 text-center text-sm text-zinc-400">No matching events</p>
+            <p className="py-12 text-center text-sm text-muted-foreground">No matching events</p>
           ) : (
             <WindowVirtualizer data={bursts} item="div">
               {(b) => {
@@ -818,24 +818,24 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
                 const isOpen = burstExpanded.has(b.key);
                 const previewFiles = [...new Set(b.rows.flatMap(r=>r.files))];
                 return (<div key={b.key} className="pb-0.5">
-                <div className="rounded-lg border border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40">
+                <div className="rounded-lg border border-border bg-muted/30/60 dark:border-zinc-800 dark:bg-zinc-900/40">
                   <button onClick={()=>setBurstExpanded(p=>{const n=new Set(p); n.has(b.key)?n.delete(b.key):n.add(b.key); return n;})}
                     className="w-full text-left px-3 py-2 block">
                     <div className="flex items-center gap-2">
-                      <div className="flex gap-0.5 shrink-0">{[...b.sources].sort().map(s=>(<span key={s} className={`rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[s]??"bg-zinc-100 text-zinc-700"}`}>{SOURCE_LABELS[s]??s}</span>))}</div>
-                      <span className="truncate text-sm text-zinc-700 dark:text-zinc-300 flex-1 min-w-0">{b.project||"—"} <span className="text-zinc-400 font-normal">· {b.rows.length} events</span></span>
-                      <span className="shrink-0 text-[10px] text-zinc-400">{relativeTime(b.rows[0].created_at)}</span>
-                      <span className="shrink-0 text-xs text-zinc-400">{isOpen?"▾":"▸"}</span>
+                      <div className="flex gap-0.5 shrink-0">{[...b.sources].sort().map(s=>(<span key={s} className={`rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[s]??"bg-zinc-100 text-foreground"}`}>{SOURCE_LABELS[s]??s}</span>))}</div>
+                      <span className="truncate text-sm text-foreground flex-1 min-w-0">{b.project||"—"} <span className="text-muted-foreground font-normal">· {b.rows.length} events</span></span>
+                      <span className="shrink-0 text-[10px] text-muted-foreground">{relativeTime(b.rows[0].created_at)}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">{isOpen?"▾":"▸"}</span>
                     </div>
                     {previewFiles.length>0 && (
                       <div className="mt-1.5 flex flex-wrap gap-1">
                         {previewFiles.slice(0,8).map((f,i)=>(
-                          <span key={i} className="inline-flex items-center gap-1 rounded-full bg-white px-1.5 py-0.5 text-[10px] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                          <span key={i} className="inline-flex items-center gap-1 rounded-full bg-white px-1.5 py-0.5 text-[10px] text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground">
                             <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${extDotColor(fileExt(f))}`} />
                             {fileBasename(f)}
                           </span>
                         ))}
-                        {previewFiles.length>8 && <span className="text-[10px] text-zinc-400 self-center">+{previewFiles.length-8} more</span>}
+                        {previewFiles.length>8 && <span className="text-[10px] text-muted-foreground self-center">+{previewFiles.length-8} more</span>}
                       </div>
                     )}
                   </button>
@@ -867,35 +867,35 @@ function ActivityDetailDrawer({ row, onClose }: { row: ReturnType<typeof useActi
   return (
     <div className="fixed inset-0 z-30 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative h-full w-full max-w-sm overflow-y-auto border-l border-zinc-200 bg-white p-4 shadow-xl dark:border-zinc-800 dark:bg-zinc-950 pb-[calc(env(safe-area-inset-bottom)+3rem)]">
+      <div className="relative h-full w-full max-w-sm overflow-y-auto border-l border-border bg-white p-4 shadow-xl dark:border-zinc-800 dark:bg-card pb-[calc(env(safe-area-inset-bottom)+3rem)]">
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="min-w-0">
-            <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[row.source]??"bg-zinc-100 text-zinc-700"}`}>{SOURCE_FULL[row.source]??row.source}</span>
-            <p className="mt-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-100 break-words">{row.summary}</p>
+            <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[row.source]??"bg-zinc-100 text-foreground"}`}>{SOURCE_FULL[row.source]??row.source}</span>
+            <p className="mt-1.5 text-sm font-medium text-foreground break-words">{row.summary}</p>
           </div>
-          <button onClick={onClose} className="shrink-0 rounded-md border border-zinc-200 px-1.5 py-0.5 text-xs text-zinc-400 hover:text-zinc-700 dark:border-zinc-700 dark:hover:text-zinc-200">✕</button>
+          <button onClick={onClose} className="shrink-0 rounded-md border border-border px-1.5 py-0.5 text-xs text-muted-foreground hover:text-foreground dark:border-zinc-700 dark:hover:text-zinc-200">✕</button>
         </div>
 
         <dl className="space-y-2 text-xs">
-          <div className="flex gap-2"><dt className="w-20 shrink-0 text-zinc-400">Type</dt><dd className="text-zinc-700 dark:text-zinc-300">{row.type}</dd></div>
-          <div className="flex gap-2"><dt className="w-20 shrink-0 text-zinc-400">Time</dt><dd className="text-zinc-700 dark:text-zinc-300">{new Date(row.created_at).toLocaleString()}</dd></div>
-          {row.project && <div className="flex gap-2"><dt className="w-20 shrink-0 text-zinc-400">Project</dt><dd className="text-zinc-700 dark:text-zinc-300 break-words">{row.project}</dd></div>}
-          {row.session_id && <div className="flex gap-2"><dt className="w-20 shrink-0 text-zinc-400">Session</dt><dd className="text-zinc-700 dark:text-zinc-300 break-all">{row.session_id}</dd></div>}
-          {row.tool && <div className="flex gap-2"><dt className="w-20 shrink-0 text-zinc-400">Tool</dt><dd className="text-zinc-700 dark:text-zinc-300">{row.tool}</dd></div>}
+          <div className="flex gap-2"><dt className="w-20 shrink-0 text-muted-foreground">Type</dt><dd className="text-foreground">{row.type}</dd></div>
+          <div className="flex gap-2"><dt className="w-20 shrink-0 text-muted-foreground">Time</dt><dd className="text-foreground">{new Date(row.created_at).toLocaleString()}</dd></div>
+          {row.project && <div className="flex gap-2"><dt className="w-20 shrink-0 text-muted-foreground">Project</dt><dd className="text-foreground break-words">{row.project}</dd></div>}
+          {row.session_id && <div className="flex gap-2"><dt className="w-20 shrink-0 text-muted-foreground">Session</dt><dd className="text-foreground break-all">{row.session_id}</dd></div>}
+          {row.tool && <div className="flex gap-2"><dt className="w-20 shrink-0 text-muted-foreground">Tool</dt><dd className="text-foreground">{row.tool}</dd></div>}
         </dl>
 
         <div className="mt-4 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-          <p className="mb-1.5 text-[10px] uppercase tracking-wider text-zinc-400">Detail</p>
+          <p className="mb-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">Detail</p>
           {parsed ? (
             <dl className="space-y-2 text-xs">
               {Object.entries(parsed).map(([k, v]) => (
-                <div key={k} className="flex gap-2"><dt className="w-20 shrink-0 text-zinc-400">{labelize(k)}</dt><dd className="min-w-0 flex-1 text-zinc-700 dark:text-zinc-300"><DetailValue value={v} /></dd></div>
+                <div key={k} className="flex gap-2"><dt className="w-20 shrink-0 text-muted-foreground">{labelize(k)}</dt><dd className="min-w-0 flex-1 text-foreground"><DetailValue value={v} /></dd></div>
               ))}
             </dl>
           ) : row.detail ? (
-            <pre className="whitespace-pre-wrap break-words rounded-md bg-zinc-50 p-2 text-[11px] leading-snug text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">{row.detail}</pre>
+            <pre className="whitespace-pre-wrap break-words rounded-md bg-muted/30 p-2 text-[11px] leading-snug text-muted-foreground dark:bg-zinc-900 dark:text-muted-foreground">{row.detail}</pre>
           ) : (
-            <p className="text-zinc-400 italic">No additional detail</p>
+            <p className="text-muted-foreground italic">No additional detail</p>
           )}
         </div>
       </div>

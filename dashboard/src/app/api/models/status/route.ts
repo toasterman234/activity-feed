@@ -10,11 +10,13 @@ export async function GET() {
   const result: {
     proxy: { running: boolean; keySuffix: string; error?: string };
     pi: { keySuffix: string };
+    iii: { keySuffix: string; error?: string };
     models: string[];
     lastSwap: string | null;
   } = {
     proxy: { running: false, keySuffix: "" },
     pi: { keySuffix: "" },
+    iii: { keySuffix: "" },
     models: [],
     lastSwap: null,
   };
@@ -37,6 +39,23 @@ export async function GET() {
     }
   } catch {
     /* auth.json may not exist */
+  }
+
+
+  // iii harness CommandCode key (llm-router providers.commandcode)
+  try {
+    const out = execSync(
+      `${process.env.HOME}/.local/bin/iii trigger configuration::get --json '{"id":"llm-router","raw":true}' --timeout-ms 8000`,
+      { encoding: "utf-8", timeout: 12000, env: { ...process.env, PATH: `${process.env.HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin` } }
+    );
+    const parsed = JSON.parse(out);
+    const value = parsed?.value ?? parsed;
+    const key = value?.providers?.commandcode?.api_key;
+    if (typeof key === "string" && key.startsWith("user_")) {
+      result.iii.keySuffix = "…" + key.slice(-6);
+    }
+  } catch (e) {
+    result.iii.error = "unreachable";
   }
 
   // Check proxy health and list models
@@ -63,7 +82,12 @@ export async function GET() {
 
   // Last swap time from backup file
   try {
-    const stat = execSync(`stat -f "%Sm" "${PROXY_ENV_FILE}.bak" 2>/dev/null`, { encoding: "utf-8", timeout: 1000 }).trim();
+    let stat = "";
+    try {
+      stat = execSync(`stat -f "%Sm" "${PROXY_ENV_FILE}.bak" 2>/dev/null`, { encoding: "utf-8", timeout: 1000 }).trim();
+    } catch {
+      stat = execSync(`stat -c "%y" "${PROXY_ENV_FILE}.bak" 2>/dev/null`, { encoding: "utf-8", timeout: 1000 }).trim();
+    }
     if (stat) result.lastSwap = stat;
   } catch {
     /* no backup */

@@ -1,28 +1,34 @@
 #!/usr/bin/env node
 /**
- * Generate Web Push VAPID keys (ECDSA P-256).
+ * Generate Web Push VAPID keys (ECDSA P-256, raw uncompressed format).
+ *
+ * web-push requires the public key as a 65-byte uncompressed EC point
+ * (04 || x || y) in base64url, and the private key as the raw 32-byte
+ * scalar d in base64url.
  *
  * Usage:
  *   node scripts/gen-vapid-keys.mjs
- *
- * Prints public + private keys as base64url (unpadded).
- * Store private key in OVH env file: VAPID_PRIVATE_KEY=<value>
- * Store public key in OVH env file: VAPID_PUBLIC_KEY=<value>
- * Also printed as env-file lines for direct append.
  */
 
 import { generateKeyPairSync } from "crypto";
 
 const { publicKey, privateKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",
-  publicKeyEncoding: { type: "spki", format: "der" },
-  privateKeyEncoding: { type: "pkcs8", format: "der" },
 });
 
-const publicBase64 = Buffer.from(publicKey).toString("base64url");
-const privateBase64 = Buffer.from(privateKey).toString("base64url");
+// Public: extract raw uncompressed point from JWK
+const pubJwk = publicKey.export({ format: "jwk" });
+const x = Buffer.from(pubJwk.x, "base64url");
+const y = Buffer.from(pubJwk.y, "base64url");
+const rawPub = Buffer.concat([Buffer.from([0x04]), x, y]);
+const publicBase64 = rawPub.toString("base64url");
 
-console.log("=== VAPID Keys (base64url, unpadded) ===");
+// Private: raw 32-byte scalar d from JWK
+const privJwk = privateKey.export({ format: "jwk" });
+const d = Buffer.from(privJwk.d, "base64url");
+const privateBase64 = d.toString("base64url");
+
+console.log("=== VAPID Keys (raw uncompressed, base64url) ===");
 console.log(`VAPID_PUBLIC_KEY=${publicBase64}`);
 console.log(`VAPID_PRIVATE_KEY=${privateBase64}`);
 console.log("");

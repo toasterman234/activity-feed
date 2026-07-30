@@ -1,13 +1,18 @@
 // ReactScan must be the top-most import (react-scan before React). See ADR-002.
 import ReactScan from "./react-scan";
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import "../../themes/generated.css";
 import BottomNav from "./bottom-nav";
 import SWUpdatePrompt from "./sw-update-prompt";
 import InstallPrompt from "./install-prompt";
 import PerfMonitors from "./perf-monitors";
 import ThemeSwitcher from "./theme-switcher";
 import ProtoThemePicker from "@/components/ProtoThemePicker";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Activity",
@@ -41,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full antialiased"
+      className={cn("h-full antialiased", "font-sans", geist.variable)}
       suppressHydrationWarning
     >
       <head>
@@ -71,14 +76,16 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-background text-foreground font-sans pb-[calc(var(--bottom-nav-height)+1rem+env(safe-area-inset-bottom))]">
-        <ReactScan />
-        <PerfMonitors />
-        <main>{children}</main>
-        <BottomNav />
-        <SWUpdatePrompt />
-        <InstallPrompt />
-        <ThemeSwitcher />
-        {process.env.NODE_ENV === "development" && <ProtoThemePicker />}
+        <TooltipProvider>
+          <ReactScan />
+          <PerfMonitors />
+          <main>{children}</main>
+          <BottomNav />
+          <SWUpdatePrompt />
+          <InstallPrompt />
+          <ThemeSwitcher />
+          {process.env.NODE_ENV === "development" && <ProtoThemePicker />}
+        </TooltipProvider>
       </body>
     </html>
   );

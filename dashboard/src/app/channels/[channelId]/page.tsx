@@ -10,20 +10,64 @@ import {
   useIssuesMeta, useChannelThreadMeta, type RepoRow,
   type ThreadMetaRow,
 } from "../shapes";
+import {
+  PageShell,
+  StatusChip,
+  Card,
+  CardContent,
+  DividedList,
+  DividedRow,
+  type UiTone,
+  cx,
+} from "@/components/ui";
 import { writeChannelRow, markChannelRead } from "../../writeChannelRow";
 import { MentionInput, MessageBody, type MentionOption } from "../MentionInput";
+import { ChannelKanbanBoard, buildKanbanCards } from "../ChannelKanbanBoard";
 import { parseMentions } from "../../../lib/mentions";
 import { LIFECYCLES, defaultEnabledWorkflows } from "../lifecycles";
+import type { ShapeMaterialization } from "@electric-circuits/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 function uuid(): string {
   return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
 }
 
+// ── state → UiTone (proto-5) ──
+
+function stateTone(state: string): UiTone {
+  const s = state.toLowerCase();
+  if (s === "in_progress" || s === "running") return "active";
+  if (s === "review") return "wait";
+  if (s === "blocked" || s === "failed" || s === "fail") return "danger";
+  if (s === "resolved" || s === "shipped" || s === "verified") return "good";
+  if (s === "approved") return "primary";
+  if (s === "drafted") return "open";
+  return "open";
+}
+
+// ── PAGE ──
+
 export default function ChannelDetailPage({ params }: { params: Promise<{ channelId: string }> }) {
   const { channelId } = use(params);
-  const [channelShape, setChannelShape] = useState<ReturnType<typeof getChannelShape> extends Promise<infer T> ? T : never | null>(null);
-  const [memberShape, setMemberShape] = useState<ReturnType<typeof getMemberShape> extends Promise<infer T> ? T : never | null>(null);
-  const [messageShape, setMessageShape] = useState<ReturnType<typeof getMessageShape> extends Promise<infer T> ? T : never | null>(null);
+  const [channelShape, setChannelShape] = useState<ShapeMaterialization | null>(null);
+  const [memberShape, setMemberShape] = useState<ShapeMaterialization | null>(null);
+  const [messageShape, setMessageShape] = useState<ShapeMaterialization | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,8 +91,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ channe
 
   if (!channelShape || !memberShape || !messageShape) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
-        <p className="text-sm text-zinc-400">{err || "Connecting…"}</p>
+      <div className="min-h-screen bg-background flex items-center justify-center pb-16">
+        <p className="text-sm text-muted-foreground animate-pulse">{err || "Connecting…"}</p>
       </div>
     );
   }
@@ -66,9 +110,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ channe
 function ChannelDetail({
   channelShape, memberShape, messageShape, channelId,
 }: {
-  channelShape: ReturnType<typeof getChannelShape> extends Promise<infer T> ? T : never;
-  memberShape: ReturnType<typeof getMemberShape> extends Promise<infer T> ? T : never;
-  messageShape: ReturnType<typeof getMessageShape> extends Promise<infer T> ? T : never;
+  channelShape: ShapeMaterialization;
+  memberShape: ShapeMaterialization;
+  messageShape: ShapeMaterialization;
   channelId: string;
 }) {
   const channels = useChannelRows(channelShape);
@@ -116,10 +160,12 @@ function ChannelDetail({
 
   if (!channel) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16 flex flex-col items-center justify-center gap-2">
-        <p className="text-sm text-zinc-400">Channel not found</p>
-        <Link href="/channels" className="text-xs text-blue-600 underline">← Back to channels</Link>
-      </div>
+      <PageShell maxWidth="max-w-5xl" className="pb-4">
+        <div className="flex flex-col items-center justify-center gap-2 py-16">
+          <p className="text-sm text-muted-foreground">Channel not found</p>
+          <Link href="/channels" className="text-xs font-medium text-primary hover:underline">← Back to channels</Link>
+        </div>
+      </PageShell>
     );
   }
 
@@ -131,11 +177,6 @@ function ChannelDetail({
     ...paseoOpts,
   ];
   const channelMessages = (messages || []).filter((m) => m.channel_id === channelId);
-  const topLevel = channelMessages.filter((m) => !m.thread_id);
-  topLevel.sort((a, b) => a.created_at.localeCompare(b.created_at));
-
-  const repliesCount = (msgId: string) =>
-    channelMessages.filter((m) => m.thread_id === msgId).length;
 
   const postMessage = async (threadId: string | null, body: string) => {
     const text = body.trim();
@@ -149,7 +190,6 @@ function ChannelDetail({
       });
       const mentions = parseMentions(text);
       if (mentions.length > 0) {
-        // For a new top-level thread, the message id IS the thread root.
         const rootId = threadId ?? id;
         await fetch("/api/channels/trigger", {
           method: "POST",
@@ -175,106 +215,125 @@ function ChannelDetail({
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[env(safe-area-inset-top,0px)]">
-        <div className="mx-auto max-w-6xl px-3 py-2 flex items-center gap-2">
+    <PageShell maxWidth="max-w-5xl" className="pb-4">
+      {/* Header (proto-5 style) */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <Link
             href="/channels"
-            className="-ml-1 shrink-0 rounded-md px-2 py-1.5 text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            className="shrink-0 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground"
             aria-label="Back to channels"
           >
-            ← Back
+            ←
           </Link>
-          <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 truncate"># {channel.name}</h1>
+          <h1 className="text-lg font-bold tracking-tight"># {channel.name}</h1>
         </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-3 py-2 space-y-3">
-        {/* members */}
-        <div className="rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="mb-1.5 text-[10px] font-medium uppercase text-zinc-400">Members</p>
-          <div className="mb-2 flex flex-wrap gap-1">
-            {channelMembers.length === 0 && (
-              <span className="text-xs text-zinc-400">No projects or agents linked yet</span>
-            )}
-            {channelMembers.map((mem) => (
-              <span
-                key={mem.id}
-                className="rounded px-1.5 py-0.5 text-[10px] bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-              >
-                {mem.member_type === "project" ? "📁" : "🤖"} {mem.member_name}
-              </span>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex gap-1">
-              <input
-                list="channel-project-options"
-                value={addProject}
-                onChange={(e) => setAddProject(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") addMember("project", addProject); }}
-                placeholder="Add project…"
-                className="w-36 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              />
-              <datalist id="channel-project-options">
-                {repos.map((r) => (
-                  <option key={r.id} value={r.name} />
-                ))}
-              </datalist>
-              <button
-                onClick={() => addMember("project", addProject)}
-                disabled={!addProject.trim()}
-                className="rounded-md border border-zinc-200 px-2 py-1 text-xs text-zinc-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex gap-1">
-              <input
-                value={addAgent}
-                onChange={(e) => setAddAgent(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") addMember("agent", addAgent); }}
-                placeholder="Add agent…"
-                className="w-36 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              />
-              <button
-                onClick={() => addMember("agent", addAgent)}
-                disabled={!addAgent.trim()}
-                className="rounded-md border border-zinc-200 px-2 py-1 text-xs text-zinc-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* messages / threads — or issues list for issue channels */}
-        {channel.default_lifecycle === "issue" ? (
-          <IssueList channelId={channelId} channelMessages={channelMessages} />
-        ) : (
-          <ThreadList
-            channelId={channelId}
-            channelMessages={channelMessages}
-            composeBody={composeBody}
-            setComposeBody={setComposeBody}
-            mentionOptions={mentionOptions}
-            sending={sending}
-            setSending={setSending}
-            router={router}
-          />
+        {channel.default_lifecycle && channel.default_lifecycle !== "coding" && (
+          <StatusChip tone="neutral">{LIFECYCLES[channel.default_lifecycle]?.label || channel.default_lifecycle}</StatusChip>
         )}
       </div>
-    </div>
+
+      <Sheet>
+        <SheetTrigger
+          className="text-[10px] font-medium text-muted-foreground hover:text-foreground"
+          render={<Button variant="outline" size="sm" className="h-7 text-[10px]" />}
+        >
+          Members{channelMembers.length > 0 ? ` (${channelMembers.length})` : ""}
+        </SheetTrigger>
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Members</SheetTitle>
+          </SheetHeader>
+          <div className="px-4 pb-4 space-y-3">
+            <div className="flex flex-wrap gap-1">
+              {channelMembers.length === 0 && (
+                <span className="text-xs text-muted-foreground">No projects or agents linked</span>
+              )}
+              {channelMembers.map((mem) => (
+                <span
+                  key={mem.id}
+                  className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[10px] bg-muted/50 text-muted-foreground"
+                >
+                  {mem.member_type === "project" ? "📁" : "🤖"} {mem.member_name}
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <div className="flex gap-1">
+                <Input
+                  list="channel-project-options"
+                  value={addProject}
+                  onChange={(e) => setAddProject(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") addMember("project", addProject); }}
+                  placeholder="Add project…"
+                  className="h-7 w-32 text-xs"
+                />
+                <datalist id="channel-project-options">
+                  {repos.map((r) => (
+                    <option key={r.id} value={r.name} />
+                  ))}
+                </datalist>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addMember("project", addProject)}
+                  disabled={!addProject.trim()}
+                >
+                  Add
+                </Button>
+              </div>
+              <div className="flex gap-1">
+                <Input
+                  value={addAgent}
+                  onChange={(e) => setAddAgent(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") addMember("agent", addAgent); }}
+                  placeholder="Add agent…"
+                  className="h-7 w-32 text-xs"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => addMember("agent", addAgent)}
+                  disabled={!addAgent.trim()}
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Thread list / Issue list */}
+      {channel.default_lifecycle === "issue" ? (
+        <IssueList channelId={channelId} channelMessages={channelMessages} />
+      ) : (
+        <ThreadList
+          channelId={channelId}
+          lifecycleKey={channel.default_lifecycle || "coding"}
+          channelMessages={channelMessages}
+          composeBody={composeBody}
+          setComposeBody={setComposeBody}
+          mentionOptions={mentionOptions}
+          sending={sending}
+          setSending={setSending}
+          router={router}
+        />
+      )}
+    </PageShell>
   );
 }
 
-// ── ThreadList (non-issue channels) ─────────────────────────────
+// ── ThreadList (proto-5 style) ──
 
 function ThreadList({
-  channelId, channelMessages, composeBody, setComposeBody,
+  channelId, lifecycleKey, channelMessages, composeBody, setComposeBody,
   mentionOptions, sending, setSending, router,
 }: {
   channelId: string;
+  lifecycleKey: string;
   channelMessages: ReturnType<typeof useMessageRows>;
   composeBody: string;
   setComposeBody: (v: string) => void;
@@ -284,7 +343,8 @@ function ThreadList({
   router: ReturnType<typeof useRouter>;
 }) {
   const [showArchived, setShowArchived] = useState(false);
-  // Always fetch all threads so we can count & suggest the toggle; hide client-side.
+  const [view, setView] = useState<"list" | "board">("list");
+  const [boardTick, setBoardTick] = useState(0);
   const threadMeta = useChannelThreadMeta(channelId, 4000, true);
   const metaByThread = useMemo(() => {
     const m: Record<string, ThreadMetaRow> = {};
@@ -315,67 +375,18 @@ function ThreadList({
     [topLevel, metaByThread],
   );
 
-  const renderThreadRow = (msg: ReturnType<typeof useMessageRows>[number], isArchived: boolean) => {
-    const rc = isArchived
-      ? 0
-      : channelMessages.filter((m) => m.thread_id === msg.id).length;
-    const last = isArchived
-      ? null
-      : channelMessages.filter((m) => m.thread_id === msg.id).sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null;
-    const meta = metaByThread[msg.id];
-    const lc = meta ? LIFECYCLES[meta.lifecycle] : null;
-    const stateLabel = meta && lc ? (lc.states[meta.state]?.label || meta.state) : null;
-    const stateKind = meta && lc ? lc.states[meta.state]?.kind : null;
-    return (
-      <li key={msg.id}>
-        <Link
-          href={`/channels/${channelId}/${msg.id}`}
-          className={`flex w-full items-start gap-2 px-3 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 md:py-2 ${isArchived ? "opacity-60" : ""}`}
-        >
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className={`text-xs font-medium ${isArchived ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}>{msg.author}</span>
-              <span className="text-[10px] text-zinc-400">{relativeTime(msg.created_at)}</span>
-              {stateLabel && (
-                <span className={`rounded px-1.5 py-0.5 text-[10px] ${
-                  stateKind === "wait"
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                    : stateKind === "active"
-                      ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
-                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                }`}>
-                  {stateLabel}
-                </span>
-              )}
-              {isArchived && (
-                <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
-                  archived
-                </span>
-              )}
-              {meta?.assignee && (
-                <span className="text-[10px] text-zinc-400">@{meta.assignee}</span>
-              )}
-            </div>
-            <MessageBody body={msg.body} className={`whitespace-pre-wrap text-xs ${isArchived ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`} />
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-zinc-400">
-              {isArchived ? (
-                <span>Archived · no replies</span>
-              ) : (
-                <>
-                  <span>{rc > 0 ? `${rc} repl${rc === 1 ? "y" : "ies"}` : "Reply"} ›</span>
-                  {last && (
-                    <span className="truncate">
-                      last {last.author} · {relativeTime(last.created_at)}
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </Link>
-      </li>
-    );
-  };
+  const kanbanCards = useMemo(
+    () =>
+      buildKanbanCards({
+        roots: activeThreads,
+        channelMessages,
+        metaByThread,
+        defaultLifecycle: lifecycleKey,
+      }),
+    // boardTick forces rebuild after successful drag transition while Electric catches up
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeThreads, channelMessages, metaByThread, lifecycleKey, boardTick],
+  );
 
   const postMessage = async (threadId: string | null, body: string) => {
     const text = body.trim();
@@ -403,20 +414,98 @@ function ThreadList({
     }
   };
 
+  const empty = (activeThreads.length === 0 && archivedThreads.length === 0);
+
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-      <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">
-        {activeThreads.length === 0 && archivedThreads.length === 0 && (
-          <li className="px-3 py-6 text-center text-xs text-zinc-400">No threads yet — start one below</li>
-        )}
-        {activeThreads.map((msg) => renderThreadRow(msg, false))}
+    <>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          Threads
+        </p>
+        <div className="inline-flex rounded-lg border border-border bg-card p-0.5">
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+              view === "list"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            List
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("board")}
+            className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+              view === "board"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Board
+          </button>
+        </div>
+      </div>
+
+      {view === "board" ? (
+        <ChannelKanbanBoard
+          channelId={channelId}
+          lifecycleKey={lifecycleKey}
+          cards={kanbanCards}
+          onTransitioned={() => setBoardTick((n) => n + 1)}
+        />
+      ) : (
+      <DividedList
+        empty={
+          <span className="text-xs text-muted-foreground">
+            No threads yet — start one below.
+          </span>
+        }
+      >
+        {activeThreads.map((msg) => {
+          const meta = metaByThread[msg.id];
+          const lc = meta ? LIFECYCLES[meta.lifecycle] : null;
+          const state = meta?.state || "open";
+          const tone = stateTone(state);
+          const replies = channelMessages.filter((m) => m.thread_id === msg.id).length;
+          const last = channelMessages
+            .filter((m) => m.thread_id === msg.id)
+            .sort((a, b) => b.created_at.localeCompare(a.created_at))[0] || null;
+
+          return (
+            <DividedRow
+              key={msg.id}
+              href={`/channels/${channelId}/${msg.id}`}
+              accent={tone}
+            >
+              <div className="flex items-center gap-2 w-full">
+                <StatusChip tone={tone}>{state}</StatusChip>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm truncate font-medium">
+                    {msg.body ? msg.body.slice(0, 80) : "(no title)"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                    {msg.author}
+                    {meta?.assignee ? ` · assigned to ${meta.assignee}` : ""}
+                    {" · "}{replies} repl{replies === 1 ? "y" : "ies"}
+                    {last ? ` · last ${last.author} ${relativeTime(last.created_at)}` : ""}
+                  </p>
+                </div>
+                <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
+                  {relativeTime(msg.created_at)}
+                </span>
+              </div>
+            </DividedRow>
+          );
+        })}
 
         {archivedThreads.length > 0 && (
-          <li>
+          <li className="!border-0">
             <button
               type="button"
               onClick={() => setShowArchived((v) => !v)}
-              className="w-full px-3 py-2 text-left text-[11px] font-medium text-zinc-500 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"
+              className="w-full px-4 py-2 text-left text-[11px] font-medium text-muted-foreground hover:bg-muted/60"
             >
               {showArchived
                 ? `▲ Hide archived (${archivedThreads.length})`
@@ -425,9 +514,31 @@ function ThreadList({
           </li>
         )}
 
-        {showArchived && archivedThreads.map((msg) => renderThreadRow(msg, true))}
-      </ul>
-      <div className="flex gap-1 border-t border-zinc-100 p-2 dark:border-zinc-800">
+        {showArchived && archivedThreads.map((msg) => {
+          const meta = metaByThread[msg.id];
+          const tone = stateTone(meta?.state || "open");
+          return (
+            <DividedRow
+              key={msg.id}
+              href={`/channels/${channelId}/${msg.id}`}
+              accent={tone}
+            >
+              <div className="flex items-center gap-2 w-full opacity-50">
+                <StatusChip tone="neutral">archived</StatusChip>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm truncate">
+                    {msg.body ? msg.body.slice(0, 80) : "(no title)"}
+                  </p>
+                </div>
+              </div>
+            </DividedRow>
+          );
+        })}
+      </DividedList>
+      )}
+
+      {/* Compose bar */}
+      <div className="flex gap-1">
         <MentionInput
           value={composeBody}
           onChange={setComposeBody}
@@ -435,28 +546,31 @@ function ThreadList({
           placeholder="Start a thread… @agent to trigger"
           options={mentionOptions}
           disabled={sending}
-          className="min-w-0 w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+          className="min-w-0 flex-1 rounded-md border border-border bg-background px-2 py-1.5 text-xs"
         />
-        <button
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
           onClick={() => { void postMessage(null, composeBody); }}
           disabled={!composeBody.trim() || sending}
-          className="rounded-md border border-zinc-200 px-2 py-1.5 text-xs text-zinc-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
+          className="shrink-0"
         >
           {sending ? "…" : "Post"}
-        </button>
+        </Button>
       </div>
-    </div>
+    </>
   );
 }
 
-// ── IssueList (issue channels) ───────────────────────────────────
+// ── IssueList (proto-5 style) ──
 
-const PRIORITY_COLORS: Record<string, string> = {
-  urgent: "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-950",
-  high: "text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-950",
-  medium: "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-950",
-  low: "text-zinc-500 bg-zinc-100 dark:text-zinc-400 dark:bg-zinc-800",
-  none: "text-zinc-400 bg-transparent",
+const PRIORITY_TO_TONE: Record<string, UiTone> = {
+  urgent: "danger",
+  high: "wait",
+  medium: "active",
+  low: "neutral",
+  none: "neutral",
 };
 
 const STATE_ORDER = ["open", "triaged", "in_progress", "blocked", "resolved", "closed", "wont_fix"];
@@ -470,6 +584,8 @@ function IssueList({
   const issuesMeta = useIssuesMeta(channelId);
   const [repos, setRepos] = useState<RepoRow[]>([]);
   const [showNewIssue, setShowNewIssue] = useState(false);
+  const [view, setView] = useState<"list" | "board">("list");
+  const [boardTick, setBoardTick] = useState(0);
 
   useEffect(() => {
     fetch("/api/repos")
@@ -478,7 +594,6 @@ function IssueList({
       .catch(() => {});
   }, []);
 
-  // Build issues list: join meta rows with their root messages
   const msgById = new Map(channelMessages.map((m) => [m.id, m]));
   const issues = issuesMeta
     .map((meta) => ({
@@ -494,79 +609,124 @@ function IssueList({
       return (a.rootMsg?.created_at || "").localeCompare(b.rootMsg?.created_at || "");
     });
 
+  // Build kanban cards from issue data
+  const issueRoots = issues.map((i) => i.rootMsg!).filter(Boolean);
+  const metaByThread = useMemo(() => {
+    const m: Record<string, ThreadMetaRow> = {};
+    for (const row of issuesMeta) m[row.thread_id] = row;
+    return m;
+  }, [issuesMeta]);
+  const kanbanCards = useMemo(
+    () => buildKanbanCards({
+      roots: issueRoots,
+      channelMessages,
+      metaByThread,
+      defaultLifecycle: "issue",
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [issueRoots, channelMessages, metaByThread, boardTick],
+  );
+
   return (
     <div className="space-y-2">
-      {/* New-issue form toggle */}
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
+        <div className="inline-flex rounded-lg border border-border bg-card p-0.5">
+          <button
+            type="button"
+            onClick={() => setView("list")}
+            className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+              view === "list"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            List
+          </button>
+          <button
+            type="button"
+            onClick={() => setView("board")}
+            className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
+              view === "board"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Board
+          </button>
+        </div>
         <button
           onClick={() => { setShowNewIssue((v) => !v); }}
-          className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-400"
+          className="rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
         >
           {showNewIssue ? "Cancel" : "+ New Issue"}
         </button>
       </div>
 
       {showNewIssue && (
-        <NewIssueForm
+        <IssueForm
           channelId={channelId}
           repos={repos}
           onCreated={() => { setShowNewIssue(false); }}
         />
       )}
 
-      {/* Issues list */}
-      <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        {issues.length === 0 ? (
-          <p className="px-3 py-6 text-center text-xs text-zinc-400">
-            No issues yet — create one above
-          </p>
-        ) : (
-          <ul className="divide-y divide-zinc-50 dark:divide-zinc-800">
-            {issues.map(({ meta, rootMsg, repo }) => {
-              const prio = meta.priority || "none";
-              const prioColor = PRIORITY_COLORS[prio] || PRIORITY_COLORS.none;
-              const lc = LIFECYCLES.issue;
-              const stateLabel = lc?.states[meta.state]?.label || meta.state;
-              const replies = channelMessages
-                .filter((m) => m.thread_id === meta.thread_id)
-                .sort((a, b) => b.created_at.localeCompare(a.created_at));
-              const last = replies[0] || null;
-              return (
-                <li key={meta.thread_id}>
-                  <Link
-                    href={`/channels/${channelId}/${meta.thread_id}`}
-                    className="flex w-full items-center gap-2 px-3 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 md:py-2"
-                  >
-                    <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${prioColor}`}>
-                      {prio !== "none" ? prio : "—"}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                        {rootMsg?.body ? rootMsg.body.split("\n")[0].slice(0, 120) : meta.thread_id}
-                      </p>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] text-zinc-400">
-                        <span>{stateLabel}</span>
-                        {meta.assignee && <span>· @{meta.assignee}</span>}
-                        {repo && <span>· {repo.name}</span>}
-                        {last && (
-                          <span className="truncate">· last {last.author} · {relativeTime(last.created_at)}</span>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+      {view === "board" ? (
+        <ChannelKanbanBoard
+          channelId={channelId}
+          lifecycleKey="issue"
+          cards={kanbanCards}
+          onTransitioned={() => setBoardTick((n) => n + 1)}
+        />
+      ) : (
+      <DividedList
+        empty={
+          <span className="text-xs text-muted-foreground">
+            No issues yet — create one above.
+          </span>
+        }
+      >
+        {issues.map(({ meta, rootMsg, repo }) => {
+          const tone = stateTone(meta.state);
+          const lc = LIFECYCLES.issue;
+          const stateLabel = lc?.states[meta.state]?.label || meta.state;
+          const replies = channelMessages
+            .filter((m) => m.thread_id === meta.thread_id)
+            .sort((a, b) => b.created_at.localeCompare(a.created_at));
+          const last = replies[0] || null;
+
+          return (
+            <DividedRow
+              key={meta.thread_id}
+              href={`/channels/${channelId}/${meta.thread_id}`}
+              accent={tone}
+            >
+              <div className="flex items-center gap-2 w-full">
+                <StatusChip tone={tone}>{stateLabel}</StatusChip>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm truncate font-medium">
+                    {rootMsg?.body ? rootMsg.body.split("\n")[0].slice(0, 120) : meta.thread_id}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                    {meta.priority !== "none" && meta.priority ? `${meta.priority} · ` : ""}
+                    {meta.assignee ? `@${meta.assignee} · ` : ""}
+                    {repo ? `${repo.name} · ` : ""}
+                    {replies.length} repl{replies.length === 1 ? "y" : "ies"}
+                    {last ? ` · last ${last.author} ${relativeTime(last.created_at)}` : ""}
+                  </p>
+                </div>
+              </div>
+            </DividedRow>
+          );
+        })}
+      </DividedList>
+      )}
     </div>
   );
 }
 
-// ── NewIssueForm ─────────────────────────────────────────────────
+// ── IssueForm ──
 
-function NewIssueForm({
+function IssueForm({
   channelId, repos, onCreated,
 }: {
   channelId: string;
@@ -579,7 +739,6 @@ function NewIssueForm({
   const [repoId, setRepoId] = useState("");
   const [assignee, setAssignee] = useState("");
   const [creating, setCreating] = useState(false);
-  // Register new repo inline
   const [newRepoName, setNewRepoName] = useState("");
   const [newRepoPath, setNewRepoPath] = useState("");
   const [addingRepo, setAddingRepo] = useState(false);
@@ -617,12 +776,10 @@ function NewIssueForm({
       const threadId = uuid();
       const now = new Date().toISOString();
       const body = description.trim() ? `${title.trim()}\n\n${description.trim()}` : title.trim();
-      // Create root message
       await writeChannelRow("messages", {
         id: threadId, channel_id: channelId, thread_id: null, author: "you",
         body, created_at: now,
       });
-      // Create meta row with issue lifecycle
       await writeChannelRow("thread_meta", {
         thread_id: threadId,
         channel_id: channelId,
@@ -638,108 +795,117 @@ function NewIssueForm({
       setTitle("");
       setDescription("");
       onCreated();
-    } catch {
-      /* handled by writeChannelRow */
     } finally {
       setCreating(false);
     }
   };
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900 space-y-2">
-      <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">New Issue</p>
-
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title…"
-        className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-        disabled={creating}
-      />
-
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description…"
-        rows={3}
-        className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-        disabled={creating}
-      />
-
-      <div className="flex flex-wrap gap-2">
-        {/* Priority */}
-        <select
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-          className="text-xs rounded border border-zinc-200 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-          disabled={creating}
-        >
-          <option value="none">No priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="urgent">Urgent</option>
-        </select>
-
-        {/* Repo picker */}
-        <select
-          value={repoId}
-          onChange={(e) => setRepoId(e.target.value)}
-          className="text-xs rounded border border-zinc-200 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-          disabled={creating}
-        >
-          <option value="">No repo</option>
-          {repos.map((r) => (
-            <option key={r.id} value={r.id}>{r.name}</option>
-          ))}
-        </select>
-
-        {/* + Register repo affordance */}
-        <details className="text-xs">
-          <summary className="cursor-pointer rounded border border-zinc-200 px-2 py-1 text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">+ Register repo</summary>
-          <div className="mt-2 flex flex-wrap gap-1">
-            <input
-              value={newRepoName}
-              onChange={(e) => setNewRepoName(e.target.value)}
-              placeholder="Name (e.g. ax-brain-crew)"
-              className="w-44 rounded border border-zinc-200 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              disabled={addingRepo}
-            />
-            <input
-              value={newRepoPath}
-              onChange={(e) => setNewRepoPath(e.target.value)}
-              placeholder="/Users/bencharney/…"
-              className="w-52 rounded border border-zinc-200 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              disabled={addingRepo}
-            />
-            <button
-              onClick={addRepo}
-              disabled={!newRepoName.trim() || !newRepoPath.trim() || addingRepo}
-              className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
+    <Card size="sm">
+      <CardContent>
+        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground mb-2">New Issue</p>
+        <div className="space-y-2">
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Title…"
+            className="h-8 text-xs"
+            disabled={creating}
+          />
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description…"
+            rows={3}
+            className="text-xs"
+            disabled={creating}
+          />
+          <div className="flex flex-wrap gap-2">
+            <Select
+              value={priority}
+              onValueChange={(value) => {
+                if (typeof value === "string") setPriority(value);
+              }}
+              disabled={creating}
             >
-              Add
-            </button>
-            {addRepoError && <span className="text-[10px] text-red-500">{addRepoError}</span>}
+              <SelectTrigger size="sm" className="w-auto">
+                <SelectValue>
+                  {({ none: "No priority", low: "Low", medium: "Medium", high: "High", urgent: "Urgent" } as Record<string, string>)[priority] || priority}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No priority</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={repoId || "__none__"}
+              onValueChange={(value) => {
+                setRepoId(typeof value === "string" && value !== "__none__" ? value : "");
+              }}
+              disabled={creating}
+            >
+              <SelectTrigger size="sm" className="w-auto">
+                <SelectValue>
+                  {repoId ? repos.find((r) => r.id === repoId)?.name || "Repo" : "No repo"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">No repo</SelectItem>
+                {repos.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <details className="text-xs">
+              <summary className="cursor-pointer rounded border border-border px-2 py-1 text-muted-foreground">+ Register repo</summary>
+              <div className="mt-2 flex flex-wrap gap-1">
+                <input
+                  value={newRepoName}
+                  onChange={(e) => setNewRepoName(e.target.value)}
+                  placeholder="Name"
+                  className="w-40 rounded border border-border px-2 py-1 text-xs bg-background"
+                  disabled={addingRepo}
+                />
+                <input
+                  value={newRepoPath}
+                  onChange={(e) => setNewRepoPath(e.target.value)}
+                  placeholder="~/Projects/…"
+                  className="w-52 rounded border border-border px-2 py-1 text-xs bg-background"
+                  disabled={addingRepo}
+                />
+                <button
+                  onClick={addRepo}
+                  disabled={!newRepoName.trim() || !newRepoPath.trim() || addingRepo}
+                  className="rounded border border-border px-2 py-1 text-xs text-muted-foreground disabled:opacity-40"
+                >
+                  Add
+                </button>
+                {addRepoError && <span className="text-[10px] text-red-500">{addRepoError}</span>}
+              </div>
+            </details>
+            <input
+              value={assignee}
+              onChange={(e) => setAssignee(e.target.value)}
+              placeholder="Assignee (optional)"
+              className="w-36 rounded-md border border-border bg-background px-2 py-1 text-xs"
+              disabled={creating}
+            />
           </div>
-        </details>
-
-        {/* Assignee */}
-        <input
-          value={assignee}
-          onChange={(e) => setAssignee(e.target.value)}
-          placeholder="Assignee (optional)"
-          className="w-36 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-          disabled={creating}
-        />
-      </div>
-
-      <button
-        onClick={createIssue}
-        disabled={!title.trim() || creating}
-        className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 disabled:opacity-40 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-      >
-        {creating ? "Creating…" : "Create Issue"}
-      </button>
-    </div>
+          <Button
+            type="button"
+            onClick={createIssue}
+            disabled={!title.trim() || creating}
+            className="border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+            size="sm"
+          >
+            {creating ? "Creating…" : "Create Issue"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
