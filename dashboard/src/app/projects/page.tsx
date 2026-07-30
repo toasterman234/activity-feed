@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ProjectWorkButton } from "./ProjectWorkButton";
 import { PageShell } from "@/components/ui";
+import { TududiPlanningPanel } from "./TududiPlanningPanel";
 
 type Repo = {
   id: string;
@@ -74,6 +75,8 @@ export default function ProjectsPage() {
         </Link>
       </div>
 
+      <TududiPlanningPanel />
+
       <div className="space-y-3">
         <input
           value={q}
@@ -84,7 +87,7 @@ export default function ProjectsPage() {
 
         {!loading && !err && filtered.length > 0 && (
           <div className="rounded-lg border border-border bg-card p-3">
-            <div className="flex flex-wrap gap-2 text-[10px] text-muted">
+            <div className="flex flex-wrap gap-2 text-[10px] text-foreground">
               <span className="rounded bg-muted/30 px-1.5 py-0.5">{totals.repos} repos</span>
               <span className="rounded bg-muted/30 px-1.5 py-0.5">{totals.promoted} promoted</span>
               <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">{totals.activeThreads} active work threads</span>
@@ -104,7 +107,7 @@ export default function ProjectsPage() {
 
         {promoted.length > 0 && (
           <section>
-            <h2 className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted">
+            <h2 className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               From promotions ({promoted.length})
             </h2>
             <ul className="space-y-2">
@@ -117,7 +120,7 @@ export default function ProjectsPage() {
 
         {other.length > 0 && (
           <section>
-            <h2 className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted">
+            <h2 className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               Registered repos ({other.length})
             </h2>
             <ul className="space-y-2">
@@ -134,18 +137,18 @@ export default function ProjectsPage() {
 
 function ProjectCard({ repo }: { repo: Repo }) {
   return (
-    <li className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <li className="rounded-lg border border-border bg-card p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">
+          <p className="truncate text-sm font-medium text-foreground">
             {repo.name}
           </p>
-          <p className="mt-0.5 break-all font-mono text-[10px] text-zinc-400">{repo.path}</p>
-          <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-zinc-500">
+          <p className="mt-0.5 break-all font-mono text-[10px] text-muted-foreground">{repo.path}</p>
+          <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-muted-foreground">
             <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
               {repo.active_thread_count} active
             </span>
-            <span className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800 dark:text-zinc-300">
+            <span className="rounded bg-muted/20 px-1.5 py-0.5 text-muted-foreground">
               {repo.archived_thread_count} archived
             </span>
             <span className={`rounded px-1.5 py-0.5 ${repo.scaffold_detected ? "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300" : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300"}`}>
