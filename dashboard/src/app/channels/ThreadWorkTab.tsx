@@ -2,6 +2,7 @@
 
 import { relativeTime, type ActivityEventRow, type ThreadPlanRow, type WorkflowStepRow } from "./shapes";
 import { WorkRunsPanel } from "./WorkRunsPanel";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type ThreadWorkTabProps = {
   threadId: string;
@@ -38,12 +39,23 @@ export function ThreadWorkTab({
           </div>
           <ul className="space-y-1">
             {plans.map((plan, index) => (
-              <li key={plan.id}>
-                <button disabled={planningStage} onClick={() => { void onTogglePlanStatus(plan); }} className="flex w-full items-start gap-2 text-left text-xs disabled:cursor-default">
-                  <span className={`mt-0.5 shrink-0 px-1 text-[10px] ${planningStage ? "font-mono text-zinc-400" : plan.status === "done" ? "rounded border border-emerald-300 bg-emerald-50 text-emerald-600 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-400" : "rounded border border-zinc-300 text-zinc-400 dark:border-zinc-700"}`}>
-                    {planningStage ? `${index + 1}.` : plan.status === "done" ? "✓" : " "}
-                  </span>
-                  <span className={!planningStage && plan.status === "done" ? "text-zinc-400 line-through" : "text-zinc-600 dark:text-zinc-300"}>{plan.title}</span>
+              <li key={plan.id} className="flex items-start gap-2 text-xs">
+                {planningStage ? (
+                  <span className="mt-0.5 shrink-0 font-mono text-[10px] text-zinc-400">{index + 1}.</span>
+                ) : (
+                  <Checkbox
+                    checked={plan.status === "done"}
+                    onCheckedChange={() => { void onTogglePlanStatus(plan); }}
+                    className="mt-0.5"
+                  />
+                )}
+                <button
+                  type="button"
+                  disabled={planningStage}
+                  onClick={() => { void onTogglePlanStatus(plan); }}
+                  className={`text-left disabled:cursor-default ${!planningStage && plan.status === "done" ? "text-zinc-400 line-through" : "text-zinc-600 dark:text-zinc-300"}`}
+                >
+                  {plan.title}
                 </button>
               </li>
             ))}

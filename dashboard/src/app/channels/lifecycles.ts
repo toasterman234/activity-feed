@@ -318,7 +318,7 @@ export const LIFECYCLES: Record<string, Lifecycle> = {
     "initial": "open",
     "states": {
       "open": {
-        "label": "Capture",
+        "label": "Open",
         "kind": "start",
         "purpose": "Describe the problem, impact, and expected behavior.",
         "outputs": [
