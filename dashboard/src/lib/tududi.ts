@@ -7,6 +7,12 @@ const BASE_URL = (process.env.TUDUDI_BASE_URL || "http://127.0.0.1:3002").replac
 const API_KEY_FILE =
   process.env.TUDUDI_API_KEY_FILE || "/opt/tududi/ops/api-key.txt";
 
+// In-memory GET cache to prevent N+1 fan-out across repeated overview calls.
+// Short TTL means fresh data within 10s; avoids hitting Tududi's rate limiter
+// when multiple requests (phone PWA, browser tabs) land simultaneously.
+const CACHE_TTL = 10_000; // 10 seconds
+const fetchCache = new Map<string, { ts: number; result: { ok: boolean; status: number; json: unknown; error?: string } }>();
+
 function loadApiKey(): string {
   const fromEnv = (process.env.TUDUDI_API_KEY || "").trim();
   if (fromEnv) return fromEnv;
@@ -83,8 +89,19 @@ export async function tududiFetch<T = unknown>(
     body = JSON.stringify(init.body);
   }
   try {
+    const method = init.method || "GET";
+    const cacheKey = method === "GET" ? path : null;
+
+    // Serve from cache if fresh (GET only)
+    if (cacheKey) {
+      const cached = fetchCache.get(cacheKey);
+      if (cached && Date.now() - cached.ts < CACHE_TTL) {
+        return cached.result as { ok: boolean; status: number; json: T; error?: string };
+      }
+    }
+
     const res = await fetch(`${BASE_URL}${path}`, {
-      method: init.method || "GET",
+      method,
       headers,
       body,
       signal: AbortSignal.timeout(20_000),
@@ -101,7 +118,17 @@ export async function tududiFetch<T = unknown>(
         error: `non-JSON response (${res.status})`,
       };
     }
-    return { ok: res.ok, status: res.status, json };
+    const result = { ok: res.ok, status: res.status, json };
+    // Cache successful GET responses (don't cache errors — they may be transient)
+    if (cacheKey && res.ok) {
+      fetchCache.set(cacheKey, { ts: Date.now(), result });
+      // Limit cache size to prevent unbounded growth
+      if (fetchCache.size > 100) {
+        const oldest = fetchCache.keys().next().value;
+        if (oldest) fetchCache.delete(oldest);
+      }
+    }
+    return result;
   } catch (e) {
     return {
       ok: false,
