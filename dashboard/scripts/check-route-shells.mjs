@@ -23,9 +23,8 @@ if (/href:\s*["']\/(activity|fleet|finance|settings|models)["']/.test(bottomNav)
   failures.push("Bottom nav must not keep Activity/Fleet/Finance/Settings/Models as primary tabs");
 }
 
-if (!/href:\s*["']\/ops\/fleet["']/.test(opsLayout) || !/href:\s*["']\/ops\/config["']/.test(opsLayout)) {
-  failures.push("Ops shell must expose Fleet and Config tabs");
-}
+// Ops layout no longer has a tab bar — sub-pages get a "← Ops" back link.
+// Navigation is handled by the ops index pick-list.
 
 if (!/ModelsPanel/.test(opsConfig) || !/WorkflowsPage/.test(opsConfig)) {
   failures.push("Ops → Config must host ModelsPanel and Workflows");
@@ -44,4 +43,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("✓ route-shell check passed (Ops/Personal shell; Models+Workflows under Config)");
+console.log("✓ route-shell check passed (Ops pick-list shell; Models+Workflows under Config)");
