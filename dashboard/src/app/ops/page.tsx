@@ -1,77 +1,33 @@
-"use client";
+import Link from "next/link";
 
-import { Suspense } from "react";
-import FleetPage from "@/app/fleet/FleetPage";
-import ActivityPage from "@/app/activity/ActivityPage";
-import RunsPage from "@/app/runs/RunsPage";
-import RegistryPanel from "@/app/fleet/RegistryPanel";
-import OpsConfigPage from "./config/page";
-import ThemesPage from "./themes/page";
+export default function OpsIndex() {
+  const links = [
+    { href: "/ops/fleet", label: "Fleet", desc: "Agent fleet status and controls" },
+    { href: "/ops/activity", label: "Activity", desc: "Live agent activity feed" },
+    { href: "/ops/runs", label: "Runs", desc: "Agent run history and metrics" },
+    { href: "/ops/registry", label: "Registry", desc: "Tool registrations and subscriptions" },
+    { href: "/ops/config", label: "Config", desc: "Models, workflows, notifications, perf" },
+    { href: "/ops/themes", label: "Themes", desc: "Theme tester and design system preview" },
+    { href: "/personal", label: "Finance", desc: "Portfolio, watchlist, screener, money flow" },
+  ];
 
-const SECTIONS = [
-  { id: "fleet", label: "Fleet" },
-  { id: "activity", label: "Activity" },
-  { id: "runs", label: "Runs" },
-  { id: "registry", label: "Registry" },
-  { id: "config", label: "Config" },
-  { id: "themes", label: "Themes" },
-] as const;
-
-export default function OpsPage() {
   return (
-    <div className="bg-background pb-16">
-      {/* Jump bar */}
-      <nav className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur px-2 py-1.5 pt-[env(safe-area-inset-top,0px)]">
-        <div className="flex gap-1 rounded-lg bg-muted/60 p-0.5 max-w-5xl mx-auto">
-          {SECTIONS.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() =>
-                document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth" })
-              }
-              className="flex-1 min-w-0 rounded-md px-0.5 py-1.5 text-center text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      {/* Fleet */}
-      <section id="fleet">
-        <FleetPage />
-      </section>
-
-      {/* Activity */}
-      <section id="activity">
-        <Suspense fallback={<div className="p-4 text-sm text-muted-foreground">Loading activity…</div>}>
-          <ActivityPage />
-        </Suspense>
-      </section>
-
-      {/* Runs */}
-      <section id="runs">
-        <RunsPage />
-      </section>
-
-      {/* Registry */}
-      <section id="registry">
-        <div className="mx-auto max-w-5xl px-3 py-3">
-          <h2 className="text-base font-bold text-foreground mb-3">Registry</h2>
-          <RegistryPanel />
-        </div>
-      </section>
-
-      {/* Config */}
-      <section id="config">
-        <OpsConfigPage />
-      </section>
-
-      {/* Themes */}
-      <section id="themes">
-        <ThemesPage />
-      </section>
+    <div className="min-h-screen bg-background pb-16">
+      <header className="sticky top-0 z-10 flex items-center border-b border-border bg-background/95 px-3 py-2 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
+        <h1 className="text-sm font-semibold text-foreground">Operations</h1>
+      </header>
+      <div className="mx-auto max-w-3xl space-y-2 px-3 py-3">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="flex flex-col rounded-lg border border-border bg-card px-3 py-2.5 hover:bg-muted/50"
+          >
+            <span className="text-sm font-medium text-foreground">{link.label}</span>
+            <span className="text-[11px] text-muted-foreground">{link.desc}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
