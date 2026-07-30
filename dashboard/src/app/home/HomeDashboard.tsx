@@ -9,8 +9,15 @@ import {
   Badge,
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
   DividedList,
   DividedRow,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  Skeleton,
   cx,
   type UiTone,
 } from "@/components/ui";
@@ -96,11 +103,135 @@ function AccentRow({
   );
 }
 
-// ── HOME DASHBOARD (post-promote density + hybrid Channels) ──
+// ── Collapsible channel entry ──
+
+function ChannelBlock({
+  ch,
+  bestThread,
+  openChannels,
+  onToggle,
+}: {
+  ch: HomeOverview["topPulse"][number];
+  bestThread: HomeOverview["threadActivity"][number] | null;
+  openChannels: Set<string>;
+  onToggle: (id: string) => void;
+}) {
+  const isOpen = openChannels.has(ch.channelId);
+  const waitCount = (ch.states?.wait ?? 0) + (ch.states?.active ?? 0);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={() => onToggle(ch.channelId)}>
+      {/* Channel header */}
+      <CollapsibleTrigger className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/60 transition-colors w-full text-left">
+        <span className="text-[10px] text-muted-foreground w-3 shrink-0">
+          {isOpen ? "▾" : "▸"}
+        </span>
+        <span className={cx("text-sm font-semibold", ch.unreadCount > 0 && "text-foreground")}>
+          # {ch.channelName}
+        </span>
+        {ch.unreadCount > 0 && (
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+            {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
+          </Badge>
+        )}
+        {waitCount > 0 && (
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 tabular-nums">
+            {waitCount} waiting
+          </span>
+        )}
+        <Link
+          href={`/channels/${ch.channelId}`}
+          onClick={(e) => e.stopPropagation()}
+          className="ml-auto text-[10px] text-muted-foreground hover:text-foreground"
+        >
+          →
+        </Link>
+      </CollapsibleTrigger>
+      {/* Nested recent thread */}
+      <CollapsibleContent>
+        {bestThread ? (
+          <Link
+            href={`/channels/${bestThread.channelId}/${bestThread.threadId}`}
+            className="flex items-center gap-2 px-4 py-2 pl-8 border-t border-border/50 hover:bg-muted/40 transition-colors"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-xs truncate">{bestThread.title}</p>
+              <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                {bestThread.replyCount > 0 ? `${bestThread.replyCount} repl${bestThread.replyCount === 1 ? "y" : "ies"}` : "No replies"}
+                {bestThread.lastAuthor ? ` · ${bestThread.lastAuthor}` : ""}
+                {bestThread.lastMessageAt ? ` · ${relativeTime(bestThread.lastMessageAt)}` : ""}
+              </p>
+            </div>
+          </Link>
+        ) : (
+          <div className="px-4 py-2 pl-8 border-t border-border/50">
+            <p className="text-[10px] text-muted-foreground">No recent threads</p>
+          </div>
+        )}
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+// ── Skeleton layout for loading ──
+
+function HomeSkeleton() {
+  return (
+    <PageShell maxWidth="max-w-5xl" className="pb-4 space-y-4">
+      <div className="flex items-baseline justify-between">
+        <div className="space-y-1.5">
+          <Skeleton className="h-6 w-24" />
+          <Skeleton className="h-3 w-40" />
+        </div>
+        <Skeleton className="h-7 w-24 rounded-lg" />
+      </div>
+      <Card size="sm">
+        <CardContent className="space-y-3 py-3">
+          <Skeleton className="h-3 w-20" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="h-5 w-12 rounded-full" />
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+      <Card size="sm">
+        <CardContent className="space-y-3 py-3">
+          <Skeleton className="h-3 w-16" />
+          {[1, 2].map((i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="h-5 w-14 rounded-full" />
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </PageShell>
+  );
+}
+
+// ── HOME DASHBOARD ──
 
 export default function HomeDashboard() {
   const { data, loading, error, refresh } = useHomeOverview();
   const [view, setView] = useState<"list" | "board">("list");
+  const [openChannels, setOpenChannels] = useState<Set<string>>(new Set());
+
+  const toggleChannel = (id: string) => {
+    setOpenChannels((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   // Build lookup maps for enrichment (all hooks MUST run before any conditional return)
   const threadActivityById = useMemo(() => {
@@ -114,7 +245,7 @@ export default function HomeDashboard() {
     return m;
   }, [data]);
 
-  // Channels hybrid C: top channels by unread/recent, each with one nested recent thread
+  // Channels: top by unread/recent, each with one nested recent thread
   const channelGroups = useMemo(() => {
     if (!data) return [];
     const channels = data.topPulse || [];
@@ -164,15 +295,7 @@ export default function HomeDashboard() {
     return cards;
   }, [data]);
 
-  if (loading && !data) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center pb-16">
-        <p className="text-sm text-muted-foreground animate-pulse">
-          Loading…
-        </p>
-      </div>
-    );
-  }
+  if (loading && !data) return <HomeSkeleton />;
 
   if (error && !data) {
     return (
@@ -278,6 +401,14 @@ export default function HomeDashboard() {
             count={failedPromotions.length + needsMe.length}
           />
           <Card size="sm">
+            <CardHeader className="pb-0">
+              <CardTitle>Waiting on you</CardTitle>
+              <CardDescription>
+                {failedPromotions.length > 0 ? `${failedPromotions.length} failed · ` : ""}
+                {needsMe.filter(n => n.reason === "blocked").length > 0 ? `${needsMe.filter(n => n.reason === "blocked").length} blocked · ` : ""}
+                {needsMe.filter(n => n.reason === "review").length > 0 ? `${needsMe.filter(n => n.reason === "review").length} in review` : "No items in review"}
+              </CardDescription>
+            </CardHeader>
             <CardContent className="!px-0">
               <DividedList>
                 {failedPromotions.map((f) => (
@@ -342,7 +473,7 @@ export default function HomeDashboard() {
         </section>
       )}
 
-      {/* In Motion — enriched with thread activity */}
+      {/* In Motion */}
       <section>
         <SectionHeading
           tone="muted"
@@ -350,6 +481,13 @@ export default function HomeDashboard() {
           count={active.length}
         />
         <Card size="sm">
+          <CardHeader className="pb-0">
+            <CardTitle>Active work</CardTitle>
+            <CardDescription>
+              {active.filter(a => a.state === "running").length} running
+              {active.filter(a => a.latestStep).length > 0 ? ` · ${active.filter(a => a.latestStep).length} with steps` : ""}
+            </CardDescription>
+          </CardHeader>
           <CardContent className="!px-0">
             <DividedList
               empty={
@@ -363,7 +501,6 @@ export default function HomeDashboard() {
               {active.map((a) => {
                 const tone = stateTone(a.state);
                 const ta = threadActivityById[a.threadId];
-                // Build meta line: #channel · assignee · step-or-last-reply · time
                 const metaParts: string[] = [`# ${a.channelName}`];
                 if (ta?.assignee) metaParts.push(ta.assignee);
                 if (a.latestStep) {
@@ -399,7 +536,7 @@ export default function HomeDashboard() {
         </Card>
       </section>
 
-      {/* Channels — hybrid C: channel header + one nested recent thread */}
+      {/* Channels — collapsible */}
       {channelGroups.length > 0 && (
         <section>
           <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
@@ -408,53 +545,16 @@ export default function HomeDashboard() {
           <Card size="sm">
             <CardContent className="!px-0">
               <DividedList>
-                {channelGroups.map(({ ch, bestThread }) => {
-                  const waitCount = (ch.states?.wait ?? 0) + (ch.states?.active ?? 0);
-                  return (
-                    <li key={ch.channelId}>
-                      {/* Channel header */}
-                      <Link
-                        href={`/channels/${ch.channelId}`}
-                        className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/60 transition-colors"
-                      >
-                        <span className={cx("text-sm font-semibold", ch.unreadCount > 0 && "text-foreground")}>
-                          # {ch.channelName}
-                        </span>
-                        {ch.unreadCount > 0 && (
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
-                          </Badge>
-                        )}
-                        {waitCount > 0 && (
-                          <span className="text-[10px] text-amber-600 dark:text-amber-400 tabular-nums">
-                            {waitCount} waiting
-                          </span>
-                        )}
-                        <span className="ml-auto text-[10px] text-muted-foreground">→</span>
-                      </Link>
-                      {/* Nested recent thread */}
-                      {bestThread ? (
-                        <Link
-                          href={`/channels/${bestThread.channelId}/${bestThread.threadId}`}
-                          className="flex items-center gap-2 px-4 py-2 pl-8 border-t border-border/50 hover:bg-muted/40 transition-colors"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs truncate">{bestThread.title}</p>
-                            <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                              {bestThread.replyCount > 0 ? `${bestThread.replyCount} repl${bestThread.replyCount === 1 ? "y" : "ies"}` : "No replies"}
-                              {bestThread.lastAuthor ? ` · ${bestThread.lastAuthor}` : ""}
-                              {bestThread.lastMessageAt ? ` · ${relativeTime(bestThread.lastMessageAt)}` : ""}
-                            </p>
-                          </div>
-                        </Link>
-                      ) : (
-                        <div className="px-4 py-2 pl-8 border-t border-border/50">
-                          <p className="text-[10px] text-muted-foreground">No recent threads</p>
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
+                {channelGroups.map(({ ch, bestThread }) => (
+                  <li key={ch.channelId}>
+                    <ChannelBlock
+                      ch={ch}
+                      bestThread={bestThread}
+                      openChannels={openChannels}
+                      onToggle={toggleChannel}
+                    />
+                  </li>
+                ))}
               </DividedList>
             </CardContent>
           </Card>
