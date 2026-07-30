@@ -1,0 +1,96 @@
+/* ── TAILWIND ── */
+@import "tailwindcss";
+
+/*
+  Shadcn semantic aliases — map OUR tokens (--bg/--fg/--accent/…)
+  onto the names shadcn components expect (--primary/--card/…).
+  Do NOT overwrite --muted (ours = muted text color).
+*/
+:root,
+[data-theme] {
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --card: var(--surface);
+  --card-foreground: var(--fg);
+  --popover: var(--elevated);
+  --popover-foreground: var(--fg);
+  --primary: var(--accent);
+  --primary-foreground: var(--accent-on);
+  --secondary: var(--elevated);
+  --secondary-foreground: var(--fg);
+  --muted-foreground: var(--muted);
+  --accent-foreground: var(--accent-on);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--accent-on);
+  --input: var(--border);
+  --ring: var(--accent);
+  --radius: var(--radius-md);
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  /* muted = soft surface for bg-muted; muted-foreground = muted text */
+  --color-muted: var(--elevated);
+  --color-muted-foreground: var(--muted);
+  --color-disabled: var(--disabled);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-on: var(--accent-on);
+  --color-accent-foreground: var(--accent-on);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warn: var(--warn);
+
+  /* Full shadcn semantic set */
+  --color-card: var(--surface);
+  --color-card-foreground: var(--fg);
+  --color-popover: var(--elevated);
+  --color-popover-foreground: var(--fg);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-on);
+  --color-secondary: var(--elevated);
+  --color-secondary-foreground: var(--fg);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--accent-on);
+  --color-input: var(--border);
+  --color-ring: var(--accent);
+
+  --font-sans: var(--font-body);
+
+  /* Bridge zinc to semantic tokens */
+  --color-zinc-50: var(--bg);
+  --color-zinc-100: var(--elevated);
+  --color-zinc-200: var(--border);
+  --color-zinc-300: var(--muted);
+  --color-zinc-400: var(--muted);
+  --color-zinc-500: var(--muted);
+  --color-zinc-600: var(--fg-2);
+  --color-zinc-700: var(--fg-2);
+  --color-zinc-800: var(--fg);
+  --color-zinc-900: var(--fg);
+  --color-zinc-950: var(--bg);
+
+  /* Bridge blue to accent */
+  --color-blue-400: var(--accent);
+  --color-blue-500: var(--accent);
+  --color-blue-600: var(--accent);
+  --color-blue-700: var(--accent-hover);
+  --color-blue-800: var(--accent-hover);
+  --color-blue-900: var(--accent-hover);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-normal, 400);
+  letter-spacing: var(--letter-spacing-body, normal);
+  line-height: var(--leading-body);
+}
