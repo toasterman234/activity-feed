@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-28T03:57:12.763Z",
+  "generatedAt": "2026-07-30T18:43:36.204Z",
   "quantChannelId": "08bf3d95-a069-4693-937d-553b49c86c77",
   "contexts": [
     {
@@ -244,6 +244,73 @@
         "threadId": "39874959-f2e2-4201-b8bc-c8c7886b06d4",
         "objectType": "mira_case",
         "objectId": "mobile-ai-hardware-supercycle-2026-07"
+      }
+    },
+    {
+      "id": "option-signal-equity-inverted-put-skew",
+      "kind": "screen_rule",
+      "title": "Option-Signal Equity — inverted put-skew signal confirmed (on paper)",
+      "symbols": [],
+      "status": "provisional",
+      "verdict": "confirmed",
+      "summary": "research active — F1+F2: inverted put-skew signal CONFIRMED on paper (survived full robustness battery); F3 IV-innovations (AABC 2014) = NULL, does not replicate; forward-track F1 + F4 next",
+      "blockingGaps": [
+        "pending_human:promote"
+      ],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "26401b0f-bc49-49d3-80f8-f67af2d01c66",
+        "objectType": "pipeline_card",
+        "objectId": "option-signal-equity-inverted-put-skew"
+      }
+    },
+    {
+      "id": "strategy-miner-live-loop",
+      "kind": "screen_rule",
+      "title": "Strategy Miner — live idea loop (self-running)",
+      "symbols": [],
+      "status": "working",
+      "verdict": "in_progress",
+      "summary": "Mine → backtest → skeptic → signal loop. OFFLINE since the 2026-07-02 cutover: its ben-agents3 runner (run-cycle.sh) is gone and the launchd job was disabled 2026-07-09. Last state: 189 ideas mined, 62 testable, 0 confirmed (≈95% die by design). Historical output still visible in the Market Lake miner widgets.",
+      "blockingGaps": [],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "8676d2c6-4a0e-417c-a322-c7bc94d91492",
+        "objectType": "pipeline_card",
+        "objectId": "strategy-miner-live-loop"
+      }
+    },
+    {
+      "id": "vrp-iv-rank-scan-top-premium-selling-candidates-today-20260617165937",
+      "kind": "screen_rule",
+      "title": "VRP / IV-rank scan — top premium-selling candidates (today)",
+      "symbols": [],
+      "status": "working",
+      "summary": "Run the new qr.py VRP universe scanner against Market Lake and rank the richest premium-selling setups.",
+      "blockingGaps": [
+        "pending_human"
+      ],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "d9f7e0cb-909f-42b6-b9d5-5d08ced2aa08",
+        "objectType": "pipeline_card",
+        "objectId": "vrp-iv-rank-scan-top-premium-selling-candidates-today-20260617165937"
+      }
+    },
+    {
+      "id": "wheel-csp-entry-ruleset",
+      "kind": "trade_doctrine",
+      "title": "Wheel Strategy — CSP entry ruleset R1–R5 (confirmed OOS)",
+      "symbols": [],
+      "status": "published",
+      "verdict": "confirmed",
+      "summary": "Best non-panic entry: market VIX < 20 AND own IV-rank 0.5–0.75 (OOS Sharpe 1.68). The VIX 20–30 band is the trap (worst tail + highest assignment). RSI/trend add nothing once you condition on regime + IVR. Confirmed out-of-sample across 147 liquid names.",
+      "blockingGaps": [],
+      "source": {
+        "channelId": "08bf3d95-a069-4693-937d-553b49c86c77",
+        "threadId": "44359af2-fc6f-4447-95c4-d96f998d72db",
+        "objectType": "pipeline_card",
+        "objectId": "wheel-csp-entry-ruleset"
       }
     }
   ]

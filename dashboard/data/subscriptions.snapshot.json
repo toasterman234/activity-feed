@@ -1,10 +1,272 @@
 {
   "reachable": true,
   "errors": [
-    "tokscale: npm error code EACCES\nnpm error syscall mkdir\nnpm error path /Volumes/Extra Storage Crucial 1TB SSD\nnpm error errno EACCES\nnpm error FetchError: Invalid response body while trying to fetch h",
     "omp: /bin/sh: /Users/bencharney/.bun/bin/omp: No such file or directory\n"
   ],
   "accounts": [
+    {
+      "provider": "openai-codex",
+      "provider_label": "Codex",
+      "account_id": "bencharney@yahoo.com",
+      "email": "bencharney@yahoo.com",
+      "plan": "Plus",
+      "source": "tokscale",
+      "limits": [
+        {
+          "label": "Weekly",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 0.07,
+          "remaining_frac": 0.93,
+          "unit": "percent",
+          "status": "ok",
+          "resets_at": "2026-08-05T04:12:51+00:00",
+          "duration_hours": null
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "github-copilot",
+      "provider_label": "GitHub Copilot",
+      "account_id": "Individual",
+      "email": null,
+      "plan": "Individual",
+      "source": "tokscale",
+      "limits": [
+        {
+          "label": "Chat",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "percent",
+          "status": "ok",
+          "resets_at": "2026-08-01",
+          "duration_hours": null
+        },
+        {
+          "label": "Completions",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "percent",
+          "status": "ok",
+          "resets_at": "2026-08-01",
+          "duration_hours": null
+        },
+        {
+          "label": "Premium",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 1,
+          "remaining_frac": 0,
+          "unit": "percent",
+          "status": "exhausted",
+          "resets_at": "2026-08-01",
+          "duration_hours": null
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "anthropic",
+      "provider_label": "Claude Code",
+      "account_id": "claude",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "claude-opus-4-8",
+          "used": 3060.9818,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "97,363,507 tokens · 66,283 msgs",
+          "used": 5323.8203,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "pi",
+      "provider_label": "Pi",
+      "account_id": "pi",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "deepseek/deepseek-v4-pro",
+          "used": 1365.417,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "3,251,057,561 tokens · 45,009 msgs",
+          "used": 2200.7466,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "opencode-go",
+      "provider_label": "OpenCode Go",
+      "account_id": "opencode",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "k2p6",
+          "used": 75.8525,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "73,641,777 tokens · 9,910 msgs",
+          "used": 171.8502,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "kimi-code",
+      "provider_label": "Kimi Code",
+      "account_id": "kimi",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "kimi-for-coding",
+          "used": 7.8564,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "1,711,034 tokens · 668 msgs",
+          "used": 7.8564,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "openclaw",
+      "provider_label": "OpenClaw",
+      "account_id": "openclaw",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "deepseek/deepseek-v4-pro",
+          "used": 2.1859,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "4,016,773 tokens · 2,011 msgs",
+          "used": 3.0934,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "command-code",
+      "provider_label": "Command Code",
+      "account_id": "commandcode",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "deepseek-v4-pro",
+          "used": 1.8637,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "3,077,021 tokens · 2,795 msgs",
+          "used": 1.8637,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
+      "provider": "grok-build",
+      "provider_label": "Grok Build",
+      "account_id": "grok",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "grok-4.5",
+          "used": 0.891,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "445,517 tokens · 10 msgs",
+          "used": 0.891,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
     {
       "provider": "cursor",
       "provider_label": "Cursor",
@@ -56,5 +318,5 @@
       "reset_credits": 0
     }
   ],
-  "generated_at": "2026-07-28T03:57:12.450Z"
+  "generated_at": "2026-07-30T18:43:35.834Z"
 }
