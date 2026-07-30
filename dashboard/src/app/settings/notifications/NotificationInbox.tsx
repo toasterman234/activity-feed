@@ -146,7 +146,7 @@ export default function NotificationInbox() {
                 key={n.id}
                 className={`rounded-lg border px-3 py-2.5 transition-colors ${
                   n.read
-                    ? "border-zinc-100 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+                    ? "border-zinc-100 bg-card dark:border-zinc-800 dark:bg-zinc-900"
                     : "border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-900/20"
                 }`}
                 onClick={() => !n.read && markRead(n.id)}

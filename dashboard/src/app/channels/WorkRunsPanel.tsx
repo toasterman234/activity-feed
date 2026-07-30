@@ -106,7 +106,7 @@ export function WorkRunsPanel({ threadId, compact = false }: { threadId: string;
   if (compact && !visibleRuns.length) return null;
 
   return (
-    <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">

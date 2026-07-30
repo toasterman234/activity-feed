@@ -199,7 +199,7 @@ function MetricsTab({
     <div className="space-y-3">
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-border bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Total Runs</p>
           <p className="text-2xl font-bold text-foreground">{totalRuns}</p>
         </div>
@@ -221,7 +221,7 @@ function MetricsTab({
       </div>
 
       {/* Per-source breakdown */}
-      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-border bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-xs font-semibold text-foreground mb-2">By Source</p>
         <div className="space-y-2">
           {overview.totals.map((t) => {
@@ -267,7 +267,7 @@ function MetricsTab({
       </div>
 
       {/* Weekly trends — sparkline-style bars per source */}
-      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-border bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-xs font-semibold text-foreground mb-2">Weekly Trends</p>
         {Object.entries(overview.weeklyTrends).map(([source, weeks]) => {
           const latest = weeks[0];
@@ -301,7 +301,7 @@ function MetricsTab({
       </div>
 
       {/* Top failing projects */}
-      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-border bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-xs font-semibold text-foreground mb-2">Top Failing Projects</p>
         {overview.topFailing.length === 0 ? (
           <p className="text-xs text-muted-foreground">No projects with ≥3 runs and failures</p>
@@ -321,7 +321,7 @@ function MetricsTab({
       </div>
 
       {/* Agent breakdown */}
-      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-border bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-xs font-semibold text-foreground mb-2">By Agent</p>
         <div className="space-y-1.5 max-h-60 overflow-y-auto">
           {overview.byAgent.map((a) => (
@@ -344,7 +344,7 @@ function MetricsTab({
       </div>
 
       {/* Judged status */}
-      <div className="rounded-lg border border-border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-border bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-xs font-semibold text-foreground mb-2">Judgment Status</p>
         <p className="text-xs text-muted-foreground dark:text-muted-foreground">
           {overview.judged.total} judged runs:{" "}
@@ -409,7 +409,7 @@ export function RunsTab() {
         <div>
           <label className="text-[10px] text-muted-foreground block">Source</label>
           <select value={source} onChange={(e) => { setSource(e.target.value); setOffset(0); }}
-            className="rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground">
+            className="rounded-md border border-border bg-card px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground">
             <option value="">All</option>
             <option value="claude-code">Claude Code</option>
             <option value="pi">Pi</option>
@@ -422,7 +422,7 @@ export function RunsTab() {
         <div>
           <label className="text-[10px] text-muted-foreground block">Outcome</label>
           <select value={outcome} onChange={(e) => { setOutcome(e.target.value); setOffset(0); }}
-            className="rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground">
+            className="rounded-md border border-border bg-card px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground">
             <option value="">All</option>
             <option value="success">Success</option>
             <option value="drifted">Drifted</option>
@@ -438,7 +438,7 @@ export function RunsTab() {
             value={project}
             onChange={(e) => { setProject(e.target.value); setOffset(0); }}
             placeholder="filter…"
-            className="w-28 rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+            className="w-28 rounded-md border border-border bg-card px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
           />
         </div>
         <button onClick={fetchRuns}
@@ -455,7 +455,7 @@ export function RunsTab() {
           <div className="text-[10px] text-muted-foreground">
             {data.total} runs · showing {data.rows.length}
           </div>
-          <div className="rounded-lg border border-border bg-white dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+          <div className="rounded-lg border border-border bg-card dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {data.rows.map((row) => (
                 <div key={row.id}>

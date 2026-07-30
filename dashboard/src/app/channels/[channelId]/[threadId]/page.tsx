@@ -758,7 +758,7 @@ function ThreadContent({
                   <button
                     type="button"
                     onClick={() => { void handleLifecycleChange(suggestedLifecycle); }}
-                    className="ml-auto shrink-0 rounded-md border border-blue-300 bg-white px-2.5 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                    className="ml-auto shrink-0 rounded-md border border-blue-300 bg-card px-2.5 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
                   >
                     Accept
                   </button>

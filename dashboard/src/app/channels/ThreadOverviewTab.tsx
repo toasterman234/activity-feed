@@ -86,14 +86,14 @@ export function ThreadOverviewTab({
           <button
             type="button"
             onClick={onAcceptSuggestedLifecycle}
-            className="ml-auto shrink-0 rounded-md border border-blue-300 bg-white px-2.5 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+            className="ml-auto shrink-0 rounded-md border border-blue-300 bg-card px-2.5 py-1 text-[11px] font-medium text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
           >
             Accept
           </button>
           <select
             defaultValue=""
             onChange={(e) => { if (e.target.value) onLifecycleChange(e.target.value); }}
-            className="text-xs rounded border border-blue-200 bg-white px-2 py-0.5 text-zinc-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-zinc-400"
+            className="text-xs rounded border border-blue-200 bg-card px-2 py-0.5 text-zinc-500 dark:border-blue-800 dark:bg-zinc-800 dark:text-zinc-400"
           >
             <option value="" disabled>Or pick…</option>
             {Object.entries(LIFECYCLES).map(([key, lcDef]) => (
@@ -104,7 +104,7 @@ export function ThreadOverviewTab({
       )}
 
       {lifecyclePicked && lc && (
-        <details className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900" open>
+        <details className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900" open>
           <summary className="cursor-pointer text-xs text-zinc-600 dark:text-zinc-300 [&::-webkit-details-marker]:hidden">
             <span className="mr-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">Details</span>
             {lc.label} · {lc.states[currentState]?.label || currentState}
@@ -118,7 +118,7 @@ export function ThreadOverviewTab({
                 value={lifecycleKey}
                 disabled={meta ? meta.state !== "drafted" : false}
                 onChange={(e) => onLifecycleChange(e.target.value)}
-                className="text-xs rounded border border-zinc-200 bg-white px-2 py-0.5 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                className="text-xs rounded border border-zinc-200 bg-card px-2 py-0.5 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
               >
                 {Object.entries(LIFECYCLES).map(([key, lcDef]) => (
                   <option key={key} value={key}>{lcDef.label}</option>
@@ -135,7 +135,7 @@ export function ThreadOverviewTab({
                 <select
                   value={researchMode}
                   onChange={(e) => onResearchModeChange(e.target.value)}
-                  className="text-xs rounded border border-zinc-200 bg-white px-2 py-0.5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                  className="text-xs rounded border border-zinc-200 bg-card px-2 py-0.5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                 >
                   {Object.values(RESEARCH_MODES).map((mode) => (
                     <option key={mode.id} value={mode.id}>{mode.label}</option>

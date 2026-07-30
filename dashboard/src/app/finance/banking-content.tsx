@@ -80,7 +80,7 @@ function BankingView({ balShape, txnShape }: { balShape: ShapeMaterialization; t
   return (
     <div className="space-y-4">
       {/* Bank balances */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">Bank Accounts</h2>
         </div>
@@ -101,7 +101,7 @@ function BankingView({ balShape, txnShape }: { balShape: ShapeMaterialization; t
       </section>
 
       {/* Credit card balances */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">Credit Cards</h2>
         </div>
@@ -124,7 +124,7 @@ function BankingView({ balShape, txnShape }: { balShape: ShapeMaterialization; t
       </section>
 
       {/* Recent transactions / history */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">Transaction History · {sortedTxns.length}</h2>
         </div>

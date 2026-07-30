@@ -161,7 +161,7 @@ export function ExecutionHandoffWorkspace({
 
   if (justCreated && !activeExecution) {
     return (
-      <section className="rounded-xl border border-emerald-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-emerald-300 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Approved · creating execution</p>
         <h3 className="mt-1 text-base font-semibold">Creating execution task…</h3>
         <p className="mt-1 text-xs leading-5 text-zinc-500">
@@ -184,7 +184,7 @@ export function ExecutionHandoffWorkspace({
 
   if (activeExecution) {
     return (
-      <section className="rounded-xl border border-emerald-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-emerald-300 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Approved · execution ready</p>
         <h3 className="mt-1 text-base font-semibold">Execution task created</h3>
         <p className="mt-1 text-xs leading-5 text-zinc-500">
@@ -233,7 +233,7 @@ export function ExecutionHandoffWorkspace({
   }
 
   return (
-    <section className="rounded-xl border border-emerald-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-emerald-300 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-emerald-800 dark:bg-zinc-900">
       <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Approved · choose what happens next</p>
       <h3 className="mt-1 text-base font-semibold">Hand this plan into execution</h3>
       <p className="mt-1 text-xs leading-5 text-zinc-500">

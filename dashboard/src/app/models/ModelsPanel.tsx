@@ -122,7 +122,7 @@ export function ModelsPanel({ embedded = false }: { embedded?: boolean }) {
   if (embedded) {
     return (
       <div className="space-y-3">
-        <div className="rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-card p-2 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-2">{controls}</div>
         </div>
         <div className="space-y-3">{body}</div>
@@ -132,7 +132,7 @@ export function ModelsPanel({ embedded = false }: { embedded?: boolean }) {
 
   return (
     <div className="min-h-screen bg-zinc-50 pb-16 dark:bg-zinc-950">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 pt-[env(safe-area-inset-top,0px)] backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-card/95 pt-[env(safe-area-inset-top,0px)] backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
         <div className="mx-auto max-w-5xl px-3 pt-2">
           <div className="flex w-full">{controls}</div>
         </div>
@@ -164,7 +164,7 @@ function StatusTab({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className={`inline-block h-2 w-2 rounded-full ${status.proxy.running ? "bg-green-500" : "bg-red-400"}`} />
@@ -177,7 +177,7 @@ function StatusTab({
         )}
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Pi Agent</span>
         </div>
@@ -188,7 +188,7 @@ function StatusTab({
         )}
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">iii Harness</span>
           {status.iii?.error && (
@@ -202,7 +202,7 @@ function StatusTab({
         )}
       </div>
 
-      <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="mb-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200">Available Models ({status.models.length})</p>
         {Object.entries(modelGroups)
           .sort(([a], [b]) => a.localeCompare(b))
@@ -268,7 +268,7 @@ function SwapTab({
           onChange={(e) => setSwapKey(e.target.value)}
           placeholder="user_…"
           autoComplete="off"
-          className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-mono text-zinc-800 placeholder:text-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+          className="w-full rounded-lg border border-zinc-200 bg-card px-3 py-2 text-sm font-mono text-zinc-800 placeholder:text-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
         />
       </div>
 
@@ -401,7 +401,7 @@ function SubscriptionsTab() {
           .join(" · ");
 
         return (
-          <div key={`${acct.provider}-${acct.account_id}-${i}`} className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <div key={`${acct.provider}-${acct.account_id}-${i}`} className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="mb-2 flex items-baseline justify-between">
               <div>
                 <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{head}</span>
@@ -455,7 +455,7 @@ function HistoryTab({
     <div className="space-y-1.5">
       <p className="mb-2 text-[10px] uppercase tracking-wider text-zinc-400">This Session</p>
       {swapLog.map((entry, i) => (
-        <div key={i} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
+        <div key={i} className="flex items-center justify-between rounded-lg border border-zinc-200 bg-card px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
           <div>
             <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
               {entry.target === "proxy" ? "CC Proxy" : entry.target === "pi" ? "Pi Agent" : entry.target === "all" ? "All" : entry.target}

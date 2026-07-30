@@ -200,7 +200,7 @@ export function CollectionsContent({
       <div className="flex items-center justify-between mb-2">
         <p className="text-[10px] text-zinc-400">{sorted.length} bucket{sorted.length !== 1 ? "s" : ""} · {judgments.length} judgment{judgments.length !== 1 ? "s" : ""}</p>
         <select value={sort} onChange={e => setSort(e.target.value as "name" | "recent" | "count")}
-          className="rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+          className="rounded-md border border-zinc-200 bg-card px-2 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
           <option value="recent">Recent</option>
           <option value="count">Most judged</option>
           <option value="name">A–Z</option>
@@ -224,7 +224,7 @@ export function CollectionsContent({
           const open = expand === c.id;
           const editable = isEditableCollection(c);
           return (
-            <div key={c.id} className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+            <div key={c.id} className="rounded-lg border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
               <div role="button" tabIndex={0}
                 onClick={() => setExpand(open ? null : c.id)}
                 onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpand(open ? null : c.id); } }}
@@ -304,7 +304,7 @@ export function CollectionsContent({
                                       rows={2}
                                       placeholder="Add a note…"
                                       autoFocus
-                                      className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-800 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none"
+                                      className="w-full rounded-md border border-zinc-200 bg-card px-2 py-1 text-xs text-zinc-800 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none"
                                     />
                                     <div className="flex justify-end gap-1.5">
                                       <button

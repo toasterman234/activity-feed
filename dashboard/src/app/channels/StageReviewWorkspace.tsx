@@ -115,7 +115,7 @@ export function StageReviewWorkspace({
   };
 
   return (
-    <section className="rounded-xl border border-amber-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-amber-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-amber-300 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-amber-800 dark:bg-zinc-900">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">Challenge workspace</p>

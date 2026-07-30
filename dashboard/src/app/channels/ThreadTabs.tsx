@@ -23,7 +23,7 @@ export function ThreadTabs({ active, onChange, counts }: ThreadTabsProps) {
 
   return (
     <div className="overflow-x-auto">
-      <div className="flex min-w-max gap-1 rounded-lg border border-zinc-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex min-w-max gap-1 rounded-lg border border-zinc-200 bg-card p-1 dark:border-zinc-800 dark:bg-zinc-900">
         {tabs.map((tab) => {
           const isActive = tab.id === active;
           return (
@@ -42,7 +42,7 @@ export function ThreadTabs({ active, onChange, counts }: ThreadTabsProps) {
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] tabular-nums ${
                     isActive
-                      ? "bg-white/15 text-white dark:bg-zinc-900/10 dark:text-zinc-900"
+                      ? "bg-card/15 text-white dark:bg-zinc-900/10 dark:text-zinc-900"
                       : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
                   }`}
                 >

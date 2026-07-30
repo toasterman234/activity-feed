@@ -72,7 +72,7 @@ function TradesView({ shape }: { shape: ShapeMaterialization }) {
 
   return (
     <div className="space-y-4">
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">Trade History · {sorted.length} trades</h2>
         </div>

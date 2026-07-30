@@ -177,7 +177,7 @@ export default function NotificationSettings() {
       )}
 
       {/* Master switch */}
-      <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-card px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
         <div>
           <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Master Switch</p>
           <p className="text-[11px] text-zinc-400">Turn all notifications on or off</p>
@@ -191,7 +191,7 @@ export default function NotificationSettings() {
           aria-checked={globalEnabled}
         >
           <span
-            className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+            className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-card shadow-sm transition-transform ${
               globalEnabled ? "translate-x-5" : "translate-x-0"
             }`}
           />
@@ -207,7 +207,7 @@ export default function NotificationSettings() {
             return (
               <div
                 key={ev.key}
-                className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900"
+                className="flex items-center justify-between rounded-lg border border-zinc-200 bg-card px-4 py-2.5 dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <div className="min-w-0 flex-1 mr-3">
                   <p className="text-sm text-zinc-900 dark:text-zinc-100">{ev.label}</p>
@@ -222,7 +222,7 @@ export default function NotificationSettings() {
                   aria-checked={eff.enabled}
                 >
                   <span
-                    className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                    className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-card shadow-sm transition-transform ${
                       eff.enabled ? "translate-x-4" : "translate-x-0"
                     }`}
                   />

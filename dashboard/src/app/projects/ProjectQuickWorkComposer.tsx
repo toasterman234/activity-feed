@@ -59,7 +59,7 @@ export function ProjectQuickWorkComposer({
   };
 
   return (
-    <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">Work in this project</h2>
@@ -73,7 +73,7 @@ export function ProjectQuickWorkComposer({
           value={agent}
           onChange={(e) => setAgent(e.target.value)}
           disabled={launching}
-          className="rounded border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+          className="rounded border border-zinc-200 bg-card px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
         >
           <option value="pi">@pi</option>
           <option value="claude">@claude</option>
@@ -83,7 +83,7 @@ export function ProjectQuickWorkComposer({
           value={mode}
           onChange={(e) => setMode(e.target.value as "resume" | "new")}
           disabled={launching}
-          className="rounded border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+          className="rounded border border-zinc-200 bg-card px-2 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
         >
           <option value="resume">Resume active thread</option>
           <option value="new">Start new work thread</option>
@@ -95,7 +95,7 @@ export function ProjectQuickWorkComposer({
         placeholder="What do you want to do in this project?"
         rows={4}
         disabled={launching}
-        className="mt-3 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+        className="mt-3 w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
       />
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button

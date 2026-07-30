@@ -136,7 +136,7 @@ export default function WatchlistContent() {
   return (
     <>
       <div className="space-y-6">
-        <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Collection</span>
             <button type="button" onClick={() => chooseCollection("default")} className={`rounded-full px-3 py-1 text-xs ${activeCollection === "default" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"}`}>Default</button>
@@ -160,7 +160,7 @@ export default function WatchlistContent() {
                 className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
               />
               {showSuggestions && suggestions.length > 0 && (
-                <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+                <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-zinc-200 bg-card shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                   {suggestions.map((s, i) => (
                     <li key={s.symbol}>
                       <button
@@ -185,7 +185,7 @@ export default function WatchlistContent() {
           {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
         </section>
 
-        <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
           <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-sm font-medium text-zinc-500">Live Quotes {loading ? "· updating…" : ""}</h2>

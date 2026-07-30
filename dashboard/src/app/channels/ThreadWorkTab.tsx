@@ -32,7 +32,7 @@ export function ThreadWorkTab({
       <WorkRunsPanel threadId={threadId} />
 
       {plans.length > 0 && (
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="mb-2">
             <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">Execution plan</p>
             {planningStage && <p className="mt-1 text-[11px] text-zinc-500">These are proposed steps. Completion tracking begins after the plan is approved.</p>}
@@ -64,7 +64,7 @@ export function ThreadWorkTab({
       )}
 
       {latestEvent && (activityRunning || latestEvent.status === "error") && (
-        <details className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900" open={activityRunning}>
+        <details className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900" open={activityRunning}>
           <summary className="flex cursor-pointer items-center gap-2 text-xs">
             <span className={activityRunning ? "animate-pulse text-amber-500" : latestEvent.status === "error" ? "text-red-500" : "text-emerald-500"}>
               {activityRunning ? "●" : latestEvent.status === "error" ? "✕" : "✓"}

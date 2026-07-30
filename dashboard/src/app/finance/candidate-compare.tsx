@@ -16,7 +16,7 @@ export default function CandidateCompare({
   if (candidates.length < 2) return null;
 
   return (
-    <section className="overflow-hidden rounded-xl border border-amber-300 bg-white dark:border-amber-900 dark:bg-zinc-950">
+    <section className="overflow-hidden rounded-xl border border-amber-300 bg-card dark:border-amber-900 dark:bg-zinc-950">
       <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
         <div>
           <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Compare selected · {candidates.length}</h3>

@@ -148,7 +148,7 @@ export function MentionInput({
         }}
       />
       {open && filtered.length > 0 && (
-        <ul className="absolute bottom-full left-0 right-0 z-30 mb-1 max-h-48 overflow-y-auto rounded-md border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+        <ul className="absolute bottom-full left-0 right-0 z-30 mb-1 max-h-48 overflow-y-auto rounded-md border border-zinc-200 bg-card py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
           {filtered.map((o, i) => (
             <li key={o.handle}>
               <button

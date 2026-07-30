@@ -193,8 +193,8 @@ export default function OptionChainSheet({
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-black/35" onClick={onClose} />
-      <div className="relative h-full w-full max-w-4xl overflow-y-auto border-l border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[max(env(safe-area-inset-top),0.75rem)]">
+      <div className="relative h-full w-full max-w-4xl overflow-y-auto border-l border-zinc-200 bg-card shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="sticky top-0 z-10 border-b border-zinc-200 bg-card/95 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[max(env(safe-area-inset-top),0.75rem)]">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-400">Live option chain</p>
@@ -216,7 +216,7 @@ export default function OptionChainSheet({
 
         <div className="space-y-4 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
           {expirations.length > 0 && (
-            <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+            <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
               <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400">Expirations</p>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {expirations.map((expiration) => (
@@ -235,7 +235,7 @@ export default function OptionChainSheet({
             </section>
           )}
 
-          <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <div>
                 <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-400">Side</p>
@@ -334,12 +334,12 @@ export default function OptionChainSheet({
             </section>
           )}
 
-          <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+          <section className="overflow-hidden rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-zinc-100 text-left text-zinc-400 dark:border-zinc-800">
-                    <th className="sticky left-0 bg-white px-4 py-2 font-medium dark:bg-zinc-900">Strike</th>
+                    <th className="sticky left-0 bg-card px-4 py-2 font-medium dark:bg-zinc-900">Strike</th>
                     <th className="px-4 py-2 text-right font-medium">Last</th>
                     <th className="px-4 py-2 text-right font-medium">Bid</th>
                     <th className="px-4 py-2 text-right font-medium">Ask</th>
@@ -356,7 +356,7 @@ export default function OptionChainSheet({
                     const itm = isInTheMoney(row, spotPrice);
                     return (
                       <tr key={`${row.side}-${row.strike}`} className="border-b border-zinc-50 dark:border-zinc-800/60">
-                        <td className="sticky left-0 bg-white px-4 py-2.5 font-mono text-zinc-800 dark:bg-zinc-900 dark:text-zinc-100">
+                        <td className="sticky left-0 bg-card px-4 py-2.5 font-mono text-zinc-800 dark:bg-zinc-900 dark:text-zinc-100">
                           <div className="flex items-center gap-2">
                             <span>{fmtNum(row.strike, 2)}</span>
                             {itm != null && (

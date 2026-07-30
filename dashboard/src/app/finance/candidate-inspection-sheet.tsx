@@ -173,8 +173,8 @@ export default function CandidateInspectionSheet({
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/45" role="dialog" aria-modal="true" aria-label={`${candidate.symbol} candidate inspection`}>
       <button className="min-w-0 flex-1 cursor-default" aria-label="Close candidate inspection" onClick={onClose} />
-      <aside className="h-full w-full max-w-2xl overflow-y-auto border-l border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
-        <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 px-5 py-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+      <aside className="h-full w-full max-w-2xl overflow-y-auto border-l border-zinc-200 bg-card shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
+        <header className="sticky top-0 z-10 border-b border-zinc-200 bg-card/95 px-5 py-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-baseline gap-2">
@@ -278,7 +278,7 @@ export default function CandidateInspectionSheet({
             {channelResearch.length ? (
               <div className="mt-3 space-y-3">
                 {channelResearch.map((context) => (
-                  <article key={context.id} className="rounded-lg border border-violet-200 bg-white p-3 dark:border-violet-900 dark:bg-zinc-950">
+                  <article key={context.id} className="rounded-lg border border-violet-200 bg-card p-3 dark:border-violet-900 dark:bg-zinc-950">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs font-semibold">{context.title}</span>
                       <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-semibold uppercase text-violet-700 dark:bg-violet-950 dark:text-violet-300">{context.status}</span>

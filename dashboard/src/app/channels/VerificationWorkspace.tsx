@@ -73,7 +73,7 @@ export function VerificationWorkspace({
   if (checkWorkflows.length === 0) return null;
 
   return (
-    <section className="rounded-xl border border-teal-200 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-teal-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-teal-200 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-teal-800 dark:bg-zinc-900">
       <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
         Coding · verification workspace
       </p>

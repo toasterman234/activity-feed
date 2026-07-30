@@ -120,7 +120,7 @@ function SelectField({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-2 text-xs text-zinc-700 outline-none transition focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+        className="w-full rounded-md border border-zinc-200 bg-card px-2.5 py-2 text-xs text-zinc-700 outline-none transition focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
       >
         {options.map(([optionValue, optionLabel]) => (
           <option key={optionValue} value={optionValue}>{optionLabel}</option>
@@ -283,7 +283,7 @@ export default function ScreenerContent() {
   return (
     <>
       <div className="space-y-4">
-        <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+        <section className="overflow-hidden rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-950">
           <div className="border-b border-zinc-200 bg-zinc-950 px-4 py-4 text-zinc-100 dark:border-zinc-800">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -309,7 +309,7 @@ export default function ScreenerContent() {
                 <select
                   value={activeId}
                   onChange={(event) => chooseScreen(event.target.value)}
-                  className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-800 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                  className="w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm font-medium text-zinc-800 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
                 >
                   <optgroup label="Built in">
                     {SCREEN_PRESETS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
@@ -335,7 +335,7 @@ export default function ScreenerContent() {
                   max={100}
                   value={topN}
                   onChange={(event) => setTopN(Math.max(5, Number(event.target.value) || 5))}
-                  className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
+                  className="w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-900"
                 />
               </label>
             </div>
@@ -364,15 +364,15 @@ export default function ScreenerContent() {
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
                     <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Min ATM IV</span>
-                    <input type="number" min={0} max={3} step={0.05} value={filters.minIv} onChange={(event) => updateFilter("minIv", Number(event.target.value))} className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-2 text-xs dark:border-zinc-700 dark:bg-zinc-900" />
+                    <input type="number" min={0} max={3} step={0.05} value={filters.minIv} onChange={(event) => updateFilter("minIv", Number(event.target.value))} className="w-full rounded-md border border-zinc-200 bg-card px-2.5 py-2 text-xs dark:border-zinc-700 dark:bg-zinc-900" />
                   </label>
                   <label className="space-y-1">
                     <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Min option volume</span>
-                    <input type="number" min={0} step={100} value={filters.minOptionVolume} onChange={(event) => updateFilter("minOptionVolume", Number(event.target.value))} className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-2 text-xs dark:border-zinc-700 dark:bg-zinc-900" />
+                    <input type="number" min={0} step={100} value={filters.minOptionVolume} onChange={(event) => updateFilter("minOptionVolume", Number(event.target.value))} className="w-full rounded-md border border-zinc-200 bg-card px-2.5 py-2 text-xs dark:border-zinc-700 dark:bg-zinc-900" />
                   </label>
                   <label className="space-y-1">
                     <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400">Min contracts</span>
-                    <input type="number" min={0} step={10} value={filters.minContracts} onChange={(event) => updateFilter("minContracts", Number(event.target.value))} className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-2 text-xs dark:border-zinc-700 dark:bg-zinc-900" />
+                    <input type="number" min={0} step={10} value={filters.minContracts} onChange={(event) => updateFilter("minContracts", Number(event.target.value))} className="w-full rounded-md border border-zinc-200 bg-card px-2.5 py-2 text-xs dark:border-zinc-700 dark:bg-zinc-900" />
                   </label>
                   <SelectField label="Flow bias" value={filters.flowBias} onChange={(value) => updateFilter("flowBias", value as ScreenerFilters["flowBias"])} options={[["all", "Any"], ["put", "Put volume leads"], ["call", "Call volume leads"]]} />
                 </div>
@@ -427,7 +427,7 @@ export default function ScreenerContent() {
           onClear={() => setCompareSymbols([])}
         />
 
-        <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
+        <section className="overflow-hidden rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-950">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
             <div>
               <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{definition.name} · {results.length} matches</h3>
@@ -450,7 +450,7 @@ export default function ScreenerContent() {
                 <thead>
                   <tr className="border-b border-zinc-100 text-left text-[10px] uppercase tracking-[0.12em] text-zinc-400 dark:border-zinc-800">
                     <th className="w-10 px-3 py-2.5 font-semibold">Compare</th>
-                    <th className="sticky left-0 bg-white px-4 py-2.5 font-semibold dark:bg-zinc-950">Candidate</th>
+                    <th className="sticky left-0 bg-card px-4 py-2.5 font-semibold dark:bg-zinc-950">Candidate</th>
                     <th className="px-4 py-2.5 font-semibold">Why it matched</th>
                     <th className="px-4 py-2.5 text-right font-semibold">Last</th>
                     <th className="px-4 py-2.5 text-right font-semibold">Primary metric</th>
@@ -477,7 +477,7 @@ export default function ScreenerContent() {
                             className="size-4 accent-amber-500"
                           />
                         </td>
-                        <td className="sticky left-0 bg-white px-4 py-3 group-hover:bg-amber-50 dark:bg-zinc-950 dark:group-hover:bg-[#17140d]">
+                        <td className="sticky left-0 bg-card px-4 py-3 group-hover:bg-amber-50 dark:bg-zinc-950 dark:group-hover:bg-[#17140d]">
                           <p className="font-semibold text-zinc-900 dark:text-zinc-100">{row.symbol}</p>
                           <p className="max-w-32 truncate text-[11px] text-zinc-400">{isLiveCandidate(row) ? row.expiration?.slice(0, 10) : row.sector ?? "Tracked universe"}</p>
                         </td>

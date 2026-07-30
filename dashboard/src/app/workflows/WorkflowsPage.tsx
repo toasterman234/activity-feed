@@ -185,7 +185,7 @@ export default function WorkflowRegistryPage() {
         </button>
       </div>
 
-      <section className="mt-5 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="mt-5 rounded-xl border border-zinc-200 bg-card p-4 dark:border-zinc-800 dark:bg-zinc-900">
         <label className="text-xs font-medium">Start from</label>
         <select value={baseId} onChange={(event) => chooseBase(event.target.value)} className="mt-1 w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700">
           <option value="">A clean workflow</option>
@@ -200,7 +200,7 @@ export default function WorkflowRegistryPage() {
 
       <div className="mt-4 space-y-3">
         {stages.map((stage, index) => (
-          <section key={`${stage.id}-${index}`} className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <section key={`${stage.id}-${index}`} className="rounded-xl border border-zinc-200 bg-card p-4 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-zinc-100 px-2 py-1 font-mono text-[9px] dark:bg-zinc-800">Stage {index + 1}</span>
               <input value={stage.label} onChange={(event) => updateStage(index, { label: event.target.value, id: slug(event.target.value, stage.id) })} className="min-w-0 flex-1 border-0 bg-transparent text-base font-semibold outline-none" />

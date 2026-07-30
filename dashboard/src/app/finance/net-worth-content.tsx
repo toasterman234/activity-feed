@@ -78,7 +78,7 @@ function NetWorthView({ nwShape, allocShape }: { nwShape: ShapeMaterialization; 
 
   return (
     <div className="space-y-4">
-      <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card p-6 dark:border-zinc-800 dark:bg-zinc-900">
         <h2 className="mb-1 text-sm font-medium text-zinc-500">Net Worth{latestNW?.date ? ` · ${latestNW.date.slice(0, 10)}` : ""}</h2>
         <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{fmt(latestNW?.net_worth)}</p>
         <div className="mt-3 flex flex-wrap gap-4 text-sm">
@@ -90,7 +90,7 @@ function NetWorthView({ nwShape, allocShape }: { nwShape: ShapeMaterialization; 
       </section>
 
       {allocations.length > 0 && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card p-6 dark:border-zinc-800 dark:bg-zinc-900">
           <h2 className="mb-4 text-sm font-medium text-zinc-500">Allocation</h2>
           <div className="flex h-5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
             {allocations.map((a) => (
@@ -113,7 +113,7 @@ function NetWorthView({ nwShape, allocShape }: { nwShape: ShapeMaterialization; 
       )}
 
       {sorted.length > 1 && (
-        <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
           <div className="border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
             <h2 className="text-sm font-medium text-zinc-500">History</h2>
           </div>

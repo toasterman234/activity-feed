@@ -42,7 +42,7 @@ export function StateFlow({ lifecycleKey, currentState }: {
   const currentLabel = lc.states[currentState]?.label || currentState;
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mb-2 flex items-center justify-between">
         <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">
           State — {lc.label}

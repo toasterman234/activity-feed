@@ -61,7 +61,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/95 backdrop-blur pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2">
           <div>
             <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Projects</h1>
@@ -80,11 +80,11 @@ export default function ProjectsPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Filter projects…"
-          className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+          className="w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
         />
 
         {!loading && !err && filtered.length > 0 && (
-          <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="flex flex-wrap gap-2 text-[10px] text-zinc-500">
               <span className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800 dark:text-zinc-300">{totals.repos} repos</span>
               <span className="rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800 dark:text-zinc-300">{totals.promoted} promoted</span>
@@ -135,7 +135,7 @@ export default function ProjectsPage() {
 
 function ProjectCard({ repo }: { repo: Repo }) {
   return (
-    <li className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <li className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">

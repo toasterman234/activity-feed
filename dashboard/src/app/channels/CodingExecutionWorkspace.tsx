@@ -141,7 +141,7 @@ export function CodingExecutionWorkspace({
   }
 
   return (
-    <section className="rounded-xl border border-sky-300 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-sky-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-sky-300 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-sky-800 dark:bg-zinc-900">
       <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Coding · ready to implement</p>
       <h3 className="mt-1 text-base font-semibold">Execute the approved plan</h3>
       <p className="mt-1 text-xs leading-5 text-zinc-500">

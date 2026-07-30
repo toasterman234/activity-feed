@@ -137,7 +137,7 @@ export default function ChannelsInboxPage() {
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center justify-between gap-2">
             <div>
               <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Pending review</p>
@@ -157,13 +157,13 @@ export default function ChannelsInboxPage() {
         </div>
 
         {loading && total === 0 ? (
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-lg border border-zinc-200 bg-card p-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">
             Loading inbox…
           </div>
         ) : null}
 
         {!loading && total === 0 ? (
-          <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="rounded-lg border border-zinc-200 bg-card p-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">
             Nothing pending.
           </div>
         ) : null}
@@ -178,7 +178,7 @@ export default function ChannelsInboxPage() {
               const busy = acting?.startsWith(`decision:${decision.id}:`) || false;
               const evidenceCount = parseJsonArray(decision.evidence).length;
               return (
-                <div key={decision.id} className="rounded-lg border border-amber-200 bg-white p-3 dark:border-amber-800 dark:bg-zinc-900">
+                <div key={decision.id} className="rounded-lg border border-amber-200 bg-card p-3 dark:border-amber-800 dark:bg-zinc-900">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">{decision.statement}</p>
@@ -231,7 +231,7 @@ export default function ChannelsInboxPage() {
             {memoryCandidates.map((candidate) => {
               const busy = acting?.startsWith(`memory:${candidate.id}:`) || false;
               return (
-                <div key={candidate.id} className="rounded-lg border border-sky-200 bg-white p-3 dark:border-sky-800 dark:bg-zinc-900">
+                <div key={candidate.id} className="rounded-lg border border-sky-200 bg-card p-3 dark:border-sky-800 dark:bg-zinc-900">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">{candidate.text}</p>
@@ -280,7 +280,7 @@ export default function ChannelsInboxPage() {
               const capabilityIds = parseJsonArray(proposal.capability_ids);
               const evidence = parseJsonArray(proposal.evidence);
               return (
-                <div key={proposal.id} className="rounded-lg border border-fuchsia-200 bg-white p-3 dark:border-fuchsia-800 dark:bg-zinc-900">
+                <div key={proposal.id} className="rounded-lg border border-fuchsia-200 bg-card p-3 dark:border-fuchsia-800 dark:bg-zinc-900">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">{proposal.hypothesis}</p>

@@ -128,12 +128,12 @@ export function ChannelsContent({
           onChange={(e) => setNewChannelName(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") createChannel(); }}
           placeholder="New channel…"
-          className="min-w-0 flex-1 rounded-md border border-zinc-200 bg-white px-2 py-2 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 md:py-1 md:text-xs"
+          className="min-w-0 flex-1 rounded-md border border-zinc-200 bg-card px-2 py-2 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 md:py-1 md:text-xs"
         />
         <select
           value={newChannelLifecycle}
           onChange={(e) => setNewChannelLifecycle(e.target.value)}
-          className="shrink-0 rounded-md border border-zinc-200 bg-white px-2 py-2 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 md:py-1 md:text-xs"
+          className="shrink-0 rounded-md border border-zinc-200 bg-card px-2 py-2 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 md:py-1 md:text-xs"
         >
           {Object.entries(LIFECYCLES).map(([key, lc]) => (
             <option key={key} value={key}>{lc.label}</option>

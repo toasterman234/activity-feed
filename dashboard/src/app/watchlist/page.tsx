@@ -63,7 +63,7 @@ export default function WatchlistPage() {
   return (
     <div className="space-y-6">
       {/* Add symbol */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card p-4 dark:border-zinc-800 dark:bg-zinc-900">
         <form onSubmit={handleAddSymbol} className="flex gap-3">
           <input
             name="symbol"
@@ -88,7 +88,7 @@ export default function WatchlistPage() {
       </section>
 
       {/* Quote table */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">
             Live Quotes {loading ? "· updating…" : ""}

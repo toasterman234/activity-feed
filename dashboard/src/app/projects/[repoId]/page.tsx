@@ -144,7 +144,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
   return (
     <Shell>
       <div className="space-y-4">
-        <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{repo.name}</h1>
@@ -205,7 +205,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
           </dl>
         </section>
 
-        <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">Project phase</h2>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
             <span className="rounded bg-blue-50 px-1.5 py-0.5 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
@@ -220,7 +220,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
 
         <ProjectQuickWorkComposer repoId={repo.id} hasActiveThread={!!activeThread} />
 
-        <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">Current agent status</h2>
           {currentRun ? (
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-zinc-500">
@@ -349,7 +349,7 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ repoId
 function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95 pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/95 backdrop-blur pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2">
           <div>
             <h1 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Project</h1>
@@ -367,7 +367,7 @@ function Shell({ children }: { children: ReactNode }) {
 
 function Panel({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
-    <section className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <section className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <h2 className="text-sm font-medium text-zinc-800 dark:text-zinc-100">{title}</h2>
       {subtitle && <p className="mt-0.5 text-[10px] text-zinc-400">{subtitle}</p>}
       <div className="mt-3">{children}</div>

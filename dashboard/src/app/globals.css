@@ -9,7 +9,7 @@
   /* Semantic → bg-background, text-muted, border-border, bg-accent, … */
   --color-background: var(--bg);
   --color-foreground: var(--fg);
-  --color-surface: var(--surface);
+  --color-card: var(--surface);
   --color-elevated: var(--elevated);
   --color-fg: var(--fg);
   --color-fg-2: var(--fg-2);
@@ -29,7 +29,7 @@
   /* Fonts — sans maps to body; display/mono stay on root token names */
   --font-sans: var(--font-body);
 
-  /* Bridge existing zinc/blue utilities to flipping semantic tokens so
+  /* Bridge existing zinc/blue/white utilities to flipping semantic tokens so
      edits in tokens.css show up without rewriting every className.
      dark: variants become mostly redundant but stay correct. */
   --color-zinc-50: var(--bg);
@@ -50,6 +50,27 @@
   --color-blue-700: var(--accent-hover);
   --color-blue-800: var(--accent-hover);
   --color-blue-900: var(--accent-hover);
+  --color-blue-300: var(--accent);
+
+  /* Semantic status colors → theme tokens so warnings/success/errors
+     shift with the theme instead of staying Tailwind defaults. */
+  --color-amber-300: var(--warn);
+  --color-amber-400: var(--warn);
+  --color-amber-500: var(--warn);
+  --color-amber-600: var(--warn);
+  --color-amber-700: var(--warn);
+  --color-amber-800: var(--warn);
+
+  --color-emerald-300: var(--success);
+  --color-emerald-400: var(--success);
+  --color-emerald-500: var(--success);
+  --color-emerald-600: var(--success);
+  --color-emerald-700: var(--success);
+
+  --color-red-400: var(--danger);
+  --color-red-500: var(--danger);
+  --color-red-600: var(--danger);
+  --color-red-700: var(--danger);
 }
 
 body {

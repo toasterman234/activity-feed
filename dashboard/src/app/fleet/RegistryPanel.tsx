@@ -136,7 +136,7 @@ function AgentEvidencePanel({ agentId }: { agentId: string }) {
 
       <div className="mt-3 grid grid-cols-4 gap-1.5">
         {stats.map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-zinc-200 bg-white/70 px-2 py-2 dark:border-zinc-800 dark:bg-zinc-900">
+          <div key={label} className="rounded-xl border border-zinc-200 bg-card/70 px-2 py-2 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="text-base font-semibold">{value}</div>
             <div className="text-[9px] text-zinc-400">{label}</div>
           </div>
@@ -164,7 +164,7 @@ function AgentEvidencePanel({ agentId }: { agentId: string }) {
       {tab === "runs" ? (
         <div className="mt-3 space-y-1.5">
           {evidence.recentRuns.map((run) => (
-            <div key={run.id} className="rounded-xl border border-zinc-200 bg-white/70 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+            <div key={run.id} className="rounded-xl border border-zinc-200 bg-card/70 p-3 dark:border-zinc-800 dark:bg-zinc-900">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="truncate text-xs font-medium">{run.headline || run.operation || run.project || "Untitled session"}</p>
@@ -186,7 +186,7 @@ function AgentEvidencePanel({ agentId }: { agentId: string }) {
           </div>
           <div className="space-y-1.5">
             {evidence.evalSuites.map((suite) => (
-              <div key={suite.id} className="rounded-xl border border-zinc-200 bg-white/70 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+              <div key={suite.id} className="rounded-xl border border-zinc-200 bg-card/70 p-3 dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-xs font-medium">{suite.name}</p>
@@ -212,7 +212,7 @@ function AgentEvidencePanel({ agentId }: { agentId: string }) {
           </div>
           <div className="mt-2 space-y-1.5">
             {evidence.improvementSignals.map((signal) => (
-              <div key={signal.id} className="rounded-xl border border-zinc-200 bg-white/70 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+              <div key={signal.id} className="rounded-xl border border-zinc-200 bg-card/70 p-3 dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-xs font-medium">{signal.label}</p>
@@ -313,7 +313,7 @@ function RecordDrawer({ record, records, onClose, onSelect }: {
           <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">Capabilities</h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {record.spec.capabilities.length ? record.spec.capabilities.map((capability) => (
-              <span key={capability} className="rounded-full border border-zinc-300 bg-white/70 px-2 py-1 font-mono text-[10px] dark:border-zinc-700 dark:bg-zinc-900">{capability}</span>
+              <span key={capability} className="rounded-full border border-zinc-300 bg-card/70 px-2 py-1 font-mono text-[10px] dark:border-zinc-700 dark:bg-zinc-900">{capability}</span>
             )) : <span className="text-xs text-zinc-400">No explicit capabilities yet.</span>}
           </div>
         </section>
@@ -332,7 +332,7 @@ function RecordDrawer({ record, records, onClose, onSelect }: {
                 </div>
                 <div className="space-y-1.5">
                   {relatedGroups.get(item)!.map((row) => (
-                    <button key={`${row.direction}:${row.record.metadata.id}`} type="button" onClick={() => onSelect(row.record)} className="flex w-full items-center justify-between rounded-xl border border-zinc-300 bg-white/70 px-3 py-2 text-left dark:border-zinc-800 dark:bg-zinc-900">
+                    <button key={`${row.direction}:${row.record.metadata.id}`} type="button" onClick={() => onSelect(row.record)} className="flex w-full items-center justify-between rounded-xl border border-zinc-300 bg-card/70 px-3 py-2 text-left dark:border-zinc-800 dark:bg-zinc-900">
                       <span className="min-w-0">
                         <span className="text-[10px] text-zinc-400">{row.direction}{row.via.length ? ` · via ${row.via.join(" → ")}` : ""}</span>
                         <br/><span className="block truncate text-xs font-medium">{row.record.metadata.name}</span>
@@ -395,7 +395,7 @@ function AgentSystemsView({ records, onSelect }: { records: RegistryRecord[]; on
             type="button"
             data-registry-id={system.metadata.id}
             onClick={() => onSelect(system)}
-            className="group overflow-hidden rounded-3xl border border-zinc-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950"
+            className="group overflow-hidden rounded-3xl border border-zinc-200 bg-card text-left shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950"
           >
             <div className={`h-1.5 ${system.metadata.id === "agent:pi" ? "bg-sky-400" : "bg-orange-400"}`} />
             <div className="p-4">
@@ -553,7 +553,7 @@ export default function RegistryPanel() {
               <Link
                 key={`${template.templateId}:${template.version}`}
                 href="/ops/config?tab=workflows"
-                className="rounded-xl border border-sky-200 bg-white/80 p-3 transition hover:border-sky-400 dark:border-sky-900 dark:bg-zinc-950/70"
+                className="rounded-xl border border-sky-200 bg-card/80 p-3 transition hover:border-sky-400 dark:border-sky-900 dark:bg-zinc-950/70"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -587,7 +587,7 @@ export default function RegistryPanel() {
           </div>
           <div className="grid gap-2 lg:grid-cols-2">
             {data.paths.map((path, index) => (
-              <button key={path.id} type="button" onClick={() => setSelected(path.entrypoint)} className="group rounded-2xl border border-zinc-200 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950">
+              <button key={path.id} type="button" onClick={() => setSelected(path.entrypoint)} className="group rounded-2xl border border-zinc-200 bg-card p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950">
                 <div className="flex items-start gap-3">
                   <span className="font-mono text-xl text-zinc-300 dark:text-zinc-700">0{index + 1}</span>
                   <div className="min-w-0 flex-1">
@@ -617,7 +617,7 @@ export default function RegistryPanel() {
           ))}
         </div>
         {kind === "Agent" && data ? <AgentSystemsView records={data.records} onSelect={setSelected} /> : (
-        <div key={kind} data-active-kind={kind} className="mt-2 divide-y divide-zinc-200 overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
+        <div key={kind} data-active-kind={kind} className="mt-2 divide-y divide-zinc-200 overflow-hidden rounded-2xl border border-zinc-200 bg-card dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-950">
           {visible.map((record) => (
             <button key={record.metadata.id} data-registry-id={record.metadata.id} type="button" onClick={() => setSelected(record)} className="grid w-full grid-cols-[1fr_auto] gap-3 px-3 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-900">
               <div className="min-w-0">

@@ -64,7 +64,7 @@ export function WorkflowCockpit({
   const openPlans = stagePlans.filter((item) => item.status !== "done");
 
   return (
-    <section className="overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-[0_12px_40px_rgba(24,24,27,0.06)] dark:border-zinc-700 dark:bg-zinc-900">
+    <section className="overflow-hidden rounded-xl border border-zinc-300 bg-card shadow-[0_12px_40px_rgba(24,24,27,0.06)] dark:border-zinc-700 dark:bg-zinc-900">
       <div className="border-b border-zinc-200 bg-zinc-950 px-3 py-3 text-zinc-50 dark:border-zinc-800">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -103,7 +103,7 @@ export function WorkflowCockpit({
                       ? "border-zinc-950 bg-zinc-950 text-white ring-4 ring-zinc-100 dark:border-white dark:bg-white dark:text-zinc-950 dark:ring-zinc-800"
                       : isDone
                         ? "border-emerald-500 bg-emerald-500 text-white"
-                        : "border-zinc-300 bg-white text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+                        : "border-zinc-300 bg-card text-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
                   }`}>
                     {isDone ? "✓" : index + 1}
                   </div>

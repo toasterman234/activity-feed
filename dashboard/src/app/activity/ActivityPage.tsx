@@ -491,12 +491,12 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
     return (<div key={r.id} className={`group relative ${selectMode&&isSelected?"ring-1 ring-amber-400 rounded-lg":""}`}>
       {selectMode && (
         <button onClick={() => { const n = new Set(selected); n.has(r.id) ? n.delete(r.id) : n.add(r.id); setSelected(n); }}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 shrink-0 w-4 h-4 rounded border border-zinc-300 bg-white dark:border-zinc-600 dark:bg-zinc-800 flex items-center justify-center">
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 shrink-0 w-4 h-4 rounded border border-zinc-300 bg-card dark:border-zinc-600 dark:bg-zinc-800 flex items-center justify-center">
           {isSelected && <span className="text-[10px] text-amber-600">✓</span>}
         </button>
       )}
       {opts?.thread && isMessage ? (
-        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border px-3 py-2 hover:brightness-95 transition-all dark:hover:brightness-110 ${selectMode?"pl-8":""} ${isUser?"border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40":"border-border bg-white dark:border-zinc-800 dark:bg-zinc-900"}`}>
+        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border px-3 py-2 hover:brightness-95 transition-all dark:hover:brightness-110 ${selectMode?"pl-8":""} ${isUser?"border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40":"border-border bg-card dark:border-zinc-800 dark:bg-zinc-900"}`}>
           <div className="flex items-center gap-1.5 mb-1">
             <span className={`text-[10px] font-semibold uppercase tracking-wide ${isUser?"text-blue-600 dark:text-blue-300":"text-muted-foreground"}`}>{isUser?"You":SOURCE_FULL[r.source]??r.source}</span>
             <span className="text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span>
@@ -508,7 +508,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           <div className="flex items-center gap-2 min-w-0"><span className="shrink-0 text-[10px] text-muted-foreground">⚙</span><span className="truncate text-[11px] text-muted-foreground flex-1 min-w-0">{r.summary}</span><span className="shrink-0 text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span></div>
         </button>
       ) : (
-      <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border border-border bg-white px-3 py-2.5 hover:bg-muted/30 transition-colors dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>
+      <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border border-border bg-card px-3 py-2.5 hover:bg-muted/30 transition-colors dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>
         <div className="flex items-center gap-2 min-w-0">
           <span className={`shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[r.source]??"bg-zinc-100 text-foreground"}`}>{SOURCE_LABELS[r.source]??r.source}</span>
           <span className="truncate text-sm text-foreground flex-1 min-w-0">{r.summary}</span>
@@ -533,10 +533,10 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         onPointerDown={e=>e.stopPropagation()}
         onClick={(e)=>{e.stopPropagation(); setToolbarFor(t=>t===r.id?null:r.id);}}
         title="Annotate"
-        className={`absolute right-2 top-2 z-10 flex items-center justify-center w-6 h-6 rounded-full text-xs shadow-sm transition-colors ${toolbarFor===r.id?"bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900":"bg-white/90 text-muted-foreground border border-border dark:bg-zinc-900/90 dark:border-zinc-700 dark:text-muted-foreground"}`}>
+        className={`absolute right-2 top-2 z-10 flex items-center justify-center w-6 h-6 rounded-full text-xs shadow-sm transition-colors ${toolbarFor===r.id?"bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900":"bg-card/90 text-muted-foreground border border-border dark:bg-zinc-900/90 dark:border-zinc-700 dark:text-muted-foreground"}`}>
         {toolbarFor===r.id?"✕":"🏷"}
       </button>}
-      {!selectMode&&toolbarFor===r.id&&<div data-annotate-ui className="absolute right-2 top-9 z-10 flex items-center gap-0.5 bg-white border border-border dark:bg-zinc-900 dark:border-zinc-700 rounded-md px-1 py-1 shadow-lg" onPointerDown={e=>e.stopPropagation()} onClick={e=>e.stopPropagation()}>
+      {!selectMode&&toolbarFor===r.id&&<div data-annotate-ui className="absolute right-2 top-9 z-10 flex items-center gap-0.5 bg-card border border-border dark:bg-zinc-900 dark:border-zinc-700 rounded-md px-1 py-1 shadow-lg" onPointerDown={e=>e.stopPropagation()} onClick={e=>e.stopPropagation()}>
         {/* One-tap save: tapping a verdict writes immediately. Long-press / right-click opens comment sheet. */}
         {VERDICTS.map(v=>(<button key={v.label}
           title={`${v.label} (tap to save)`}
@@ -546,16 +546,16 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           className="text-base p-1.5 active:scale-90 transition-transform touch-manipulation">{v.emoji}</button>))}
       </div>}
       {/* comment / collection sheet — fixed so it can't clip inside a thread card on mobile */}
-      {isJudging&&<div data-annotate-ui className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-50 mx-auto w-[min(100%,20rem)] rounded-xl border border-border bg-white p-3 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900" onClick={e=>e.stopPropagation()}>
+      {isJudging&&<div data-annotate-ui className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-50 mx-auto w-[min(100%,20rem)] rounded-xl border border-border bg-card p-3 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900" onClick={e=>e.stopPropagation()}>
         <div className="flex items-center gap-1.5 mb-2"><span className="text-sm">{VERDICTS.find(v=>v.label===judging.verdict)?.emoji}</span><span className="text-xs font-medium text-foreground capitalize">{judging.verdict}</span></div>
-        <textarea value={judgeComment} onChange={e=>setJudgeComment(e.target.value)} placeholder="Comment (optional)…" rows={2} className="w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-zinc-800 placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" autoFocus />
+        <textarea value={judgeComment} onChange={e=>setJudgeComment(e.target.value)} placeholder="Comment (optional)…" rows={2} className="w-full rounded-md border border-border bg-card px-2 py-1 text-xs text-zinc-800 placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" autoFocus />
         {/* bucket picker */}
         <div className="mt-2">
           <label className="text-[10px] text-muted-foreground uppercase tracking-wider">Collection</label>
           {!showNewBucket ? (
             <div className="flex items-center gap-1 mt-0.5">
               <select value={judgeBucket} onChange={e => setJudgeBucket(e.target.value)}
-                className="flex-1 rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
+                className="flex-1 rounded-md border border-border bg-card px-1.5 py-0.5 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
                 {!collections.some(c => c.id === "inbox") && <option value="inbox">inbox</option>}
                 {collections.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
               </select>
@@ -566,7 +566,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
             <div className="flex items-center gap-1 mt-0.5">
               <input type="text" value={newBucketName} onChange={e => setNewBucketName(e.target.value)}
                 placeholder="name…" autoFocus
-                className="flex-1 rounded-md border border-border bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200" />
+                className="flex-1 rounded-md border border-border bg-card px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200" />
               <button onClick={() => { if (newBucketName.trim()) { const id = newBucketName.trim().toLowerCase().replace(/\s+/g, "-"); setJudgeBucket(id); setShowNewBucket(false); setNewBucketName(""); } }}
                 className="rounded px-1.5 py-0.5 text-xs font-medium bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-800">Add</button>
               <button onClick={() => { setShowNewBucket(false); setNewBucketName(""); }}
@@ -591,7 +591,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         </div>
       )}
       {/* sticky header: row 1 = tabs only (no scroll), row 2 = search + menu */}
-      <header className="sticky top-0 z-10 border-b border-border bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-card/95 pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/95 backdrop-blur dark:border-zinc-800 dark:bg-card/95 pt-[env(safe-area-inset-top,0px)]">
         <div className="mx-auto max-w-5xl px-2 pt-1.5">
           {/* row 1: activity tabs, evenly spread, own row, no scroll */}
           <div className="flex w-full">
@@ -607,7 +607,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           {/* row 2: search + live count + menu */}
           {tab!=="collections" && <div className="flex items-center gap-2 py-1 flex-wrap">
             <input type="text" value={cs} onChange={e=>setCs(e.target.value)} placeholder={ph}
-              className="flex-1 min-w-0 rounded-md border border-border bg-white px-2 py-0.5 text-xs text-zinc-800 placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+              className="flex-1 min-w-0 rounded-md border border-border bg-card px-2 py-0.5 text-xs text-zinc-800 placeholder:text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
 
             <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:inline"><span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500 mr-1"/>{visibleCount}</span>
 
@@ -622,7 +622,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
               <button onClick={()=>setMenuOpen(!menuOpen)}
                 className={`rounded-md border px-1.5 py-0.5 text-xs transition-colors ${menuOpen?"border-zinc-300 bg-zinc-100 text-foreground dark:border-zinc-600 dark:bg-zinc-800 dark:text-muted-foreground":"border-border text-muted-foreground hover:text-muted-foreground dark:border-zinc-700 dark:hover:text-muted-foreground"}`}>⋯</button>
               {menuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-border bg-white p-2.5 shadow-lg dark:border-zinc-700 dark:bg-zinc-900 space-y-2.5 z-20">
+                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-border bg-card p-2.5 shadow-lg dark:border-zinc-700 dark:bg-zinc-900 space-y-2.5 z-20">
                   <div className="space-y-1">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sources</p>
                     <div className="flex flex-wrap gap-1">
@@ -631,13 +631,13 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sort</p>
-                    <select value={sort} onChange={e=>setSort(e.target.value as any)} className="w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
+                    <select value={sort} onChange={e=>setSort(e.target.value as any)} className="w-full rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
                       <option value="newest">↓ Newest</option><option value="oldest">↑ Oldest</option><option value="source">By source</option>
                     </select>
                   </div>
                   {tab!=="projects"&&tab!=="memory"&&(<div className="space-y-1">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Date</p>
-                    <select value={dateFilter} onChange={e=>setDateFilter(e.target.value as any)} className="w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
+                    <select value={dateFilter} onChange={e=>setDateFilter(e.target.value as any)} className="w-full rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
                       <option value="all">All time</option><option value="today">Today</option><option value="week">This week</option><option value="month">This month</option>
                     </select>
                   </div>)}
@@ -687,7 +687,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
               ))}
             </div>
             <select value={memSort} onChange={e=>setMemSort(e.target.value as any)}
-              className="rounded-md border border-border bg-white px-1.5 py-0.5 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground shrink-0">
+              className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-900 dark:text-muted-foreground shrink-0">
               <option value="newest">↓ Newest</option><option value="oldest">↑ Oldest</option><option value="most-active">Most active</option>
             </select>
             <button onClick={()=>setMemMessagesOnly(m=>!m)}
@@ -719,10 +719,10 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
         {tab==="projects"&&<>
           {/* project sort + threshold bar */}
           <div className="flex items-center gap-2 mb-2">
-            <select value={projSort} onChange={e=>setProjSort(e.target.value as any)} className="rounded-md border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
+            <select value={projSort} onChange={e=>setProjSort(e.target.value as any)} className="rounded-md border border-border bg-card px-2 py-1 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
               <option value="recent">Recent</option><option value="active">Most active</option><option value="az">A–Z</option>
             </select>
-            <select value={minEvents} onChange={e=>setMinEvents(Number(e.target.value))} className="rounded-md border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
+            <select value={minEvents} onChange={e=>setMinEvents(Number(e.target.value))} className="rounded-md border border-border bg-card px-2 py-1 text-[10px] text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-muted-foreground">
               <option value={1}>All</option><option value={3}>≥3 events</option><option value={10}>≥10 events</option><option value={50}>≥50 events</option><option value={100}>≥100 events</option>
             </select>
             <span className="text-[10px] text-muted-foreground ml-auto">{projGroups.length} of {projList.length} projects</span>
@@ -755,7 +755,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-medium text-amber-800 dark:text-amber-200">{selected.size} selected</span>
               <select value={bulkBucket} onChange={e => setBulkBucket(e.target.value)}
-                className="rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-foreground dark:border-amber-700 dark:bg-zinc-800 dark:text-muted-foreground">
+                className="rounded-md border border-amber-300 bg-card px-1.5 py-0.5 text-xs text-foreground dark:border-amber-700 dark:bg-zinc-800 dark:text-muted-foreground">
                 {collections.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
               </select>
               {!bulkShowNew ? (
@@ -764,7 +764,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
                 <div className="flex items-center gap-1">
                   <input type="text" value={bulkNewName} onChange={e => setBulkNewName(e.target.value)}
                     placeholder="name…" autoFocus
-                    className="w-20 rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground" />
+                    className="w-20 rounded-md border border-amber-300 bg-card px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground" />
                   <button onClick={() => { if (bulkNewName.trim()) { setBulkBucket(bulkNewName.trim().toLowerCase().replace(/\s+/g, "-")); setBulkShowNew(false); setBulkNewName(""); } }}
                     className="rounded px-1.5 py-0.5 text-[10px] font-medium bg-amber-600 text-white">✓</button>
                   <button onClick={() => { setBulkShowNew(false); setBulkNewName(""); }} className="text-[10px] text-amber-400">✕</button>
@@ -793,7 +793,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
               }} className="rounded px-2 py-0.5 text-[10px] font-medium bg-amber-600 text-white">Save all</button>
             </div>
             <textarea value={bulkComment} onChange={e => setBulkComment(e.target.value)} placeholder="Bulk comment (optional)…" rows={1}
-              className="mt-1 w-full rounded-md border border-amber-300 bg-white px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-amber-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" />
+              className="mt-1 w-full rounded-md border border-amber-300 bg-card px-1.5 py-0.5 text-xs text-foreground placeholder:text-muted-foreground dark:border-amber-700 dark:bg-zinc-800 dark:text-zinc-200 resize-none" />
           </div>
         )}
 
@@ -830,7 +830,7 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
                     {previewFiles.length>0 && (
                       <div className="mt-1.5 flex flex-wrap gap-1">
                         {previewFiles.slice(0,8).map((f,i)=>(
-                          <span key={i} className="inline-flex items-center gap-1 rounded-full bg-white px-1.5 py-0.5 text-[10px] text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground">
+                          <span key={i} className="inline-flex items-center gap-1 rounded-full bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground dark:bg-zinc-800 dark:text-muted-foreground">
                             <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${extDotColor(fileExt(f))}`} />
                             {fileBasename(f)}
                           </span>
@@ -867,7 +867,7 @@ function ActivityDetailDrawer({ row, onClose }: { row: ReturnType<typeof useActi
   return (
     <div className="fixed inset-0 z-30 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative h-full w-full max-w-sm overflow-y-auto border-l border-border bg-white p-4 shadow-xl dark:border-zinc-800 dark:bg-card pb-[calc(env(safe-area-inset-bottom)+3rem)]">
+      <div className="relative h-full w-full max-w-sm overflow-y-auto border-l border-border bg-card p-4 shadow-xl dark:border-zinc-800 dark:bg-card pb-[calc(env(safe-area-inset-bottom)+3rem)]">
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="min-w-0">
             <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none ${SOURCE_COLORS[row.source]??"bg-zinc-100 text-foreground"}`}>{SOURCE_FULL[row.source]??row.source}</span>

@@ -14,14 +14,14 @@ const EVENT_LABELS: Record<string, string> = {
 export function ThreadHistoryTab({ events }: { events: WorkflowEventRow[] }) {
   if (events.length === 0) {
     return (
-      <div className="rounded-lg border border-zinc-200 bg-white p-4 text-xs text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-card p-4 text-xs text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">
         Workflow history will appear here as the thread advances.
       </div>
     );
   }
 
   return (
-    <ol className="rounded-lg border border-zinc-200 bg-white px-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <ol className="rounded-lg border border-zinc-200 bg-card px-3 dark:border-zinc-800 dark:bg-zinc-900">
       {[...events].reverse().map((event, index) => {
         const lifecycle = LIFECYCLES[event.template_id];
         const from = event.from_state ? lifecycle?.states[event.from_state]?.label || event.from_state : null;

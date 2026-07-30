@@ -30,7 +30,7 @@ export function AdvanceStateButtons({
   const next = lc.transitions[currentState] || [];
   if (next.length === 0) {
     return (
-      <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg border border-zinc-200 bg-card px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
         <p className="text-[10px] font-medium uppercase tracking-wide text-zinc-400">Advance</p>
         <p className="mt-1 text-xs text-zinc-400">No further transitions</p>
       </div>
@@ -66,7 +66,7 @@ export function AdvanceStateButtons({
   };
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-lg border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-zinc-400">Advance</p>
       <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
         {next.map((toState) => {

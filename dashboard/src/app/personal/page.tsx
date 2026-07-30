@@ -28,7 +28,7 @@ export default function PersonalPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4 px-3">
-      <div className="sticky top-0 z-10 -mx-3 border-b border-zinc-200 bg-white/90 px-3 py-2 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90 pt-[env(safe-area-inset-top,0px)]">
+      <div className="sticky top-0 z-10 -mx-3 border-b border-border bg-card/90 px-3 py-2 backdrop-blur pt-[env(safe-area-inset-top,0px)]">
         <div className="mb-1 flex items-baseline justify-between gap-2 px-1">
           <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Personal</h1>
           <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Money and markets</p>

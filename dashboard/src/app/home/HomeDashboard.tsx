@@ -215,7 +215,7 @@ export default function HomeDashboard() {
             </div>
             <Link
               href="/ops/config?tab=models"
-              className="shrink-0 rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-100 dark:hover:bg-amber-800"
+              className="shrink-0 rounded-md border border-amber-300 bg-card px-2.5 py-1 text-[11px] font-medium text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-100 dark:hover:bg-amber-800"
             >
               Open Models
             </Link>

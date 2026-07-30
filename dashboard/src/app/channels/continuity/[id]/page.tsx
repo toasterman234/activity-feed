@@ -176,7 +176,7 @@ export default function InitiativeDetailPage() {
       )}
 
       {/* Origin strip — shows BEFORE What this is */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Origin</h3>
         <dl className="mt-2 space-y-1.5 text-[11px] text-zinc-600 dark:text-zinc-300">
           <div>
@@ -295,7 +295,7 @@ export default function InitiativeDetailPage() {
       )}
 
       {(mapEntry?.requireAll?.length || mapEntry?.forbidAll?.length || mapEntry?.openItems?.length) && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
             Evidence contract
           </h3>
@@ -336,7 +336,7 @@ export default function InitiativeDetailPage() {
       )}
 
       {check && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
             Live check {check.ok ? "✓" : "✗"}
           </h3>
@@ -366,7 +366,7 @@ export default function InitiativeDetailPage() {
       )}
 
       {shipEvidence && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
           <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
             Ship evidence
           </h3>
@@ -376,7 +376,7 @@ export default function InitiativeDetailPage() {
         </section>
       )}
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <h3 className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">Timeline</h3>
         {timeline.length === 0 ? (
           <p className="mt-2 text-[11px] text-zinc-400">No graph events yet for this initiative.</p>

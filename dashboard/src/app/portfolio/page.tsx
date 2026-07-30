@@ -115,7 +115,7 @@ function PortfolioContent({ nwShape, allocShape, posShape }: {
   return (
     <div className="space-y-6">
       {/* Net Worth Card */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card p-6 dark:border-zinc-800 dark:bg-zinc-900">
         <h2 className="mb-1 text-sm font-medium text-zinc-500">Net Worth</h2>
         <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
           {fmt(latestNW?.net_worth)}
@@ -130,7 +130,7 @@ function PortfolioContent({ nwShape, allocShape, posShape }: {
 
       {/* Allocation Bar */}
       {allocations.length > 0 && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="rounded-xl border border-zinc-200 bg-card p-6 dark:border-zinc-800 dark:bg-zinc-900">
           <h2 className="mb-4 text-sm font-medium text-zinc-500">Allocation</h2>
           <div className="flex h-5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
             {allocations.map((a) => (
@@ -158,7 +158,7 @@ function PortfolioContent({ nwShape, allocShape, posShape }: {
       )}
 
       {/* Positions */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">Positions · {positions.filter(p => p.position_kind !== "Cash sweep").length} holdings</h2>
         </div>

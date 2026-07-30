@@ -33,7 +33,7 @@ export default function ScreenerPage() {
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card p-4 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label className="mb-1 block text-xs text-zinc-400">Min IV Rank</label>
@@ -69,7 +69,7 @@ export default function ScreenerPage() {
       </section>
 
       {/* Results table */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">
             VRP Scan · {results.length} symbols
@@ -79,7 +79,7 @@ export default function ScreenerPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-zinc-100 text-left text-zinc-400 dark:border-zinc-800">
-                <th className="sticky left-0 bg-white px-6 py-2 font-medium dark:bg-zinc-900">
+                <th className="sticky left-0 bg-card px-6 py-2 font-medium dark:bg-zinc-900">
                   Symbol
                 </th>
                 <th className="px-6 py-2 font-medium">Sector</th>
@@ -101,7 +101,7 @@ export default function ScreenerPage() {
                   key={r.symbol}
                   className="border-b border-zinc-50 dark:border-zinc-800/50"
                 >
-                  <td className="sticky left-0 bg-white px-6 py-2.5 font-medium text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+                  <td className="sticky left-0 bg-card px-6 py-2.5 font-medium text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
                     {r.symbol}
                   </td>
                   <td className="px-6 py-2.5 text-zinc-400">{r.sector}</td>

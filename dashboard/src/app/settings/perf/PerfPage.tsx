@@ -129,7 +129,7 @@ export default function PerfPage() {
         <select
           value={route}
           onChange={(e) => setRoute(e.target.value)}
-          className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+          className="rounded-lg border border-zinc-200 bg-card px-2 py-1 text-xs text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
         >
           <option value="">All routes</option>
           {data?.routes.map((r) => (

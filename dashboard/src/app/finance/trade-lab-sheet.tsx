@@ -115,7 +115,7 @@ function RiskMetric({ label, value, warning }: { label: string; value: string; w
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-sky-100 bg-white p-3 dark:border-sky-900 dark:bg-zinc-950">
+    <div className="rounded-lg border border-sky-100 bg-card p-3 dark:border-sky-900 dark:bg-zinc-950">
       <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-zinc-400">{label}</p>
       <p className="mt-1 font-mono text-sm font-semibold text-zinc-800 dark:text-zinc-100">{value}</p>
     </div>
@@ -270,7 +270,7 @@ export default function TradeLabSheet({
   return (
     <div className="fixed inset-0 z-[60] flex justify-end bg-black/50" role="dialog" aria-modal="true" aria-label={`${symbol} Trade Lab`}>
       <button onClick={onClose} className="min-w-0 flex-1 cursor-default" aria-label="Close Trade Lab" />
-      <aside className="h-full w-full max-w-5xl overflow-y-auto border-l border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
+      <aside className="h-full w-full max-w-5xl overflow-y-auto border-l border-zinc-200 bg-card shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
         <header className="sticky top-0 z-20 border-b border-zinc-200 bg-zinc-950 px-5 py-4 text-white dark:border-zinc-800">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -286,7 +286,7 @@ export default function TradeLabSheet({
           <section className="grid gap-3 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800 lg:grid-cols-[1.1fr_1fr_1fr_0.6fr]">
             <label>
               <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Structure</span>
-              <select value={structure} onChange={(event) => setStructure(event.target.value as TradeStructure)} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900">
+              <select value={structure} onChange={(event) => setStructure(event.target.value as TradeStructure)} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900">
                 <option value="stock">Buy stock</option>
                 <option value="csp">Cash-secured put</option>
                 <option value="covered_call">Covered call</option>
@@ -294,13 +294,13 @@ export default function TradeLabSheet({
             </label>
             <label>
               <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Expiration</span>
-              <select disabled={structure === "stock"} value={expiration} onChange={(event) => setExpiration(event.target.value)} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900">
+              <select disabled={structure === "stock"} value={expiration} onChange={(event) => setExpiration(event.target.value)} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900">
                 {expirations.map((date) => <option key={date} value={date}>{date}</option>)}
               </select>
             </label>
             <label>
               <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Fill assumption</span>
-              <select disabled={structure === "stock"} value={fillAssumption} onChange={(event) => setFillAssumption(event.target.value as FillAssumption)} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900">
+              <select disabled={structure === "stock"} value={fillAssumption} onChange={(event) => setFillAssumption(event.target.value as FillAssumption)} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900">
                 <option value="bid">Bid · conservative</option>
                 <option value="mid">Midpoint · modeled</option>
                 <option value="custom">Custom limit</option>
@@ -308,7 +308,7 @@ export default function TradeLabSheet({
             </label>
             <label>
               <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Quantity</span>
-              <input type="number" min={1} max={100} value={quantity} onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" />
+              <input type="number" min={1} max={100} value={quantity} onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))} className="mt-1.5 w-full rounded-md border border-zinc-200 bg-card px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" />
             </label>
           </section>
 
@@ -346,7 +346,7 @@ export default function TradeLabSheet({
               {fillAssumption === "custom" && (
                 <label className="flex items-center gap-3 border-t border-zinc-200 px-4 py-3 text-xs dark:border-zinc-800">
                   <span className="font-semibold text-zinc-500">Custom credit</span>
-                  <input type="number" min={0} step={0.01} value={customFill} onChange={(event) => setCustomFill(Number(event.target.value))} className="w-28 rounded-md border border-zinc-200 bg-white px-2 py-1.5 font-mono dark:border-zinc-700 dark:bg-zinc-900" />
+                  <input type="number" min={0} step={0.01} value={customFill} onChange={(event) => setCustomFill(Number(event.target.value))} className="w-28 rounded-md border border-zinc-200 bg-card px-2 py-1.5 font-mono dark:border-zinc-700 dark:bg-zinc-900" />
                 </label>
               )}
             </section>
@@ -404,12 +404,12 @@ export default function TradeLabSheet({
                   <Metric label="−10% beta stress" value={money(portfolioRisk.downside10)} />
                 </div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg border border-sky-100 bg-white p-3 text-xs dark:border-sky-900 dark:bg-zinc-950">
+                  <div className="rounded-lg border border-sky-100 bg-card p-3 text-xs dark:border-sky-900 dark:bg-zinc-950">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Delta shares · before → after</p>
                     <p className="mt-1 font-mono text-sm font-semibold">{portfolioRisk.equityDeltaShares.toFixed(1)} → {portfolioRisk.postDeltaShares.toFixed(1)}</p>
                     <p className="mt-1 text-[10px] text-zinc-400">Cash equities treated as 1.0 delta; proposed option Greeks use the live chain.</p>
                   </div>
-                  <div className="rounded-lg border border-sky-100 bg-white p-3 text-xs dark:border-sky-900 dark:bg-zinc-950">
+                  <div className="rounded-lg border border-sky-100 bg-card p-3 text-xs dark:border-sky-900 dark:bg-zinc-950">
                     <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Concentration · before → after</p>
                     <p className="mt-1 font-mono text-sm font-semibold">
                       {portfolioRisk.portfolioValue ? `${(portfolioRisk.currentSymbolValue / portfolioRisk.portfolioValue * 100).toFixed(1)}%` : "—"}
@@ -437,7 +437,7 @@ export default function TradeLabSheet({
               </div>
               <label className="flex items-center gap-2 text-xs text-zinc-500">
                 Time passes
-                <select value={daysElapsed} onChange={(event) => setDaysElapsed(Number(event.target.value))} className="rounded-md border border-zinc-200 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">
+                <select value={daysElapsed} onChange={(event) => setDaysElapsed(Number(event.target.value))} className="rounded-md border border-zinc-200 bg-card px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">
                   <option value={0}>0 days</option><option value={7}>7 days</option><option value={14}>14 days</option><option value={21}>21 days</option>
                 </select>
               </label>
@@ -463,8 +463,8 @@ export default function TradeLabSheet({
           <section className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
             <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Paper plan</h3>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <label className="text-xs text-zinc-500">Entry rule<textarea value={entryRule} onChange={(event) => setEntryRule(event.target.value)} className="mt-1.5 min-h-20 w-full rounded-md border border-zinc-200 bg-white p-2 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" /></label>
-              <label className="text-xs text-zinc-500">Invalidation rule<textarea value={invalidationRule} onChange={(event) => setInvalidationRule(event.target.value)} className="mt-1.5 min-h-20 w-full rounded-md border border-zinc-200 bg-white p-2 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" /></label>
+              <label className="text-xs text-zinc-500">Entry rule<textarea value={entryRule} onChange={(event) => setEntryRule(event.target.value)} className="mt-1.5 min-h-20 w-full rounded-md border border-zinc-200 bg-card p-2 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" /></label>
+              <label className="text-xs text-zinc-500">Invalidation rule<textarea value={invalidationRule} onChange={(event) => setInvalidationRule(event.target.value)} className="mt-1.5 min-h-20 w-full rounded-md border border-zinc-200 bg-card p-2 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" /></label>
             </div>
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="text-xs text-emerald-600">{status}</p>

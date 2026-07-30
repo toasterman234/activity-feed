@@ -52,7 +52,7 @@ export default function ResearchPage() {
           {strategies.map((s) => (
             <div
               key={s.strategy}
-              className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+              className="rounded-xl border border-zinc-200 bg-card p-4 dark:border-zinc-800 dark:bg-zinc-900"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-medium text-zinc-800 capitalize dark:text-zinc-200">
@@ -84,7 +84,7 @@ export default function ResearchPage() {
       </section>
 
       {/* Findings */}
-      <section className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-xl border border-zinc-200 bg-card dark:border-zinc-800 dark:bg-zinc-900">
         <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
           <h2 className="text-sm font-medium text-zinc-500">
             Research Findings · {findings.length}

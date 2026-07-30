@@ -234,7 +234,7 @@ export default function EnableNotifications() {
           onChange={(e) => setDeviceName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleEnable()}
           placeholder="iPhone 15 Pro"
-          className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-400"
+          className="w-full rounded-lg border border-zinc-200 bg-card px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-400"
           autoFocus
         />
       )}
@@ -271,7 +271,7 @@ export default function EnableNotifications() {
           {subscriptions.map((sub) => (
             <div
               key={sub.id}
-              className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900"
+              className="flex items-center justify-between rounded-lg border border-zinc-200 bg-card px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
@@ -307,7 +307,7 @@ export default function EnableNotifications() {
           ))}
           <button
             onClick={handleTestDelivery}
-            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            className="w-full rounded-lg border border-zinc-200 bg-card px-3 py-2 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
             Send Test Notification
           </button>

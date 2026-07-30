@@ -76,29 +76,29 @@ export function FinancePublisherPanel({
       <div className="mt-3 grid gap-2 border-t border-violet-100 pt-3 dark:border-violet-900/60 sm:grid-cols-2">
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
           Artifact type
-          <select value={kind} onChange={(event) => setKind(event.target.value as FinancePublicationKind)} className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
+          <select value={kind} onChange={(event) => setKind(event.target.value as FinancePublicationKind)} className="mt-1 w-full rounded border border-zinc-200 bg-card px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
             {FINANCE_PUBLICATION_KINDS.map((value) => <option key={value} value={value}>{LABELS[value]}</option>)}
           </select>
         </label>
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
           Title
-          <input value={title} onChange={(event) => setTitle(event.target.value)} className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+          <input value={title} onChange={(event) => setTitle(event.target.value)} className="mt-1 w-full rounded border border-zinc-200 bg-card px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
         </label>
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
           Symbols
-          <input value={symbols} onChange={(event) => setSymbols(event.target.value)} placeholder="MU, WDC, NTAP" className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+          <input value={symbols} onChange={(event) => setSymbols(event.target.value)} placeholder="MU, WDC, NTAP" className="mt-1 w-full rounded border border-zinc-200 bg-card px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
         </label>
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
           Stale after
-          <input type="date" value={staleAfter} onChange={(event) => setStaleAfter(event.target.value)} className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+          <input type="date" value={staleAfter} onChange={(event) => setStaleAfter(event.target.value)} className="mt-1 w-full rounded border border-zinc-200 bg-card px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
         </label>
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 sm:col-span-2">
           Finance summary
-          <textarea value={summary} onChange={(event) => setSummary(event.target.value)} rows={3} className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+          <textarea value={summary} onChange={(event) => setSummary(event.target.value)} rows={3} className="mt-1 w-full rounded border border-zinc-200 bg-card px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
         </label>
         <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 sm:col-span-2">
           Blocking gaps · one per line
-          <textarea value={gaps} onChange={(event) => setGaps(event.target.value)} rows={2} className="mt-1 w-full rounded border border-zinc-200 bg-white px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
+          <textarea value={gaps} onChange={(event) => setGaps(event.target.value)} rows={2} className="mt-1 w-full rounded border border-zinc-200 bg-card px-2 py-2 text-xs normal-case text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200" />
         </label>
         <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
           <button type="button" disabled={busy || !eligible || !title.trim() || !summary.trim()} onClick={() => { void submit("publish"); }} className="rounded bg-violet-600 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">

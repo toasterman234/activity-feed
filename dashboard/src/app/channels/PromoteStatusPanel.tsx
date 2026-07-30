@@ -100,7 +100,7 @@ export function PromoteStatusPanel({
           )}
           <a
             href="/projects"
-            className="rounded border border-emerald-300 bg-white px-2 py-1 text-[10px] font-medium text-emerald-700 dark:border-emerald-700 dark:bg-zinc-900 dark:text-emerald-300"
+            className="rounded border border-emerald-300 bg-card px-2 py-1 text-[10px] font-medium text-emerald-700 dark:border-emerald-700 dark:bg-zinc-900 dark:text-emerald-300"
           >
             View in Projects
           </a>
@@ -113,7 +113,7 @@ export function PromoteStatusPanel({
                 setTimeout(() => setCopied(false), 1500);
               } catch { /* ignore */ }
             }}
-            className="rounded border border-emerald-300 bg-white px-2 py-1 text-[10px] font-medium text-emerald-700 dark:border-emerald-700 dark:bg-zinc-900 dark:text-emerald-300"
+            className="rounded border border-emerald-300 bg-card px-2 py-1 text-[10px] font-medium text-emerald-700 dark:border-emerald-700 dark:bg-zinc-900 dark:text-emerald-300"
           >
             {copied ? "Copied" : "Copy path"}
           </button>
@@ -200,14 +200,14 @@ export function PromoteStatusPanel({
           <button
             type="button"
             onClick={onEditPath}
-            className="rounded border border-red-300 bg-white px-2 py-1 text-[10px] text-red-600 dark:border-red-700 dark:bg-zinc-800 dark:text-red-400"
+            className="rounded border border-red-300 bg-card px-2 py-1 text-[10px] text-red-600 dark:border-red-700 dark:bg-zinc-800 dark:text-red-400"
           >
             Edit path…
           </button>
           <button
             type="button"
             onClick={onDismiss}
-            className="rounded border border-zinc-200 bg-white px-2 py-1 text-[10px] text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+            className="rounded border border-zinc-200 bg-card px-2 py-1 text-[10px] text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
           >
             Dismiss
           </button>

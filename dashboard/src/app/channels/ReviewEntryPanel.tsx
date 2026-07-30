@@ -31,7 +31,7 @@ export function ReviewEntryPanel({
   };
 
   return (
-    <section className="rounded-xl border border-purple-200 bg-white p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-purple-800 dark:bg-zinc-900">
+    <section className="rounded-xl border border-purple-200 bg-card p-3 shadow-[0_10px_30px_rgba(24,24,27,0.05)] dark:border-purple-800 dark:bg-zinc-900">
       <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400">
         Coding · review entry
       </p>
