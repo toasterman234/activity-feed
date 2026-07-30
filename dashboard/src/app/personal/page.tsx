@@ -5,12 +5,14 @@ import PortfolioContent from "../finance/portfolio-content";
 import WatchlistContent from "../finance/watchlist-content";
 import PersonalContent from "../finance/personal-content";
 import ScreenerContent from "../finance/screener-content";
+import MoneyFlowContent from "../finance/money-flow-content";
 
-const TABS = ["Portfolio", "Personal", "Watchlist", "Screener"] as const;
+const TABS = ["Portfolio", "Flow", "Personal", "Watchlist", "Screener"] as const;
 type Tab = (typeof TABS)[number];
 
 const TAB_COMPONENTS: Record<Tab, React.ComponentType> = {
   Portfolio: PortfolioContent,
+  Flow: MoneyFlowContent,
   Personal: PersonalContent,
   Watchlist: WatchlistContent,
   Screener: ScreenerContent,
