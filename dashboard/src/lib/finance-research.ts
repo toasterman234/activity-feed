@@ -34,6 +34,16 @@ export async function getFinanceResearch(symbols?: string[]): Promise<FinanceRes
   return response.json();
 }
 
+export async function refreshFinanceSnapshot(): Promise<{ success: boolean; generatedAt: string; warnings: string[] }> {
+  const response = await fetch("/api/finance/refresh-snapshot", { method: "POST" });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error((body as { error?: string }).error || `Refresh failed: ${response.status}`);
+  }
+  return response.json();
+}
+
 export function researchThreadHref(context: FinanceResearchContext): string {
+  if (!context.source.threadId) return "";
   return `/channels/${context.source.channelId}/${context.source.threadId}`;
 }

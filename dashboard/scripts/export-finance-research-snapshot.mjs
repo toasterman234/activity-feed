@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, writeFile } from "node:fs/promises";
+import { statSync } from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -9,24 +10,12 @@ const miraRoot = process.env.MIRA_ROOT ?? "/Users/bencharney/sandbox/Mira";
 const quantChannelId = "08bf3d95-a069-4693-937d-553b49c86c77";
 const READ_TIMEOUT_MS = Number(process.env.FINANCE_SNAPSHOT_READ_TIMEOUT_MS || 4000);
 
-const sources = [
-  {
-    id: "cybersecurity-demand-2026-07", kind: "theme",
-    title: "Cybersecurity demand", threadId: "3f0b6e86-08ea-41ff-a33c-4d145f2a1d11",
-    directory: "cybersecurity-demand-2026-07",
-  },
-  {
-    id: "memory-storage-sector-2026-07", kind: "theme",
-    title: "Memory & storage", threadId: "4ab8a854-bc9e-4f25-b9f2-c0159e8d4b0e",
-    directory: "memory-storage-sector-2026-07",
-  },
-  {
-    id: "mobile-ai-hardware-supercycle-2026-07", kind: "theme",
-    title: "Mobile AI hardware", threadId: "39874959-f2e2-4201-b8bc-c8c7886b06d4",
-    directory: "mobile-ai-hardware-supercycle-2026-07",
-    fallbackSymbols: ["QCOM", "AAPL", "AVGO"],
-  },
-];
+// These three themes have channel threads — auto-discovered cases won't.
+const THREADED_THEMES = new Map([
+  ["cybersecurity-demand-2026-07", "3f0b6e86-08ea-41ff-a33c-4d145f2a1d11"],
+  ["memory-storage-sector-2026-07", "4ab8a854-bc9e-4f25-b9f2-c0159e8d4b0e"],
+  ["mobile-ai-hardware-supercycle-2026-07", "39874959-f2e2-4201-b8bc-c8c7886b06d4"],
+]);
 
 const cards = [
   {
@@ -46,6 +35,32 @@ const cards = [
     threadId: "44359af2-fc6f-4447-95c4-d96f998d72db", status: "published",
   },
 ];
+
+/** Map Mira package_type → FinanceResearchContext kind */
+function kindFromPackageType(type, directoryName) {
+  if (!type) return "symbol_thesis";
+  const t = type.toLowerCase();
+  if (t.includes("theme") || t.includes("thematic") || t.includes("sector") || t.includes("value_capture") || directoryName.includes("sector") || directoryName.includes("demand") || directoryName.includes("theme")) return "theme";
+  if (t.includes("screen") || t.includes("scan") || t.includes("rule")) return "screen_rule";
+  if (t.includes("doctrine") || t.includes("methodology") || t.includes("workflow")) return "trade_doctrine";
+  if (t.includes("earnings") || t.includes("analysis") || t.includes("backtest") || t.includes("triage")) return "symbol_thesis";
+  return "symbol_thesis";
+}
+
+/** Derive a human title from research_object + directory name */
+function titleFromCase(dirName, manifest) {
+  const obj = manifest.research_object || "";
+  // If research_object is a ticker symbol only, prepend the case dir name
+  if (/^[A-Z]{1,5}$/.test(obj.trim())) {
+    const readable = dirName.replace(/-202[0-9]-[0-9]+.*$/, "").replace(/-/g, " ").toUpperCase();
+    if (readable && readable !== obj.trim()) return `${readable} (${obj.trim()})`;
+    return obj.trim();
+  }
+  // If title-like string, use it
+  if (obj.length > 4 && obj.length < 80) return obj;
+  // Fallback: clean directory name
+  return dirName.replace(/-202[0-9]-[0-9]+.*$/, "").replace(/-/g, " ");
+}
 
 function parseCsv(input) {
   const rows = [];
@@ -99,40 +114,92 @@ async function existingSnapshotReusable() {
 const warnings = [];
 const contexts = [];
 
-for (const source of sources) {
-  const directory = path.join(miraRoot, "cases", source.directory);
+// --- Auto-discover all Mira cases ---
+const casesDir = path.join(miraRoot, "cases");
+let entries = [];
+try {
+  entries = await readdir(casesDir);
+} catch {
+  // Mira root doesn't exist on this machine — skip auto-discovery, cards only
+  entries = [];
+}
+
+for (const entry of entries.sort()) {
+  const dirPath = path.join(casesDir, entry);
+  let isDir = false;
+  try { isDir = statSync(dirPath).isDirectory(); } catch { continue; }
+  if (!isDir) continue;
+
+  const manifestPath = path.join(dirPath, "research-package-manifest.json");
   try {
-    const manifest = JSON.parse(readFileTimed(path.join(directory, "research-package-manifest.json")));
+    await access(manifestPath);
+  } catch {
+    continue; // no manifest = skip
+  }
+
+  try {
+    const manifest = JSON.parse(readFileTimed(manifestPath));
+    const caseId = manifest.case_id || entry;
+    const kind = kindFromPackageType(manifest.package_type, entry);
+    const title = titleFromCase(entry, manifest);
+
+    // Parse company-map.csv for symbols if present
     let collection = [];
+    const csvPath = path.join(dirPath, "company-map.csv");
     try {
-      const rows = parseCsv(readFileTimed(path.join(directory, "company-map.csv")));
+      const rows = parseCsv(readFileTimed(csvPath));
       collection = rows
         .map((row) => ({
-          symbol: row.ticker?.trim().toUpperCase(),
-          role: row.value_chain_position || row.company_name,
+          symbol: (row.ticker || row.symbol || "").trim().toUpperCase(),
+          role: row.value_chain_position || row.company_name || row.role || "",
           notes: row.why_it_matters || row.notes || "",
         }))
         .filter((item) => validSymbol(item.symbol));
     } catch {
-      collection = (source.fallbackSymbols ?? []).map((symbol) => ({ symbol, role: "Named research exposure", notes: "" }));
+      // No company-map.csv — extract symbols from research_object if it's a ticker
+      const objSymbol = (manifest.research_object || "").trim().toUpperCase();
+      if (validSymbol(objSymbol)) {
+        collection = [{ symbol: objSymbol, role: "Research subject", notes: "" }];
+      }
     }
+
+    // Status: check stale_after vs now
+    const staleAfter = manifest.stale_after || manifest.research_cutoff_date || undefined;
+    const status = staleAfter && new Date(staleAfter) < new Date() ? "stale" : "working";
+
+    // Summary: use notes or synthesise from manifest
+    const summary = manifest.notes
+      || `Mira ${kind.replace("_", " ")} — ${manifest.research_object || entry}. Cutoff: ${manifest.research_cutoff_date || "unknown"}. Readiness: ${manifest.readiness_level || "working_view"}.`;
+
+    const threadId = THREADED_THEMES.get(entry) || "";
+
     contexts.push({
-      id: source.id,
-      kind: source.kind,
-      title: source.title,
+      id: caseId,
+      kind,
+      title: title.charAt(0).toUpperCase() + title.slice(1),
       symbols: [...new Set(collection.map((item) => item.symbol))],
-      status: new Date(manifest.stale_after) < new Date() ? "stale" : "working",
-      verdict: manifest.readiness_level,
-      summary: manifest.notes,
+      status,
+      verdict: manifest.readiness_level || "working_view",
+      summary,
       blockingGaps: manifest.blocking_gaps ?? [],
-      staleAfter: manifest.stale_after,
-      collection,
-      source: { channelId: quantChannelId, threadId: source.threadId, objectType: "mira_case", objectId: source.id },
+      staleAfter: staleAfter || undefined,
+      collection: collection.length ? collection : undefined,
+      source: {
+        channelId: quantChannelId,
+        threadId,
+        objectType: "mira_case",
+        objectId: caseId,
+      },
     });
   } catch (error) {
-    warnings.push(`mira:${source.id}: ${error instanceof Error ? error.message : String(error)}`);
+    warnings.push(`mira:${entry}: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
+
+// --- Pipeline cards ---
+// Cards only exist on Mac. On Zima refreshes, preserve them from the existing snapshot.
+let existingSnapshot = null;
+try { existingSnapshot = JSON.parse(readFileTimed(snapshotPath)); } catch { /* no existing snapshot */ }
 
 for (const cardSource of cards) {
   try {
@@ -148,8 +215,18 @@ for (const cardSource of cards) {
       blockingGaps: card.approval_gate && card.approval_gate !== "none" ? [card.approval_gate] : [],
       source: { channelId: quantChannelId, threadId: cardSource.threadId, objectType: "pipeline_card", objectId: card.id },
     });
-  } catch (error) {
-    warnings.push(`card:${cardSource.id}: ${error instanceof Error ? error.message : String(error)}`);
+  } catch {
+    // Source file unavailable — try existing snapshot
+    if (existingSnapshot?.contexts) {
+      const existing = existingSnapshot.contexts.find(
+        (c) => c.source?.objectType === "pipeline_card" && c.id === cardSource.id,
+      );
+      if (existing) {
+        contexts.push(existing);
+        continue;
+      }
+    }
+    warnings.push(`card:${cardSource.id}: source unavailable, no cached version`);
   }
 }
 
@@ -164,10 +241,10 @@ if (contexts.length === 0) {
   process.exit(1);
 }
 
-const snapshot = { version: 1, generatedAt: new Date().toISOString(), quantChannelId, contexts };
+const snapshot = { version: 2, generatedAt: new Date().toISOString(), quantChannelId, contexts };
 await mkdir(path.join(root, "data"), { recursive: true });
 await writeFile(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`);
-console.log(`Exported ${contexts.length} Finance research contexts.`);
+console.log(`Exported ${contexts.length} Finance research contexts (${contexts.filter(c => c.source.objectType === "mira_case").length} Mira, ${contexts.filter(c => c.source.objectType === "pipeline_card").length} pipeline).`);
 if (warnings.length) {
   console.warn(`Skipped ${warnings.length} unavailable source(s):`);
   for (const warning of warnings) console.warn(`  - ${warning}`);
