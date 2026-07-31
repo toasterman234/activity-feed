@@ -16,7 +16,7 @@ const FLEET_METRICS_URLS = {
 } as const;
 
 const FLEET_TIMEOUT_MS = {
-  mac: Number(process.env.MAC_FLEET_TIMEOUT_MS || 500),
+  mac: Number(process.env.MAC_FLEET_TIMEOUT_MS || 5000),
   zima: Number(process.env.ZIMA_FLEET_TIMEOUT_MS || 5000),
 } as const;
 

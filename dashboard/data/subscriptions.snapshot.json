@@ -152,15 +152,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 1464.7506,
+          "used": 1480.8263,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "3,487,340,586 tokens · 48,543 msgs",
-          "used": 2376.519,
+          "label": "3,523,748,020 tokens · 49,108 msgs",
+          "used": 2392.5947,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -233,15 +233,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 2.1962,
+          "used": 2.216,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "4,024,495 tokens · 2,047 msgs",
-          "used": 3.1037,
+          "label": "4,069,958 tokens · 2,048 msgs",
+          "used": 3.1235,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -282,7 +282,7 @@
       "provider_label": "Cursor",
       "account_id": "bencharney234@gmail.com",
       "email": "bencharney234@gmail.com",
-      "plan": "Pro",
+      "plan": "pro",
       "source": "cursor-local",
       "limits": [
         {
@@ -328,5 +328,5 @@
       "reset_credits": 0
     }
   ],
-  "generated_at": "2026-07-31T18:29:19.185Z"
+  "generated_at": "2026-07-31T20:14:54.538Z"
 }
