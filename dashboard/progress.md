@@ -23,3 +23,21 @@
 ### Next Steps
 - Run Phase 4 QA checklist on OVH
 - Update `PLAN-workflow-next.md` status row
+
+## Session: 2026-07-29 — mobile-v2 config
+
+### Completed
+- Replaced the `/mobile-v2/config` stub with a real mobile-v2 Config surface
+- Added tabbed mobile-v2 wrappers for Models, Workflows, Notifications, and Perf
+- Updated `docs/mobile-v2-status.md` to mark Config as a real page
+
+### Files changed
+- `src/app/mobile-v2/_components/ConfigView.tsx` — NEW real config surface
+- `src/app/mobile-v2/config/page.tsx` — swapped stub for ConfigView
+- `docs/mobile-v2-status.md` — config no longer listed as a stub
+
+### Test Results
+- `npm run build` passed
+
+### Next Steps
+- Optional: deploy to OVH if Ben wants it live on phone

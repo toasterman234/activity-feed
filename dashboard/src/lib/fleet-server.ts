@@ -15,6 +15,11 @@ const FLEET_METRICS_URLS = {
   zima: process.env.ZIMA_FLEET_METRICS_URL || "http://100.71.118.10:18190/zima/resources",
 } as const;
 
+const FLEET_TIMEOUT_MS = {
+  mac: Number(process.env.MAC_FLEET_TIMEOUT_MS || 500),
+  zima: Number(process.env.ZIMA_FLEET_TIMEOUT_MS || 5000),
+} as const;
+
 type RemotePayload = {
   ok?: boolean;
   host?: string;
@@ -223,61 +228,58 @@ function formatHostStats(host: FleetHost, stats: HostStats): FleetHost {
 }
 
 async function readLocalProcessAndContainerData() {
-  const probe = await execFileNoStdin(
-    "sh",
-    [
-      "-lc",
+  try {
+    const probe = await execFileNoStdin(
+      "sh",
       [
-        "echo '=PROCS='",
-        "ps -ax -o pid= -o ppid= -o pcpu= -o pmem= -o comm= 2>/dev/null | sort -k3 -nr | head -n 12",
-        "echo '=CONTAINERS='",
-        "if command -v docker >/dev/null 2>&1; then docker ps --format '{{.Names}}|{{.Status}}|{{.Image}}' 2>/dev/null; fi",
-        "echo '=CONTAINER_STATS='",
-        "if command -v docker >/dev/null 2>&1; then docker stats --no-stream --format '{{.Name}}|{{.CPUPerc}}|{{.MemPerc}}|{{.MemUsage}}' 2>/dev/null; fi",
-      ].join("; "),
-    ],
-    { timeout: 4000, maxBuffer: 128 * 1024 },
-  );
+        "-lc",
+        [
+          "echo '=PROCS='",
+          "ps -ax -o pid= -o ppid= -o pcpu= -o pmem= -o comm= 2>/dev/null | sort -k3 -nr | head -n 12",
+          "echo '=CONTAINERS='",
+          "if command -v docker >/dev/null 2>&1; then docker ps --format '{{.Names}}|{{.Status}}|{{.Image}}' 2>/dev/null; fi",
+        ].join("; "),
+      ],
+      { timeout: 1500, maxBuffer: 128 * 1024 },
+    );
 
-  let section: "PROCS" | "CONTAINERS" | "CONTAINER_STATS" | null = null;
-  const processes: FleetProcess[] = [];
-  const containers: Array<{ name?: string; status?: string; image?: string; stack?: string; unhealthy?: boolean }> = [];
-  const stats: Array<{ name: string; cpuPct: number | null; memPct: number | null; memUsage: string }> = [];
+    let section: "PROCS" | "CONTAINERS" | null = null;
+    const processes: FleetProcess[] = [];
+    const containers: Array<{ name?: string; status?: string; image?: string; stack?: string; unhealthy?: boolean }> = [];
 
-  for (const rawLine of probe.stdout.split("\n")) {
-    const line = rawLine.trimEnd();
-    if (!line) continue;
-    if (line === "=PROCS=" || line === "=CONTAINERS=" || line === "=CONTAINER_STATS=") {
-      section = line.slice(1, -1) as typeof section;
-      continue;
+    for (const rawLine of probe.stdout.split("\n")) {
+      const line = rawLine.trimEnd();
+      if (!line) continue;
+      if (line === "=PROCS=" || line === "=CONTAINERS=") {
+        section = line.slice(1, -1) as typeof section;
+        continue;
+      }
+      if (section === "PROCS") {
+        const parsed = parseProcessRow(line);
+        if (parsed) processes.push(parsed);
+        continue;
+      }
+      if (section === "CONTAINERS") {
+        const [name, status = "", image = ""] = line.split("|");
+        if (!name) continue;
+        containers.push({
+          name,
+          status,
+          image,
+          stack: name.split("-")[0] || name,
+          unhealthy: status.toLowerCase().includes("unhealthy"),
+        });
+        continue;
+      }
     }
-    if (section === "PROCS") {
-      const parsed = parseProcessRow(line);
-      if (parsed) processes.push(parsed);
-      continue;
-    }
-    if (section === "CONTAINERS") {
-      const [name, status = "", image = ""] = line.split("|");
-      if (!name) continue;
-      containers.push({
-        name,
-        status,
-        image,
-        stack: name.split("-")[0] || name,
-        unhealthy: status.toLowerCase().includes("unhealthy"),
-      });
-      continue;
-    }
-    if (section === "CONTAINER_STATS") {
-      const parsed = parseContainerStatsRow(line);
-      if (parsed) stats.push(parsed);
-    }
+
+    return {
+      processes,
+      containers: mergeContainers(containers, []),
+    };
+  } catch {
+    return { processes: [], containers: [] };
   }
-
-  return {
-    processes,
-    containers: mergeContainers(containers, stats),
-  };
 }
 
 async function readOvhMetrics(host: FleetHost): Promise<FleetHost> {
@@ -338,8 +340,8 @@ async function readOvhMetrics(host: FleetHost): Promise<FleetHost> {
   );
 }
 
-async function readRemoteMetrics(host: FleetHost, url: string): Promise<FleetHost> {
-  const payload = await fetchJson(url);
+async function readRemoteMetrics(host: FleetHost, url: string, timeoutMs = 5000): Promise<FleetHost> {
+  const payload = await fetchJson(url, timeoutMs);
   if (!payload || payload.ok === false) {
     return {
       ...host,
@@ -417,15 +419,71 @@ async function readRemoteMetrics(host: FleetHost, url: string): Promise<FleetHos
   );
 }
 
+const DAGU_URLS: Record<string, string> = {
+  mac: process.env.MAC_DAGU_URL || "http://100.71.118.10:8091/api/v1",
+  zima: process.env.ZIMA_DAGU_URL || "http://100.99.174.29:8093/api/v1",
+  ovh: process.env.OVH_DAGU_URL || "http://127.0.0.1:8090/api/v1",
+};
+
+const DAGU_AUTH: Record<string, { username: string; password: string } | undefined> = {
+  mac: undefined,
+  zima: { username: "ben", password: "n9Vx7KpL3mQwRtYfJcBgDh2Za4Es5UuT" },
+  ovh: { username: "ben", password: "n9Vx7KpL3mQwRtYfJcBgDh2Za4Es5UuT" },
+};
+
+const DAGU_TIMEOUT_MS = Number(process.env.FLEET_DAGU_TIMEOUT_MS || 1200);
+
+async function fetchDaguDags(url: string, auth?: { username: string; password: string }) {
+  try {
+    const headers: Record<string, string> = { accept: "application/json" };
+    if (auth) {
+      headers.authorization = "Basic " + Buffer.from(`${auth.username}:${auth.password}`).toString("base64");
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), DAGU_TIMEOUT_MS);
+    try {
+      const res = await fetch(url + "/dags?limit=50", { signal: controller.signal, headers });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const dags = data.dags || data || [];
+      const names = Array.isArray(dags)
+        ? dags.filter((d: unknown) => typeof (d as Record<string, unknown>).name === "string").map((d: Record<string, unknown>) => d.name)
+        : [];
+      return { names: names as string[], count: names.length };
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch {
+    return null;
+  }
+}
+
 export async function buildFleetSnapshot(): Promise<FleetSnapshot> {
   const baseById = new Map(FLEET_HOSTS.map((host) => [host.id, host]));
   const [ovh, mac, zima] = await Promise.all([
     readOvhMetrics(baseById.get("ovh")!),
-    readRemoteMetrics(baseById.get("mac")!, FLEET_METRICS_URLS.mac),
-    readRemoteMetrics(baseById.get("zima")!, FLEET_METRICS_URLS.zima),
+    readRemoteMetrics(baseById.get("mac")!, FLEET_METRICS_URLS.mac, FLEET_TIMEOUT_MS.mac),
+    readRemoteMetrics(baseById.get("zima")!, FLEET_METRICS_URLS.zima, FLEET_TIMEOUT_MS.zima),
   ]);
   const hosts = [mac, zima, ovh];
-  const summary = hosts.reduce(
+  // Enrich with live Dagu DAG counts (merge into static URLs, don't replace)
+  const enriched = await Promise.all(
+    hosts.map(async (host) => {
+      const daguUrl = DAGU_URLS[host.id];
+      if (!daguUrl) return host;
+      const baseHost = {
+        ...host,
+        dagu: { ...host.dagu, url: daguUrl.replace(/\/api\/v1$/, "") },
+      };
+      if (host.health === "offline") return baseHost;
+      const daguData = await fetchDaguDags(daguUrl, DAGU_AUTH[host.id]);
+      return {
+        ...baseHost,
+        dagu: { ...baseHost.dagu, dags: daguData?.count },
+      };
+    }),
+  );
+  const summary = enriched.reduce(
     (acc, host) => {
       if (host.health === "offline") acc.offline += 1;
       else if (host.health === "warn") acc.warn += 1;
@@ -437,7 +495,7 @@ export async function buildFleetSnapshot(): Promise<FleetSnapshot> {
   return {
     ok: true,
     generatedAt: new Date().toISOString(),
-    hosts,
+    hosts: enriched,
     summary,
   };
 }

@@ -40,6 +40,7 @@ export type HomeOverview = {
     state: string;
     latestStep: { label: string; status: string; detail: string | null; createdAt: string | null } | null;
     promotion: { status: string; progress: string | null } | null;
+    tududiTasks: Array<{ externalId: string; taskName: string; taskUid: string; projectName: string }>;
   }>;
   topThreads: Array<{
     threadId: string;
@@ -54,6 +55,7 @@ export type HomeOverview = {
     lastAuthor: string | null;
     lastMessageAt: string | null;
     updatedAt: string | null;
+    tududiTasks: Array<{ externalId: string; taskName: string; taskUid: string; projectName: string }>;
   }>;
   topPulse: Array<{
     channelId: string;
@@ -117,6 +119,7 @@ export type HomeOverview = {
     lastAuthor: string | null;
     lastMessageAt: string | null;
     updatedAt: string | null;
+    tududiTasks: Array<{ externalId: string; taskName: string; taskUid: string; projectName: string }>;
   }>;
   approvedPlans: Array<{
     threadId: string;
@@ -141,6 +144,7 @@ export type HomeOverview = {
       state: string;
       latestStep: { label: string; status: string; detail: string | null; createdAt: string | null } | null;
       promotion: { status: string; progress: string | null } | null;
+      tududiTasks: Array<{ externalId: string; taskName: string; taskUid: string; projectName: string }>;
     }>;
   };
   agents: {
@@ -177,6 +181,32 @@ export type HomeOverview = {
     states: { start: number; active: number; wait: number; proven: number };
     lastPulse: { author: string; snippet: string; createdAt: string } | null;
   }>;
+  tududiGlance?: {
+    ok: boolean;
+    error?: string;
+    public_base?: string;
+    total_open?: number;
+    total_blocked?: number;
+    projects?: Array<{
+      uid: string;
+      name: string;
+      open_count: number;
+      blocked_count: number;
+      incident_count: number;
+      sort_key?: number;
+      items: Array<{
+        uid: string;
+        name: string;
+        status: number;
+        kind: string;
+        stage: string | null;
+        outcome: string | null;
+        blocked: boolean;
+        repo: string | null;
+        note: string;
+      }>;
+    }>;
+  };
 };
 
 const POLL_MS = 10_000;

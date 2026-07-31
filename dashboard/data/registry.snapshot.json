@@ -1,6 +1,6 @@
 {
   "apiVersion": "registry.bencharney.dev/v1alpha1",
-  "generatedAt": "2026-07-30T18:43:35.883Z",
+  "generatedAt": "2026-07-31T18:29:19.234Z",
   "records": [
     {
       "apiVersion": "registry.bencharney.dev/v1alpha1",
@@ -18,7 +18,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Algorithm.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -44,7 +44,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -63,7 +63,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Anvil.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -89,7 +89,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -108,7 +108,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Architect.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -134,7 +134,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -153,7 +153,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Arthur.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -179,7 +179,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -198,7 +198,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Artist.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -228,7 +228,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -247,7 +247,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/BrowserAgent.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -273,7 +273,7 @@
       },
       "observed": {
         "status": "superseded",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -292,7 +292,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Cato.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -318,7 +318,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -337,7 +337,7 @@
         "source": {
           "adapter": "agent-system",
           "locator": "~/.claude/settings.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -435,7 +435,7 @@
       },
       "observed": {
         "status": "live",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -454,7 +454,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/ClaudeResearcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -484,7 +484,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -503,7 +503,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/CodexResearcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -529,7 +529,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -548,7 +548,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Designer.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -574,7 +574,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -593,7 +593,7 @@
         "source": {
           "adapter": "opencode",
           "locator": "~/.config/opencode/agent/electra.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -615,7 +615,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -634,7 +634,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Engineer.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -660,7 +660,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -679,7 +679,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Forge.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -705,7 +705,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -724,7 +724,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/GeminiResearcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -754,7 +754,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -773,7 +773,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/pi/agent/agents/github.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -795,7 +795,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -814,7 +814,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/GrokResearcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -840,7 +840,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -859,7 +859,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/pi/agent/agents/lead-gen.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -881,7 +881,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -900,7 +900,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/ben-workspace/projects/personal/life-os-knowledge-graph/.pi/agent/agents/life-os-analyst.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -926,7 +926,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -945,7 +945,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/PerplexityResearcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -975,7 +975,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -994,7 +994,7 @@
         "source": {
           "adapter": "agent-system",
           "locator": "~/.pi/agent/settings.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1037,6 +1037,10 @@
             "target": "tool:cartograph"
           },
           {
+            "type": "calls",
+            "target": "tool:21st"
+          },
+          {
             "type": "contains",
             "target": "agent:github"
           },
@@ -1073,7 +1077,7 @@
       },
       "observed": {
         "status": "live",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1092,7 +1096,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/QATester.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1118,7 +1122,7 @@
       },
       "observed": {
         "status": "superseded",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1137,7 +1141,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/pi/agent/agents/quant-researcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1159,7 +1163,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1178,7 +1182,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/pi/agent/agents/researcher.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1200,7 +1204,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1219,7 +1223,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/pi/agent/agents/security-reviewer.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1241,7 +1245,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1260,7 +1264,7 @@
         "source": {
           "adapter": "pi-live",
           "locator": "~/pi/agent/agents/session-analyzer.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1282,7 +1286,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1301,7 +1305,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/Silas.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1327,7 +1331,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1346,7 +1350,7 @@
         "source": {
           "adapter": "claude-code",
           "locator": "~/.claude/agents/UIReviewer.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1372,7 +1376,7 @@
       },
       "observed": {
         "status": "superseded",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1389,7 +1393,7 @@
         "source": {
           "adapter": "activity-dashboard",
           "locator": "src/app/channels/lifecycles.ts",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1404,7 +1408,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1421,7 +1425,7 @@
         "source": {
           "adapter": "activity-dashboard",
           "locator": "src/app/channels/lifecycles.ts",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1436,7 +1440,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1453,7 +1457,7 @@
         "source": {
           "adapter": "activity-dashboard",
           "locator": "src/app/channels/lifecycles.ts",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1468,7 +1472,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1485,7 +1489,7 @@
         "source": {
           "adapter": "activity-dashboard",
           "locator": "src/app/channels/lifecycles.ts",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1500,7 +1504,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1521,7 +1525,7 @@
         "source": {
           "adapter": "agent-frontmatter",
           "locator": "~/ben-workspace/projects/personal/life-os-knowledge-graph/.pi/agent/agents/life-os-analyst.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1533,7 +1537,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1552,7 +1556,7 @@
         "source": {
           "adapter": "agent-frontmatter",
           "locator": "~/.claude/agents/Arthur.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1564,7 +1568,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1583,7 +1587,7 @@
         "source": {
           "adapter": "agent-frontmatter",
           "locator": "~/.claude/agents/Algorithm.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1595,7 +1599,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1614,7 +1618,7 @@
         "source": {
           "adapter": "agent-frontmatter",
           "locator": "~/.claude/agents/BrowserAgent.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1626,7 +1630,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1645,7 +1649,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1661,7 +1665,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1680,7 +1684,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1696,7 +1700,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1715,7 +1719,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1731,7 +1735,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1750,7 +1754,7 @@
         "source": {
           "adapter": "agent-frontmatter",
           "locator": "~/.pi/agent/settings.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1762,7 +1766,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1781,7 +1785,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1797,7 +1801,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1816,7 +1820,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1832,7 +1836,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1851,7 +1855,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1867,7 +1871,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1886,7 +1890,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1902,7 +1906,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1921,7 +1925,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1937,7 +1941,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1956,7 +1960,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -1972,7 +1976,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -1991,7 +1995,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2007,7 +2011,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2026,7 +2030,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2042,7 +2046,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2061,7 +2065,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2077,7 +2081,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2096,7 +2100,7 @@
         "source": {
           "adapter": "pi-models",
           "locator": "~/.pi/agent/models.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2112,7 +2116,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2128,7 +2132,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "central-repo-ops/docs/agent-rules.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2140,7 +2144,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2156,7 +2160,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/ben-workspace/CLAUDE.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2168,7 +2172,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2184,7 +2188,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "central-repo-ops/docs/capability-routing.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2196,7 +2200,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2212,7 +2216,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "central-repo-ops/docs/experimental-repos.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2224,7 +2228,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2240,7 +2244,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "central-repo-ops/docs/runbooks/fleet-paused-recurring-failures.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2252,7 +2256,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2268,7 +2272,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/Projects/pi/agent/policies/operating-contract.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2280,7 +2284,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2296,7 +2300,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "central-repo-ops/docs/planning-spec.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2308,7 +2312,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2324,7 +2328,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/Projects/pi/docs/ROUTING.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2336,7 +2340,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2352,7 +2356,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/central-ops-dashboard/routing-index.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2453,7 +2457,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2469,7 +2473,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/central-ops-dashboard/routing-index.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2642,7 +2646,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2658,7 +2662,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/central-ops-dashboard/routing-index.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2835,7 +2839,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2851,7 +2855,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/central-ops-dashboard/routing-index.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -2952,7 +2956,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -2968,7 +2972,7 @@
         "source": {
           "adapter": "routing-index",
           "locator": "~/central-ops-dashboard/routing-index.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3069,7 +3073,7 @@
       },
       "observed": {
         "status": "reference",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3087,7 +3091,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/accessibility/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3099,7 +3103,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3117,7 +3121,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/agent-scope-and-design/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3129,7 +3133,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3147,7 +3151,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/claude-to-im/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3159,7 +3163,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3177,7 +3181,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/codex-memory-bridge/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3189,7 +3193,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3207,7 +3211,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/create-mcp-server/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3219,7 +3223,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3237,7 +3241,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/create-skill/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3249,7 +3253,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3267,7 +3271,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/CreateSkill/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3279,7 +3283,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3297,7 +3301,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/dependency-upgrade/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3309,7 +3313,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3327,7 +3331,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/design-an-interface/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3339,7 +3343,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3357,7 +3361,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/diagnosing-bugs/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3369,7 +3373,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3387,7 +3391,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/docs-langfuse/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3399,7 +3403,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3417,7 +3421,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/docs-litellm/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3429,7 +3433,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3447,7 +3451,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/docs-nodered/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3459,7 +3463,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3477,7 +3481,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/docs-otel-collector/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3489,7 +3493,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3507,7 +3511,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/documentation-and-adrs/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3519,7 +3523,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3537,7 +3541,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/doubt-driven-development/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3549,7 +3553,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3567,7 +3571,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/Evals/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3579,7 +3583,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3597,7 +3601,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/Fabric/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3609,7 +3613,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3627,7 +3631,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/figma/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3639,7 +3643,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3657,7 +3661,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/figma-implement-design/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3669,7 +3673,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3687,7 +3691,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/frontend-design/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3699,7 +3703,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3717,7 +3721,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/frontend-skill/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3729,7 +3733,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3747,7 +3751,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/github-workflows/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3759,7 +3763,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3777,7 +3781,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/imagegen/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3789,7 +3793,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3807,7 +3811,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/incremental-implementation/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3819,7 +3823,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3837,7 +3841,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/Interceptor/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3849,7 +3853,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3867,7 +3871,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/interview-me/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3879,7 +3883,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3897,7 +3901,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/ISA/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3909,7 +3913,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3927,7 +3931,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/lint/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3939,7 +3943,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3957,7 +3961,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/observability/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3969,7 +3973,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -3987,7 +3991,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/observal/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -3999,7 +4003,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4017,7 +4021,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/observal-admin/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4029,7 +4033,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4047,7 +4051,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/observal-advanced/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4059,7 +4063,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4077,7 +4081,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/observal-agents/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4089,7 +4093,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4107,7 +4111,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/observal-ops/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4119,7 +4123,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4137,7 +4141,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/observal-registry/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4149,7 +4153,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4167,7 +4171,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/obsidian-second-brain/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4179,7 +4183,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4198,7 +4202,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/open-knowledge-discovery/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4214,7 +4218,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4233,7 +4237,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/open-knowledge-write-skill/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4249,7 +4253,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4269,7 +4273,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/paseo/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4286,7 +4290,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4306,7 +4310,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/paseo-advisor/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4323,7 +4327,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4343,7 +4347,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/paseo-committee/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4360,7 +4364,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4380,7 +4384,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/paseo-handoff/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4397,7 +4401,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4417,7 +4421,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/paseo-loop/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4434,7 +4438,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4452,7 +4456,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/planning-with-files/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4464,7 +4468,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4482,7 +4486,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/playwright-interactive/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4494,7 +4498,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4512,7 +4516,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/quant-viz/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4524,7 +4528,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4542,7 +4546,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/quantconnect-cloud/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4554,7 +4558,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4572,7 +4576,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/react-best-practices/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4584,7 +4588,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4602,7 +4606,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/Research/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4614,7 +4618,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4632,7 +4636,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/review/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4644,7 +4648,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4662,7 +4666,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/screenshot/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4674,7 +4678,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4692,7 +4696,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/security-review/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4704,7 +4708,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4723,7 +4727,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/smithers/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4739,7 +4743,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4757,7 +4761,7 @@
         "source": {
           "adapter": "claude-skill",
           "locator": "~/.claude/skills/steer/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4769,7 +4773,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4787,7 +4791,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/tdd/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4799,7 +4803,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4817,7 +4821,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/test/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4829,7 +4833,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4847,7 +4851,7 @@
         "source": {
           "adapter": "codex-skill",
           "locator": "~/.codex/skills/vault-context/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4859,7 +4863,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4877,7 +4881,7 @@
         "source": {
           "adapter": "shared-skill",
           "locator": "~/.agents/skills/write-docs/SKILL.md",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4889,7 +4893,35 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
+      }
+    },
+    {
+      "apiVersion": "registry.bencharney.dev/v1alpha1",
+      "kind": "Tool",
+      "metadata": {
+        "id": "tool:21st",
+        "name": "21st",
+        "status": "active",
+        "description": "",
+        "owner": "ben",
+        "tags": [],
+        "source": {
+          "adapter": "pi-mcp",
+          "locator": "~/.pi/agent/mcp.json",
+          "observedAt": "2026-07-31T18:29:19.234Z"
+        }
+      },
+      "spec": {
+        "capabilities": [
+          "tool.21st"
+        ],
+        "relations": [],
+        "config": {}
+      },
+      "observed": {
+        "status": "active",
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4905,7 +4937,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/agent_mail.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4917,7 +4949,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4933,7 +4965,7 @@
         "source": {
           "adapter": "pi-mcp",
           "locator": "~/.pi/agent/mcp.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4945,7 +4977,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4961,7 +4993,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/agentmemory.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -4973,7 +5005,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -4989,7 +5021,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/aios_memory_bridge.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5001,7 +5033,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5017,7 +5049,7 @@
         "source": {
           "adapter": "pi-mcp",
           "locator": "~/.pi/agent/mcp.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5029,7 +5061,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5045,7 +5077,7 @@
         "source": {
           "adapter": "pi-mcp",
           "locator": "~/.pi/agent/mcp.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5057,7 +5089,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5073,7 +5105,7 @@
         "source": {
           "adapter": "pi-mcp",
           "locator": "~/.pi/agent/mcp.json",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5085,7 +5117,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5101,7 +5133,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/exa.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5113,7 +5145,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5129,7 +5161,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/executor.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5141,7 +5173,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5157,7 +5189,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/footprint_search.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5169,7 +5201,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5185,7 +5217,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/github.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5197,7 +5229,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5213,7 +5245,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/github_labels.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5225,7 +5257,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5241,7 +5273,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/market_lake.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5253,7 +5285,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5269,7 +5301,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/miyami_websearch.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5281,7 +5313,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5297,7 +5329,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/octocode.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5309,7 +5341,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5325,7 +5357,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/open_brain.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5337,7 +5369,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5353,7 +5385,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/openbb.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5365,7 +5397,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5381,7 +5413,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/reddit_mcp_buddy.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5393,7 +5425,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5409,7 +5441,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/workspace_mcp.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5421,7 +5453,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5437,7 +5469,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/xactions.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5449,7 +5481,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5465,7 +5497,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/servers/zima.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5477,7 +5509,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5493,7 +5525,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/ax-research.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5546,7 +5578,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5562,7 +5594,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/code-review.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5583,7 +5615,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5599,7 +5631,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/footprint-recall.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5616,7 +5648,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5632,7 +5664,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/memory-only.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5653,7 +5685,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5669,7 +5701,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/ops-terminal.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5722,7 +5754,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5738,7 +5770,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/ops-terminal-footprint.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5807,7 +5839,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5823,7 +5855,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/personal-tools.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5856,7 +5888,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     },
     {
@@ -5872,7 +5904,7 @@
         "source": {
           "adapter": "mcp-registry",
           "locator": "~/ben-workspace/projects/control-plane/ben-agents3-tool-registry/config/toolsets/quant-research.yaml",
-          "observedAt": "2026-07-30T18:43:35.883Z"
+          "observedAt": "2026-07-31T18:29:19.234Z"
         }
       },
       "spec": {
@@ -5909,7 +5941,7 @@
       },
       "observed": {
         "status": "active",
-        "observedAt": "2026-07-30T18:43:35.883Z"
+        "observedAt": "2026-07-31T18:29:19.234Z"
       }
     }
   ],

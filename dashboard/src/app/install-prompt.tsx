@@ -88,7 +88,7 @@ export default function InstallPrompt() {
   if (!show || !mounted) return null;
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 z-40 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
+    <div data-install-prompt className="fixed bottom-16 left-0 right-0 z-40 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]">
       <div className="mx-auto max-w-lg rounded-lg border border-zinc-200 bg-card px-3 py-2.5 text-xs shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
         {isIOS ? (
           <div className="flex items-center gap-2">

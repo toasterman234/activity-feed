@@ -138,7 +138,7 @@ function ThreadContent({
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
   const [archiving, setArchiving] = useState(false);
-  const [activeTab, setActiveTab] = useState<ThreadTabId>("work");
+  const [activeTab, setActiveTab] = useState<ThreadTabId>("conversation");
   const [focusTriage, setFocusTriage] = useState(false);
   const [triageAnchor, setTriageAnchor] = useState(0);
   const [repos, setRepos] = useState<RepoRow[]>([]);
@@ -259,7 +259,7 @@ function ThreadContent({
   const meta: ThreadMetaRow | null = extras.meta;
   useEffect(() => {
     if (!meta) return;
-    // Show the Work tab by default where it has the most value:
+    // Conversation-first by default, but jump to Work where it has more value:
     // - Approved plans → execution handoff workspace
     // - Drafted coding threads → copied task list ready to run
     if (
@@ -702,7 +702,7 @@ function ThreadContent({
               </CardContent>
             </Card>
           )}
-          {lifecyclePicked && meta && lc && (
+          {activeTab !== "conversation" && lifecyclePicked && meta && lc && (
             <WorkflowCockpit
               lifecycleKey={lifecycleKey}
               currentState={currentState}
@@ -715,7 +715,7 @@ function ThreadContent({
             />
           )}
 
-          {lifecyclePicked && meta && lc && (
+          {activeTab !== "conversation" && lifecyclePicked && meta && lc && (
             <StageActionBar
               lifecycleKey={lifecycleKey}
               currentState={currentState}
@@ -746,7 +746,7 @@ function ThreadContent({
             />
           )}
 
-          {!lifecyclePicked && (
+          {activeTab !== "conversation" && !lifecyclePicked && (
             <Card size="sm">
               <CardContent>
                 <div className="flex items-center gap-2">
@@ -783,7 +783,7 @@ function ThreadContent({
           )}
 
 
-          {attention && !isArchived && attention.need !== "triage" && (
+          {activeTab !== "conversation" && attention && !isArchived && attention.need !== "triage" && (
             <DoNowBanner
               guide={attention}
               onCta={() => {
@@ -794,7 +794,7 @@ function ThreadContent({
 
 
           {/* Stage workspace stack: one expanded for current state, completed stages collapsed */}
-          {lifecyclePicked && meta && !isArchived && (
+          {activeTab !== "conversation" && lifecyclePicked && meta && !isArchived && (
             <ThreadStageStack
               lifecycleKey={lifecycleKey}
               currentState={currentState}
@@ -818,7 +818,9 @@ function ThreadContent({
           </div>
 
 
-          <WorkRunsPanel threadId={threadId} compact />
+          {activeTab !== "conversation" && (
+            <WorkRunsPanel threadId={threadId} compact />
+          )}
 
           <ThreadTabs
             active={activeTab}
@@ -836,6 +838,8 @@ function ThreadContent({
               mentionOptions={mentionOptions}
               sending={sending}
               isArchived={isArchived}
+              runEvents={runEvents}
+              activityRunning={activityRunning}
             />
           )}
 

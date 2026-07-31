@@ -34,6 +34,7 @@ Environment=CHANNEL_AIWG_ROOT=/home/ubuntu/.local/lib/node_modules/aiwg
 # iii → dashboard task API token (chmod 600). Create with:
 #   install -m 600 /dev/null /home/ubuntu/activity-dashboard/iii.env
 #   echo "DASHBOARD_III_TOKEN=$(openssl rand -hex 24)" >> /home/ubuntu/activity-dashboard/iii.env
+Environment=MARKET_LAKE_URL=http://100.71.118.10:9077
 EnvironmentFile=-/home/ubuntu/activity-dashboard/iii.env
 ExecCondition=/usr/bin/test -s /home/ubuntu/activity-dashboard/current/.next/BUILD_ID
 ExecStart=/usr/bin/npm run start

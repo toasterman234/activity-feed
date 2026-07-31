@@ -43,11 +43,14 @@ export function ThreadTabs({ active, onChange, counts }: ThreadTabsProps) {
                   className={`rounded-full px-1.5 py-0.5 text-[10px] tabular-nums ${
                     isActive
                       ? "bg-card/15 text-white dark:bg-zinc-900/10 dark:text-zinc-900"
-                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                      : "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
                   }`}
                 >
                   {tab.badge}
                 </span>
+              )}
+              {!tab.badge && !isActive && (tab.id === "work" || tab.id === "artifacts" || tab.id === "history") && (
+                <span className="block h-1.5 w-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600" />
               )}
             </button>
           );

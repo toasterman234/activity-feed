@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { hotkeysCoreFeature, syncDataLoaderFeature, dragAndDropFeature } from "@headless-tree/core";
 import { useTree } from "@headless-tree/react";
 import type { ItemInstance } from "@headless-tree/core";
@@ -123,6 +123,7 @@ type Props = {
   tasks: TududiTreeTask[];
   busy?: boolean;
   onSelectProject: (uid: string) => void;
+  onOpenTask?: (uid: string) => void;
   onSetStatus: (uid: string, status: string) => void;
   onReorderTask?: (uid: string, newOrder: number) => void;
 };
@@ -133,9 +134,15 @@ function TududiPlanningTreeInner({
   tasks,
   busy,
   onSelectProject,
+  onOpenTask,
   onSetStatus,
   onReorderTask,
 }: Props) {
+  const onSelectProjectRef = useRef(onSelectProject);
+  const onOpenTaskRef = useRef(onOpenTask);
+  onSelectProjectRef.current = onSelectProject;
+  onOpenTaskRef.current = onOpenTask;
+
   const items = useMemo(
     () => buildItems({ projects, selectedProjectUid, tasks }),
     [projects, selectedProjectUid, tasks],
@@ -206,12 +213,33 @@ function TududiPlanningTreeInner({
             isProject && data.projectUid === selectedProjectUid;
 
           return (
-            <TreeItem key={item.getId()} item={item}>
+            <TreeItem
+              key={item.getId()}
+              item={item}
+              // DnD feature remaps getProps().onClick → onPress; native button ignores onPress.
+              // Render as div and handle activation ourselves.
+              render={<div />}
+              className="cursor-pointer"
+            >
               <TreeItemLabel
                 className={cx(
                   "before:bg-background relative w-full before:absolute before:inset-x-0 before:-inset-y-0.5 before:-z-10",
                   isSelectedProject && "bg-accent text-accent-foreground",
+                  isTask && "cursor-pointer",
                 )}
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).closest("[data-task-action]")) return;
+                  if (isTask && data.taskUid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onOpenTaskRef.current?.(data.taskUid);
+                    return;
+                  }
+                  if (isProject && data.projectUid) {
+                    e.preventDefault();
+                    onSelectProjectRef.current(data.projectUid);
+                  }
+                }}
               >
                 <span className="flex w-full min-w-0 items-center gap-2">
                   {item.isFolder() ? (
@@ -261,6 +289,7 @@ function TududiPlanningTreeInner({
                       variant="outline"
                       size="xs"
                       disabled={busy}
+                      data-task-action=""
                       className="shrink-0 select-none"
                       onClick={(e) => {
                         e.stopPropagation();

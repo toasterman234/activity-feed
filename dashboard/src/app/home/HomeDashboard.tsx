@@ -1,44 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useHomeOverview, type HomeOverview } from "./useHomeOverview";
+import { useMemo } from "react";
+import { useHomeOverview } from "./useHomeOverview";
 import {
   PageShell,
-  StatusChip,
-  Badge,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  DividedList,
-  DividedRow,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+  StatusChip,
   Skeleton,
-  cx,
   type UiTone,
 } from "@/components/ui";
-import { HomeKanbanBoard, type HomeKanbanCard } from "./HomeKanbanBoard";
-
-// ── helpers ──
-
-function relativeTime(iso: string | null | undefined): string {
-  if (!iso) return "—";
-  const diff = Date.now() - Date.parse(iso);
-  if (Number.isNaN(diff)) return iso;
-  const seconds = Math.floor(diff / 1000);
-  if (seconds < 60) return "now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
-  return new Date(iso).toLocaleDateString();
-}
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import FleetStatusStrip from "./FleetStatusStrip";
+import { kindBadgeClass, extractAdPointer } from "@/lib/tududiConventions";
 
 function stateTone(state: string): UiTone {
   const s = state.toLowerCase();
@@ -56,160 +44,29 @@ function toneForRow(kind: string, state: string): UiTone {
   return stateTone(state);
 }
 
-// ── section heading ──
-
-function SectionHeading({
-  tone,
-  label,
-  count,
-}: {
-  tone: "amber" | "muted" | "neutral";
-  label: string;
-  count: number;
-}) {
-  return (
-    <div className="flex items-center gap-2 mb-2">
-      <h2
-        className={cx(
-          "text-[10px] font-semibold uppercase tracking-wider",
-          tone === "amber"
-            ? "text-amber-600 dark:text-amber-400"
-            : "text-muted-foreground",
-        )}
-      >
-        {label}
-      </h2>
-      <div className="h-3 w-px bg-border" />
-      <span className="text-[10px] text-muted-foreground">{count} items</span>
-    </div>
-  );
+function itemHref(projUid: string, item: {
+  uid: string;
+  note?: string;
+}): string {
+  const pointer = item.note ? extractAdPointer(item.note) : null;
+  if (pointer?.type === "thread") return `/channels/default/${pointer.id}`;
+  if (pointer?.type === "repo") return `/projects/${pointer.id}`;
+  if (pointer?.type === "run") return `/runs?run=${pointer.id}`;
+  return `/projects?tududi=${encodeURIComponent(projUid)}&task=${item.uid}`;
 }
-
-// ── accent row wrapper ──
-
-function AccentRow({
-  tone,
-  href,
-  children,
-}: {
-  tone: UiTone;
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <DividedRow href={href} accent={tone}>
-      {children}
-    </DividedRow>
-  );
-}
-
-// ── Collapsible channel entry ──
-
-function ChannelBlock({
-  ch,
-  bestThread,
-  openChannels,
-  onToggle,
-}: {
-  ch: HomeOverview["topPulse"][number];
-  bestThread: HomeOverview["threadActivity"][number] | null;
-  openChannels: Set<string>;
-  onToggle: (id: string) => void;
-}) {
-  const isOpen = openChannels.has(ch.channelId);
-  const waitCount = (ch.states?.wait ?? 0) + (ch.states?.active ?? 0);
-
-  return (
-    <Collapsible open={isOpen} onOpenChange={() => onToggle(ch.channelId)}>
-      {/* Channel header */}
-      <CollapsibleTrigger className="flex items-center gap-2 px-4 py-2.5 hover:bg-muted/60 transition-colors w-full text-left">
-        <span className="text-[10px] text-muted-foreground w-3 shrink-0">
-          {isOpen ? "▾" : "▸"}
-        </span>
-        <span className={cx("text-sm font-semibold", ch.unreadCount > 0 && "text-foreground")}>
-          # {ch.channelName}
-        </span>
-        {ch.unreadCount > 0 && (
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-            {ch.unreadCount > 99 ? "99+" : ch.unreadCount}
-          </Badge>
-        )}
-        {waitCount > 0 && (
-          <span className="text-[10px] text-amber-600 dark:text-amber-400 tabular-nums">
-            {waitCount} waiting
-          </span>
-        )}
-        <Link
-          href={`/channels/${ch.channelId}`}
-          onClick={(e) => e.stopPropagation()}
-          className="ml-auto text-[10px] text-muted-foreground hover:text-foreground"
-        >
-          →
-        </Link>
-      </CollapsibleTrigger>
-      {/* Nested recent thread */}
-      <CollapsibleContent>
-        {bestThread ? (
-          <Link
-            href={`/channels/${bestThread.channelId}/${bestThread.threadId}`}
-            className="flex items-center gap-2 px-4 py-2 pl-8 border-t border-border/50 hover:bg-muted/40 transition-colors"
-          >
-            <div className="min-w-0 flex-1">
-              <p className="text-xs truncate">{bestThread.title}</p>
-              <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                {bestThread.replyCount > 0 ? `${bestThread.replyCount} repl${bestThread.replyCount === 1 ? "y" : "ies"}` : "No replies"}
-                {bestThread.lastAuthor ? ` · ${bestThread.lastAuthor}` : ""}
-                {bestThread.lastMessageAt ? ` · ${relativeTime(bestThread.lastMessageAt)}` : ""}
-              </p>
-            </div>
-          </Link>
-        ) : (
-          <div className="px-4 py-2 pl-8 border-t border-border/50">
-            <p className="text-[10px] text-muted-foreground">No recent threads</p>
-          </div>
-        )}
-      </CollapsibleContent>
-    </Collapsible>
-  );
-}
-
-// ── Skeleton layout for loading ──
 
 function HomeSkeleton() {
   return (
     <PageShell maxWidth="max-w-5xl" className="pb-4 space-y-4">
-      <div className="flex items-baseline justify-between">
-        <div className="space-y-1.5">
-          <Skeleton className="h-6 w-24" />
-          <Skeleton className="h-3 w-40" />
-        </div>
-        <Skeleton className="h-7 w-24 rounded-lg" />
+      <div className="space-y-1.5">
+        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-3 w-40" />
       </div>
       <Card size="sm">
         <CardContent className="space-y-3 py-3">
           <Skeleton className="h-3 w-20" />
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Skeleton className="h-5 w-12 rounded-full" />
-              <div className="flex-1 space-y-1">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      <Card size="sm">
-        <CardContent className="space-y-3 py-3">
-          <Skeleton className="h-3 w-16" />
-          {[1, 2].map((i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Skeleton className="h-5 w-14 rounded-full" />
-              <div className="flex-1 space-y-1">
-                <Skeleton className="h-4 w-2/3" />
-                <Skeleton className="h-3 w-1/2" />
-              </div>
-            </div>
+            <Skeleton key={i} className="h-8 w-full" />
           ))}
         </CardContent>
       </Card>
@@ -217,82 +74,19 @@ function HomeSkeleton() {
   );
 }
 
-// ── HOME DASHBOARD ──
-
 export default function HomeDashboard() {
   const { data, loading, error, refresh } = useHomeOverview();
-  const [view, setView] = useState<"list" | "board">("list");
-  const [openChannels, setOpenChannels] = useState<Set<string>>(new Set());
 
-  const toggleChannel = (id: string) => {
-    setOpenChannels((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  // Build lookup maps for enrichment (all hooks MUST run before any conditional return)
-  const threadActivityById = useMemo(() => {
-    const m: Record<string, HomeOverview["threadActivity"][number]> = {};
-    if (!data) return m;
-    for (const t of [...(data.topThreads || []), ...(data.threadActivity || [])]) {
-      if (!m[t.threadId] || (t.lastMessageAt || "") > (m[t.threadId].lastMessageAt || "")) {
-        m[t.threadId] = t;
+  const threadsByProject = useMemo(() => {
+    const byProject = new Map<string, number>();
+    if (!data) return byProject;
+    for (const a of data.topActive || []) {
+      for (const ref of a.tududiTasks || []) {
+        if (!ref.projectName) continue;
+        byProject.set(ref.projectName, (byProject.get(ref.projectName) || 0) + 1);
       }
     }
-    return m;
-  }, [data]);
-
-  // Channels: top by unread/recent, each with one nested recent thread
-  const channelGroups = useMemo(() => {
-    if (!data) return [];
-    const channels = data.topPulse || [];
-    const byChannel = new Map<string, {
-      ch: (typeof channels)[number];
-      bestThread: HomeOverview["threadActivity"][number] | null;
-    }>();
-    const sorted = [...channels].sort((a, b) => {
-      if ((b.unreadCount ?? 0) !== (a.unreadCount ?? 0)) return (b.unreadCount ?? 0) - (a.unreadCount ?? 0);
-      return (b.lastPulse?.createdAt || "").localeCompare(a.lastPulse?.createdAt || "");
-    });
-    for (const ch of sorted.slice(0, 6)) {
-      byChannel.set(ch.channelId, { ch, bestThread: null });
-    }
-    for (const t of [...(data.topThreads || []), ...(data.threadActivity || [])]) {
-      const entry = byChannel.get(t.channelId);
-      if (!entry) continue;
-      if (!entry.bestThread || (t.lastMessageAt || "") > (entry.bestThread.lastMessageAt || "")) {
-        entry.bestThread = t;
-      }
-    }
-    return [...byChannel.values()];
-  }, [data]);
-
-  // Build kanban cards from topThreads + threadActivity
-  const kanbanCards: HomeKanbanCard[] = useMemo(() => {
-    if (!data) return [];
-    const seen = new Set<string>();
-    const cards: HomeKanbanCard[] = [];
-    for (const t of [...(data.topThreads || []), ...(data.threadActivity || [])]) {
-      if (seen.has(t.threadId)) continue;
-      seen.add(t.threadId);
-      cards.push({
-        id: t.threadId,
-        threadId: t.threadId,
-        channelId: t.channelId,
-        channelName: t.channelName,
-        title: t.title,
-        state: t.state || "open",
-        assignee: t.assignee,
-        replyCount: t.replyCount,
-        lastAuthor: t.lastAuthor,
-        lastMessageAt: t.lastMessageAt,
-        updatedAt: t.updatedAt,
-      });
-    }
-    return cards;
+    return byProject;
   }, [data]);
 
   if (loading && !data) return <HomeSkeleton />;
@@ -301,13 +95,8 @@ export default function HomeDashboard() {
     return (
       <div className="min-h-screen bg-background pb-16">
         <div className="mx-auto max-w-lg px-4 py-16 text-center">
-          <p className="text-sm font-medium text-red-600 dark:text-red-400">
-            {error}
-          </p>
-          <button
-            onClick={() => void refresh()}
-            className="mt-3 text-xs underline"
-          >
+          <p className="text-sm font-medium text-red-600 dark:text-red-400">{error}</p>
+          <button onClick={() => void refresh()} className="mt-3 text-xs underline">
             Retry
           </button>
         </div>
@@ -317,14 +106,56 @@ export default function HomeDashboard() {
 
   if (!data) return null;
 
-  const failedPromotions = data?.needsAttention?.failedPromotions || [];
-  const needsMe = data?.topNeedsMe || [];
-  const active = data?.topActive || [];
+  const failedPromotions = data.needsAttention?.failedPromotions || [];
+  const needsMe = data.topNeedsMe || [];
   const hasNeedsYou = failedPromotions.length > 0 || needsMe.length > 0;
+  const projects = data.tududiGlance?.ok ? data.tududiGlance.projects || [] : [];
+  const active = data.topActive || [];
+
+  type NeedRow = {
+    key: string;
+    href: string;
+    status: string;
+    tone: UiTone;
+    title: string;
+    channel: string;
+    detail?: string;
+  };
+
+  const needRows: NeedRow[] = [
+    ...failedPromotions.map((f) => ({
+      key: `fp-${f.threadId}`,
+      href: `/channels/${f.channelId}/${f.threadId}?need=gate`,
+      status: "fail",
+      tone: "danger" as UiTone,
+      title: f.progress || "Promotion failed",
+      channel: f.channelName,
+      detail: f.errorDetail || undefined,
+    })),
+    ...needsMe.map((n) => {
+      const need =
+        n.need ||
+        (n.reason === "review"
+          ? "review"
+          : n.reason === "blocked"
+            ? "blocked"
+            : n.reason === "failed_required_gate"
+              ? "gate"
+              : "triage");
+      return {
+        key: `nm-${n.threadId}`,
+        href: `/channels/${n.channelId}/${n.threadId}?need=${need}`,
+        status: n.state,
+        tone: toneForRow(n.reason, n.state),
+        title: n.title,
+        channel: n.channelName,
+        detail: n.why || undefined,
+      };
+    }),
+  ];
 
   return (
     <PageShell maxWidth="max-w-5xl" className="pb-4">
-      {/* Agent runtime warning */}
       {(data.summaryCounts.agentsDown || !data.agents.runtimeOk) && (
         <div className="rounded-xl border border-amber-300/50 bg-amber-50/80 px-3 py-2.5 dark:border-amber-800 dark:bg-amber-950/80">
           <div className="flex flex-wrap items-center gap-2">
@@ -346,221 +177,202 @@ export default function HomeDashboard() {
         </div>
       )}
 
-      {/* Compact header */}
-      <div className="flex items-baseline justify-between">
+      <FleetStatusStrip />
+
+      <div className="flex items-baseline justify-between gap-2">
         <div>
-          <h1 className="text-lg font-bold tracking-tight">Activity</h1>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
-            {active.length} active · {data?.summaryCounts?.unread ?? 0} unread ·{" "}
-            {data?.summaryCounts?.agentsDown ? "agents down" : "agents up"}
+          <h1 className="text-lg font-bold tracking-tight">Home</h1>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">
+            {active.length} active · {data.summaryCounts.unread} unread ·{" "}
+            {data.summaryCounts.agentsDown ? "agents down" : "agents up"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-lg border border-border bg-card p-0.5">
-            <button
-              type="button"
-              onClick={() => setView("list")}
-              className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
-                view === "list"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              List
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("board")}
-              className={`rounded-md px-2.5 py-1 text-[11px] font-medium ${
-                view === "board"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Board
-            </button>
-          </div>
-          <button
-            onClick={() => void refresh()}
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            Refresh
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => void refresh()}
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          Refresh
+        </button>
       </div>
 
-      {view === "board" ? (
-        <HomeKanbanBoard cards={kanbanCards} />
-      ) : (<>
-      {/* Needs You */}
+      {/* B — Needs You as dense table */}
       {hasNeedsYou && (
-        <section>
-          <SectionHeading
-            tone="amber"
-            label="Needs You"
-            count={failedPromotions.length + needsMe.length}
-          />
-          <Card size="sm">
-            <CardHeader className="pb-0">
-              <CardTitle>Waiting on you</CardTitle>
-              <CardDescription>
-                {failedPromotions.length > 0 ? `${failedPromotions.length} failed · ` : ""}
-                {needsMe.filter(n => n.reason === "blocked").length > 0 ? `${needsMe.filter(n => n.reason === "blocked").length} blocked · ` : ""}
-                {needsMe.filter(n => n.reason === "review").length > 0 ? `${needsMe.filter(n => n.reason === "review").length} in review` : "No items in review"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="!px-0">
-              <DividedList>
-                {failedPromotions.map((f) => (
-                  <AccentRow
-                    key={`fp-${f.threadId}`}
-                    tone="danger"
-                    href={`/channels/${f.channelId}/${f.threadId}?need=gate`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <StatusChip tone="danger">fail</StatusChip>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm truncate font-medium">
-                          {f.progress || "Promotion failed"}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                          # {f.channelName}
-                          {f.errorDetail ? ` — ${f.errorDetail}` : ""}
-                        </p>
-                      </div>
-                      <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
-                        {relativeTime(f.createdAt)}
-                      </span>
-                    </div>
-                  </AccentRow>
+        <section className="space-y-1.5">
+          <div className="flex items-baseline justify-between px-0.5">
+            <h2 className="text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+              Needs You
+            </h2>
+            <span className="text-[10px] text-muted-foreground">{needRows.length}</span>
+          </div>
+          <Card size="sm" className="overflow-hidden py-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="h-8 w-[72px] text-[10px]">Status</TableHead>
+                  <TableHead className="h-8 text-[10px]">Item</TableHead>
+                  <TableHead className="h-8 w-[28%] text-[10px]">Channel</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {needRows.slice(0, 8).map((row) => (
+                  <TableRow key={row.key} className="cursor-pointer">
+                    <TableCell className="py-2">
+                      <Link href={row.href} className="block">
+                        <StatusChip tone={row.tone} className="text-[9px]">
+                          {row.status}
+                        </StatusChip>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Link href={row.href} className="block min-w-0">
+                        <p className="truncate text-sm font-medium">{row.title}</p>
+                        {row.detail && (
+                          <p className="mt-0.5 truncate text-[10px] text-muted-foreground">
+                            {row.detail}
+                          </p>
+                        )}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Link href={row.href} className="block truncate text-xs text-muted-foreground">
+                        # {row.channel}
+                      </Link>
+                    </TableCell>
+                  </TableRow>
                 ))}
-                {needsMe.map((n) => {
-                  const tone = toneForRow(n.reason, n.state);
-                  const badge = n.reason === "blocked" ? "blocked" : n.state;
-                  const need = n.need || (
-                    n.reason === "review" ? "review"
-                    : n.reason === "blocked" ? "blocked"
-                    : n.reason === "failed_required_gate" ? "gate"
-                    : "triage"
-                  );
-                  return (
-                    <AccentRow
-                      key={`nm-${n.threadId}`}
-                      tone={tone}
-                      href={`/channels/${n.channelId}/${n.threadId}?need=${need}`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <StatusChip tone={tone}>{badge}</StatusChip>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm truncate font-medium">
-                            {n.title}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                            # {n.channelName}
-                            {n.why ? ` — ${n.why}` : ""}
-                          </p>
-                        </div>
-                        <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
-                          {relativeTime(n.updatedAt)}
+              </TableBody>
+            </Table>
+          </Card>
+        </section>
+      )}
+
+      {/* A — Projects as accordion; trigger meta is table-dense */}
+      <section className="space-y-1.5">
+        <div className="flex items-baseline justify-between px-0.5">
+          <h2 className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Projects
+          </h2>
+          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+            {data.tududiGlance?.ok && (
+              <span>
+                {data.tududiGlance.total_open ?? 0} open
+                {data.tududiGlance.total_blocked
+                  ? ` · ${data.tududiGlance.total_blocked} blocked`
+                  : ""}
+              </span>
+            )}
+            <Link href="/projects" className="text-primary hover:underline">
+              All →
+            </Link>
+          </div>
+        </div>
+
+        {data.tududiGlance && !data.tududiGlance.ok && (
+          <Card size="sm">
+            <CardContent className="px-3 py-2">
+              <p className="text-[10px] text-red-600 dark:text-red-400">
+                Tududi: {data.tududiGlance.error || "unreachable"}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {projects.length === 0 && data.tududiGlance?.ok && (
+          <Card size="sm">
+            <CardContent className="px-3 py-6 text-center text-xs text-muted-foreground">
+              No projects with open signal.
+            </CardContent>
+          </Card>
+        )}
+
+        {projects.length > 0 && (
+          <Card size="sm" className="overflow-hidden py-0">
+            {/* Column legend — table density on accordion triggers */}
+            <div className="grid grid-cols-[minmax(0,1fr)_3.5rem_4rem_4.5rem] gap-2 border-b border-border px-3 py-1.5 text-[10px] text-muted-foreground">
+              <span>Project</span>
+              <span className="text-right tabular-nums">Open</span>
+              <span className="text-right tabular-nums">Blocked</span>
+              <span className="text-right tabular-nums">Working</span>
+            </div>
+            <Accordion multiple className="px-1">
+              {projects.slice(0, 8).map((proj) => {
+                const working = threadsByProject.get(proj.name) || 0;
+                return (
+                  <AccordionItem key={proj.uid} value={proj.uid} className="border-border px-2">
+                    <AccordionTrigger className="py-2.5 hover:no-underline">
+                      <div className="grid w-full grid-cols-[minmax(0,1fr)_3.5rem_4rem_4.5rem] items-center gap-2 pr-2 text-left">
+                        <span className="truncate text-sm font-medium">{proj.name}</span>
+                        <span className="text-right text-xs tabular-nums text-muted-foreground">
+                          {proj.open_count}
+                        </span>
+                        <span
+                          className={`text-right text-xs tabular-nums ${
+                            proj.blocked_count > 0
+                              ? "font-medium text-red-600 dark:text-red-400"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {proj.blocked_count || "—"}
+                        </span>
+                        <span className="text-right text-xs tabular-nums text-muted-foreground">
+                          {working || "—"}
                         </span>
                       </div>
-                    </AccentRow>
-                  );
-                })}
-              </DividedList>
-            </CardContent>
-          </Card>
-        </section>
-      )}
-
-      {/* In Motion */}
-      <section>
-        <SectionHeading
-          tone="muted"
-          label="In Motion"
-          count={active.length}
-        />
-        <Card size="sm">
-          <CardHeader className="pb-0">
-            <CardTitle>Active work</CardTitle>
-            <CardDescription>
-              {active.filter(a => a.state === "running").length} running
-              {active.filter(a => a.latestStep).length > 0 ? ` · ${active.filter(a => a.latestStep).length} with steps` : ""}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="!px-0">
-            <DividedList
-              empty={
-                active.length === 0 ? (
-                  <span className="text-xs text-muted-foreground">
-                    Nothing active.
-                  </span>
-                ) : undefined
-              }
-            >
-              {active.map((a) => {
-                const tone = stateTone(a.state);
-                const ta = threadActivityById[a.threadId];
-                const metaParts: string[] = [`# ${a.channelName}`];
-                if (ta?.assignee) metaParts.push(ta.assignee);
-                if (a.latestStep) {
-                  metaParts.push(`${a.latestStep.status} — ${a.latestStep.label}`);
-                } else if (ta?.lastAuthor) {
-                  metaParts.push(`${ta.lastAuthor} replied`);
-                }
-                if (ta?.lastMessageAt) metaParts.push(relativeTime(ta.lastMessageAt));
-                else if (ta?.updatedAt) metaParts.push(relativeTime(ta.updatedAt));
-
-                return (
-                  <AccentRow
-                    key={`im-${a.threadId}`}
-                    tone={tone}
-                    href={`/channels/${a.channelId}/${a.threadId}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <StatusChip tone={tone}>{a.state}</StatusChip>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm truncate font-medium">
-                          {a.title}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                          {metaParts.join(" · ")}
-                        </p>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-2">
+                      <ul className="space-y-1 border-l border-border/60 pl-3">
+                        {(proj.items || []).slice(0, 5).map((item) => (
+                          <li key={item.uid}>
+                            <Link
+                              href={itemHref(proj.uid, item)}
+                              className="flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs hover:bg-muted/60"
+                            >
+                              {item.blocked ? (
+                                <StatusChip tone="danger" className="text-[9px]">
+                                  blocked
+                                </StatusChip>
+                              ) : item.kind && item.kind !== "task" ? (
+                                <span
+                                  className={`shrink-0 rounded px-1 text-[9px] font-medium uppercase ${kindBadgeClass(item.kind)}`}
+                                >
+                                  {item.kind}
+                                  {item.stage ? `:${item.stage}` : ""}
+                                </span>
+                              ) : item.status === 1 ? (
+                                <StatusChip tone="active" className="text-[9px]">
+                                  active
+                                </StatusChip>
+                              ) : null}
+                              <span className="min-w-0 truncate">
+                                {item.repo ? `${item.repo} · ` : ""}
+                                {item.name}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                        {(proj.items?.length || 0) === 0 && (
+                          <li className="px-1.5 py-1 text-[10px] text-muted-foreground">
+                            No open items
+                          </li>
+                        )}
+                      </ul>
+                      <div className="mt-1.5 px-1.5">
+                        <Link
+                          href={`/projects?tududi=${encodeURIComponent(proj.uid)}`}
+                          className="text-[10px] text-primary hover:underline"
+                        >
+                          Open in Projects →
+                        </Link>
                       </div>
-                    </div>
-                  </AccentRow>
+                    </AccordionContent>
+                  </AccordionItem>
                 );
               })}
-            </DividedList>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Channels — collapsible */}
-      {channelGroups.length > 0 && (
-        <section>
-          <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-            Channels
-          </h2>
-          <Card size="sm">
-            <CardContent className="!px-0">
-              <DividedList>
-                {channelGroups.map(({ ch, bestThread }) => (
-                  <li key={ch.channelId}>
-                    <ChannelBlock
-                      ch={ch}
-                      bestThread={bestThread}
-                      openChannels={openChannels}
-                      onToggle={toggleChannel}
-                    />
-                  </li>
-                ))}
-              </DividedList>
-            </CardContent>
+            </Accordion>
           </Card>
-        </section>
-      )}
-      </>)}
+        )}
+      </section>
     </PageShell>
   );
 }

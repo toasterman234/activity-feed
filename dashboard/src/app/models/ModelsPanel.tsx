@@ -74,25 +74,25 @@ export function ModelsPanel({ embedded = false }: { embedded?: boolean }) {
 
   const controls = (
     <>
-      <div className="flex w-full gap-1">
+      <div className={`grid w-full gap-1 ${embedded ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-4"}`}>
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 min-w-0 rounded-md px-0.5 py-1.5 text-[11px] font-medium transition-colors ${
+            className={`min-w-0 rounded-md px-1 py-1.5 text-[11px] font-medium transition-colors ${
               tab === t
                 ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
                 : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
             }`}
           >
-            {t}
+            <span className="block truncate">{t}</span>
           </button>
         ))}
       </div>
       <button
         onClick={fetchStatus}
         className={embedded
-          ? "rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-500 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+          ? "self-end rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-500 hover:text-zinc-700 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
           : "absolute right-3 top-2.5 text-[10px] text-zinc-400 hover:text-zinc-600"}
       >
         Refresh
@@ -123,7 +123,7 @@ export function ModelsPanel({ embedded = false }: { embedded?: boolean }) {
     return (
       <div className="space-y-3">
         <div className="rounded-lg border border-zinc-200 bg-card p-2 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2">{controls}</div>
+          <div className="space-y-2">{controls}</div>
         </div>
         <div className="space-y-3">{body}</div>
       </div>

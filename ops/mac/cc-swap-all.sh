@@ -148,7 +148,43 @@ else
   echo "ax-control-plane: skipped (no .env at $AC_PLANE_ENV)"
 fi
 
-# 5. Fan-out to OVH (activity dashboard / iii / OVH pi).
+# 5. Buzz agent(s) — any managed agent with runtime buzz-agent using the CC proxy.
+BUZZ_AGENTS_JSON="$HOME/Library/Application Support/xyz.block.buzz.app/agents/managed-agents.json"
+if [ -f "$BUZZ_AGENTS_JSON" ]; then
+  KEY="$KEY" FILE="$BUZZ_AGENTS_JSON" python3 <<'PY'
+import json, os
+key = os.environ["KEY"].strip()
+path = os.environ["FILE"]
+with open(path) as f:
+    agents = json.load(f)
+updated = 0
+for a in agents:
+    if a.get("runtime") != "buzz-agent":
+        continue
+    ev = a.setdefault("env_vars", {})
+    old = ev.get("OPENAI_COMPAT_API_KEY", "")
+    if old == key:
+        continue
+    ev["OPENAI_COMPAT_API_KEY"] = key
+    a["env_vars"] = ev
+    old_s = old[-6:] if old else "none"
+    new_s = key[-6:]
+    print(f"buzz-agent '{a.get('display_name','?')}': updated (...{old_s} -> ...{new_s})")
+    updated += 1
+if updated:
+    t = path + ".tmp"
+    with open(t, "w") as f:
+        json.dump(agents, f, indent=2)
+    os.replace(t, path)
+    print(f"buzz-agent: {updated} agent(s) updated")
+else:
+    print("buzz-agent: already current")
+PY
+else
+  echo "buzz-agent: skipped (no managed-agents.json at $BUZZ_AGENTS_JSON)"
+fi
+
+# 6. Fan-out to OVH (activity dashboard / iii / OVH pi).
 if [ "${CC_SWAP_SKIP_REMOTE:-0}" = "1" ]; then
   echo "remote-ovh: skipped (CC_SWAP_SKIP_REMOTE=1)"
 else

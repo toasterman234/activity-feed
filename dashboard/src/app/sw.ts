@@ -100,6 +100,17 @@ self.addEventListener("pushsubscriptionchange", (event) => {
 // must come AFTER defaultCache in the array (last match wins).
 const runtimeCaching = [
   ...defaultCache,
+  // App shell / page navigations should prefer the network so an installed
+  // PWA doesn't keep serving an older HTML shell after deploy.
+  {
+    urlPattern: ({ request, url }: { request: Request; url: URL }) =>
+      request.mode === "navigate" && url.origin === self.location.origin,
+    handler: new NetworkFirst({
+      cacheName: "pages",
+      networkTimeoutSeconds: 5,
+    }),
+    method: "GET" as const,
+  },
   {
     urlPattern: ({ url }: { url: URL }) =>
       url.pathname.startsWith("/api/") || url.pathname.startsWith("/ds/"),
@@ -127,10 +138,10 @@ const runtimeCaching = [
 
 installSerwist({
   precacheEntries: self.__SW_MANIFEST,
-  // Don't skip waiting — we want to show an "Update available" prompt
-  // on the client side instead of silently swapping the SW mid-session.
-  skipWaiting: false,
-  clientsClaim: false,
+  // Activate new builds immediately so the installed PWA stops pinning an
+  // older shell after deploy.
+  skipWaiting: true,
+  clientsClaim: true,
   runtimeCaching,
   // Navigation preload speeds up navigations when the SW boots.
   navigationPreload: true,

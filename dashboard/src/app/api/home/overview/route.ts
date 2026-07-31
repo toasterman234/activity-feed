@@ -5,6 +5,8 @@ import { promisify } from "util";
 import { existsSync } from "fs";
 import { pool } from "../../_db";
 import { stateKind } from "@/app/channels/lifecycles";
+import { listTasks, listProjects, tududiPublicBase } from "@/lib/tududi";
+import { parseConventions } from "@/lib/tududiConventions";
 
 const execFileAsync = promisify(execFile);
 
@@ -256,7 +258,7 @@ function threadAttentionGuide(row: {
 export async function GET() {
   try {
     const viewer = "you";
-    const [channels, approvalsRes, promotionsRes, activityRes, threadsRes, workRes, recentAgentRes, agents, approvedPlansRes] = await Promise.all([
+    const [channels, approvalsRes, promotionsRes, activityRes, threadsRes, workRes, recentAgentRes, agents, threadTududiRes, tududiGlance, approvedPlansRes] = await Promise.all([
       getChannelRollups(viewer),
       pool.query<{
         thread_id: string;
@@ -461,6 +463,76 @@ export async function GET() {
           LIMIT 8`,
       ),
       getLiveAgents(),
+      // Thread→Tududi linkage: find messages referencing tududi::task: markers
+      pool.query<{ thread_id: string; body: string }>(
+        `SELECT DISTINCT ON (thread_id) thread_id, body
+           FROM messages
+          WHERE body LIKE '%tududi::task:%'
+            AND thread_id IS NOT NULL
+          ORDER BY thread_id, created_at DESC
+          LIMIT 100`,
+      ),
+      // Tududi glance — fail-open, iterate ALL projects
+      (async () => {
+        try {
+          const projects = await listProjects();
+          if (!projects.ok) return { ok: false, error: projects.error };
+          const projectResults = await Promise.all(
+            projects.projects.map(async (proj) => {
+              const tasks = await listTasks({ project_uid: proj.uid });
+              if (!tasks.ok) return null;
+              const enriched = tasks.tasks.map((t) => {
+                const tags = (t as { tags?: Array<{name?:string}|string> }).tags || [];
+                const c = parseConventions(t.note, tags);
+                return {
+                  uid: t.uid,
+                  name: t.name,
+                  status: typeof t.status === 'number' ? t.status : 0,
+                  kind: c.kind,
+                  stage: c.stage,
+                  outcome: c.outcome,
+                  blocked: c.blocked,
+                  repo: c.repo,
+                  note: t.note || '',
+                };
+              });
+              const open = enriched.filter(t => t.status !== 2);
+              const blocked = open.filter(t => t.blocked);
+              const incidents = open.filter(t =>
+                (t.note || '').toLowerCase().includes('tags: incident')
+              );
+              const totalOpen = open.length;
+              // Only show projects with signal: incidents, blocked items, or kind tags
+              const hasSignal = incidents.length > 0 || blocked.length > 0 || open.some(t => t.kind && t.kind !== 'task');
+              if (totalOpen === 0 || !hasSignal) return null;
+              const sortKey = incidents.length * 10 + blocked.length * 5 + (open.filter(t => t.kind && t.kind !== 'task').length);
+              return {
+                uid: proj.uid,
+                name: proj.name,
+                open_count: totalOpen,
+                blocked_count: blocked.length,
+                incident_count: incidents.length,
+                sort_key: sortKey,
+                items: open.slice(0, 6),
+              };
+            }),
+          );
+          const visible = (projectResults.filter(Boolean) as NonNullable<typeof projectResults[number]>[])
+            .sort((a, b) => (b.sort_key ?? 0) - (a.sort_key ?? 0))
+            .slice(0, 6);
+          const totalOpen = visible.reduce((s, p) => s + p.open_count, 0);
+          const totalBlocked = visible.reduce((s, p) => s + p.blocked_count, 0);
+          return {
+            ok: true,
+            public_base: tududiPublicBase(),
+            total_open: totalOpen,
+            total_blocked: totalBlocked,
+            projects: visible,
+          };
+        } catch (e) {
+          return { ok: false, error: String(e) };
+        }
+      })(),
       pool.query<{
         thread_id: string;
         channel_id: string;
@@ -508,6 +580,34 @@ export async function GET() {
           ORDER BY tm.updated_at DESC`,
       ),
     ]);
+
+    // ── Thread→Tududi cross-reference: parse tududi::task: markers & enrich with glance ──
+    const threadTududiMap = new Map<string, Array<{ externalId: string; taskName: string; taskUid: string; projectName: string }>>();
+    const tududiTaskById = new Map<string, { name: string; uid: string; projectName: string }>();
+    if (tududiGlance?.ok && tududiGlance.projects) {
+      for (const proj of tududiGlance.projects) {
+        for (const item of proj.items) {
+          // Match by note external_id: [external_id:iii:tv:task:...]
+          const extMatch = (item.note || '').match(/\[external_id:(iii:tv:[^\]]+)\]/);
+          if (extMatch) {
+            tududiTaskById.set(extMatch[1], { name: item.name, uid: item.uid, projectName: proj.name });
+          }
+        }
+      }
+    }
+    for (const row of threadTududiRes.rows) {
+      const markers = row.body.matchAll(/tududi::task:(iii:tv:[^\s\]]+)/g);
+      const refs: Array<{ externalId: string; taskName: string; taskUid: string; projectName: string }> = [];
+      const seen = new Set<string>();
+      for (const m of markers) {
+        const extId = m[1];
+        if (seen.has(extId)) continue;
+        seen.add(extId);
+        const info = tududiTaskById.get(extId);
+        refs.push({ externalId: extId, taskName: info?.name || extId.split(':').pop() || extId, taskUid: info?.uid || '', projectName: info?.projectName || '' });
+      }
+      if (refs.length > 0) threadTududiMap.set(row.thread_id, refs);
+    }
 
     const unreadChannels = channels.filter((channel) => channel.unreadCount > 0);
     const approvalThreads = approvalsRes.rows.map((row) => {
@@ -565,6 +665,7 @@ export async function GET() {
       lastAuthor: row.last_author,
       lastMessageAt: row.last_message_at,
       updatedAt: row.updated_at,
+      tududiTasks: threadTududiMap.get(row.thread_id) || [],
     }));
     const activeThreads = workRes.rows.map((row) => ({
       threadId: row.thread_id,
@@ -583,6 +684,7 @@ export async function GET() {
         status: row.promotion_status,
         progress: row.promotion_progress,
       } : null,
+      tududiTasks: threadTududiMap.get(row.thread_id) || [],
     }));
     const channelNames = new Map(channels.map((channel) => [channel.channelId, channel.channelName]));
     const recentAgentActivity = recentAgentRes.rows.map((row) => ({
@@ -658,6 +760,7 @@ export async function GET() {
         recentActivity: recentAgentActivity,
       },
       channels,
+      tududiGlance,
     });
   } catch (error) {
     console.error("[home/overview] failed:", error);

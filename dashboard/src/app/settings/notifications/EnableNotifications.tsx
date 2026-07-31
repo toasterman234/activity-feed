@@ -316,7 +316,10 @@ export default function EnableNotifications() {
 
       {/* Unsupported */}
       {supported === false && (
-        <div className="rounded-lg bg-zinc-100 px-3 py-2 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+        <div
+          className="rounded-lg bg-white px-3 py-2 text-xs !text-black dark:bg-white dark:!text-black"
+          style={{ color: "#000000", WebkitTextFillColor: "#000000" }}
+        >
           Push notifications require a supported browser (Chrome, Edge, or PWA-installed Safari ≥16.4).
         </div>
       )}

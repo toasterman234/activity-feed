@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3010 -H 127.0.0.1",
+    "dev": "next dev --webpack -p 3010 -H 127.0.0.1",
+    "dev:tailscale": "next dev --webpack -p 3011 -H 0.0.0.0",
     "build": "npm run check:shapes && npm run check:shell && npm run check:routes && npm run check:plans && next build --webpack",
     "start": "next start",
     "check:shapes": "node scripts/check-shape-budget.mjs",
@@ -11,7 +12,7 @@
     "check:routes": "node scripts/check-route-shells.mjs",
     "init:workflow": "node scripts/init-workflow-cockpit.mjs",
     "init:perf": "node scripts/init-perf-metrics.mjs",
-    "dev:unsafe-3000": "next dev -p 3000",
+    "dev:unsafe-3000": "next dev --webpack -p 3000",
     "deploy:ovh": "bash scripts/deploy-ovh.sh",
     "rollback:ovh": "bash scripts/rollback-ovh.sh",
     "gen:themes": "npx ts-node themes/generate.ts",
@@ -24,7 +25,11 @@
     "rollback:notifications": "node scripts/rollback-notifications.mjs",
     "gen:vapid": "node scripts/gen-vapid-keys.mjs",
     "deliver:notifications": "node scripts/deliver-notifications.mjs",
-    "test:notifications": "node scripts/test-notifications.mjs"
+    "test:notifications": "node scripts/test-notifications.mjs",
+    "test:mobile": "playwright test -c playwright.mobile.config.ts && node scripts/mobile-qa-report.mjs",
+    "test:mobile:update": "playwright test -c playwright.mobile.config.ts --update-snapshots && node scripts/mobile-qa-report.mjs",
+    "test:mobile:perf": "playwright test -c playwright.mobile.config.ts tests/mobile/perf.spec.ts && node scripts/mobile-perf-report.mjs",
+    "test:mobile:report": "playwright show-report tmp-qa/mobile-qa/html-report"
   },
   "dependencies": {
     "@base-ui/react": "1.6.0",
@@ -40,6 +45,7 @@
     "@headless-tree/core": "1.7.0",
     "@headless-tree/react": "1.7.0",
     "@serwist/next": "^9.5.12",
+    "@shadcn/react": "^0.2.1",
     "@tanstack/db": "file:../electric-circuits/node_modules/.pnpm/@tanstack+db@0.6.12_typescript@5.9.3/node_modules/@tanstack/db",
     "@tanstack/react-db": "file:../electric-circuits/node_modules/.pnpm/@tanstack+react-db@0.1.90_react@18.3.1_typescript@5.9.3/node_modules/@tanstack/react-db",
     "@trpc/client": "^11.18.0",
@@ -54,6 +60,7 @@
     "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-resizable-panels": "^4.12.2",
     "serwist": "^9.5.12",
     "tailwind-merge": "3.6.0",
     "tw-animate-css": "1.3.4",
@@ -62,6 +69,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

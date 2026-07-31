@@ -1,6 +1,6 @@
 export type FleetHostId = "mac" | "zima" | "ovh";
 export type FleetControlLevel = "assist" | "operator";
-export type FleetActionId = "inspect" | "open-session" | "open-shell" | "open-paseo" | "open-cronicle";
+export type FleetActionId = "inspect" | "open-session" | "open-shell" | "open-paseo" | "open-cronicle" | "stop-container" | "restart-container" | "remove-container" | "pool-command";
 export type FleetHealth = "healthy" | "warn" | "cool" | "offline";
 
 export type FleetProcess = {
@@ -58,6 +58,7 @@ export type FleetHost = {
   source?: string;
   sourceLabel?: string;
   updatedAt?: string;
+  dagu?: { url?: string; dags?: number; ok: boolean };
 };
 
 export type FleetSnapshot = {
@@ -88,6 +89,7 @@ export const FLEET_HOSTS: FleetHost[] = [
     health: "warn",
     highlight: "Best for local sessions when idle. The page should bias launches away from this box if it is busy.",
     services: ["Paseo", "Cronicle worker", "executor", "herdr", "newagent"],
+    dagu: { url: "http://localhost:8091", ok: true },
     controls: [
       { label: "Open local session", level: "assist", action: "open-session" },
       { label: "Inspect Mac", level: "assist", action: "inspect" },
@@ -109,6 +111,7 @@ export const FLEET_HOSTS: FleetHost[] = [
     health: "healthy",
     highlight: "Runs Cronicle primary in Docker and is the natural place for shared fleet services.",
     services: ["Cronicle primary", "herdr", "LiteLLM", "Dagu", "shared-agents"],
+    dagu: { url: "http://100.99.174.29:8093", ok: true },
     controls: [
       { label: "Open Cronicle", level: "assist", action: "open-cronicle" },
       { label: "Inspect Zima", level: "assist", action: "inspect" },
@@ -130,6 +133,7 @@ export const FLEET_HOSTS: FleetHost[] = [
     health: "healthy",
     highlight: "Best target for overflow work when the Mac is hot. Good place to land longer-lived sessions.",
     services: ["herdr", "Cronicle worker", "agent-mail", "executor", "shared-agents"],
+    dagu: { url: "http://127.0.0.1:8090", ok: true },
     controls: [
       { label: "Attach herdr", level: "assist", action: "open-session" },
       { label: "Inspect OVH", level: "assist", action: "inspect" },

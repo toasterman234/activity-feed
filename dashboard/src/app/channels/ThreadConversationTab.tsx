@@ -1,10 +1,9 @@
 "use client";
 
-import { MentionInput, MessageBody, type MentionOption } from "./MentionInput";
-import { Card, CardContent, Separator } from "@/components/ui";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { relativeTime, type MessageRow } from "./shapes";
+import { ArrowUpIcon } from "lucide-react";
+import { ThreadChatTranscript } from "./ThreadChatTranscript";
+import { type MessageRow, type ActivityEventRow } from "./shapes";
+import { InputGroup, InputGroupAddon, InputGroupButton } from "@/components/ui";
 
 export type ThreadConversationTabProps = {
   threadMsg: MessageRow;
@@ -12,29 +11,12 @@ export type ThreadConversationTabProps = {
   replyBody: string;
   onReplyBodyChange: (value: string) => void;
   onSubmitReply: () => void;
-  mentionOptions: MentionOption[];
+  mentionOptions: Array<{ handle: string; label: string; hint?: string }>;
   sending: boolean;
   isArchived: boolean;
+  runEvents: ActivityEventRow[];
+  activityRunning: boolean;
 };
-
-function ReplyCard({ reply }: { reply: MessageRow }) {
-  return (
-    <Card size="sm" className="border-border">
-      <CardContent>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-foreground">{reply.author}</span>
-          <span className="text-[10px] text-muted-foreground">
-            {relativeTime(reply.created_at)}
-          </span>
-        </div>
-        <MessageBody
-          body={reply.body}
-          className="mt-1 whitespace-pre-wrap text-sm text-foreground leading-relaxed"
-        />
-      </CardContent>
-    </Card>
-  );
-}
 
 export function ThreadConversationTab({
   threadMsg,
@@ -42,75 +24,62 @@ export function ThreadConversationTab({
   replyBody,
   onReplyBodyChange,
   onSubmitReply,
-  mentionOptions,
   sending,
   isArchived,
+  runEvents,
+  activityRunning,
 }: ThreadConversationTabProps) {
-  const sortedReplies = [...replies].sort(
-    (a, b) => a.created_at.localeCompare(b.created_at),
-  );
-
   return (
-    <div className="flex flex-col gap-3">
-      {/* Thread root message */}
-      <Card className="border-border">
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-foreground">
-              {threadMsg.author}
-            </span>
-            <span className="text-[10px] text-muted-foreground">
-              {relativeTime(threadMsg.created_at)}
-            </span>
-          </div>
-          <MessageBody
-            body={threadMsg.body}
-            className="mt-1 whitespace-pre-wrap text-sm leading-relaxed"
-          />
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {/* Replies */}
-      {sortedReplies.length === 0 ? (
-        <p className="py-4 text-center text-xs text-muted-foreground">
-          No replies yet
-        </p>
-      ) : (
-        <div className="flex flex-col gap-2 pl-3 border-l-2 border-muted">
-          {sortedReplies.map((reply) => (
-            <ReplyCard key={reply.id} reply={reply} />
-          ))}
-        </div>
-      )}
-
-      {/* Compose bar */}
-      <div className="sticky bottom-0 -mx-3 -mb-3 border-t border-border bg-card p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <div className="mx-auto flex w-full max-w-3xl gap-2">
-          <MentionInput
-            value={replyBody}
-            onChange={onReplyBodyChange}
-            onSubmit={onSubmitReply}
-            placeholder={
-              isArchived
-                ? "Thread is archived — replies disabled"
-                : "Reply… use @agent to trigger"
-            }
-            options={mentionOptions}
-            disabled={sending || isArchived}
-            className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm disabled:opacity-50"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onSubmitReply}
-            disabled={!replyBody.trim() || sending || isArchived}
-          >
-            {sending ? "…" : "Reply"}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <ThreadChatTranscript
+      rootMessage={{
+        id: threadMsg.id,
+        author: threadMsg.author,
+        body: threadMsg.body,
+        createdAt: threadMsg.created_at,
+      }}
+      replies={replies.map((reply) => ({
+        id: reply.id,
+        author: reply.author,
+        body: reply.body,
+        createdAt: reply.created_at,
+      }))}
+      runEvents={runEvents}
+      activityRunning={activityRunning}
+      description="Live thread chat"
+      emptyLabel="No conversation yet"
+      emptyDescription="Type a reply below to continue the thread."
+      footer={
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmitReply();
+          }}
+          className="w-full"
+        >
+          <InputGroup>
+            <input
+              value={replyBody}
+              onChange={(e) => onReplyBodyChange(e.target.value)}
+              placeholder={isArchived ? "Thread is archived — replies disabled" : "Reply to this thread…"}
+              disabled={sending || isArchived}
+              className="h-14 w-full bg-transparent px-4 text-sm outline-none placeholder:text-muted-foreground disabled:opacity-50"
+            />
+            <InputGroupAddon align="block-end" className="pt-0">
+              <InputGroupButton
+                type="submit"
+                variant="default"
+                size="icon-sm"
+                disabled={!replyBody.trim() || sending || isArchived}
+                className="ml-auto"
+                aria-label="Send reply"
+              >
+                <ArrowUpIcon />
+                <span className="sr-only">Send</span>
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+        </form>
+      }
+    />
   );
 }

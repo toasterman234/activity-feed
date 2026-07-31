@@ -73,9 +73,46 @@
   --color-red-700: var(--danger);
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+svg,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
 body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
   line-height: var(--leading-body);
+  overflow-x: hidden;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.page-content {
+  padding-inline: clamp(12px, 4vw, 20px);
 }

@@ -4,9 +4,7 @@ import type { Metadata, Viewport } from "next";
 import "../../themes/generated.css";
 import BottomNav from "./bottom-nav";
 import SWUpdatePrompt from "./sw-update-prompt";
-import InstallPrompt from "./install-prompt";
 import PerfMonitors from "./perf-monitors";
-import ThemeSwitcher from "./theme-switcher";
 import ProtoThemePicker from "@/components/ProtoThemePicker";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -82,8 +80,6 @@ export default function RootLayout({
           <main>{children}</main>
           <BottomNav />
           <SWUpdatePrompt />
-          <InstallPrompt />
-          <ThemeSwitcher />
           {process.env.NODE_ENV === "development" && <ProtoThemePicker />}
         </TooltipProvider>
       </body>

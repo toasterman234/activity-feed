@@ -65,6 +65,11 @@ async function isGraphEnabledForChannel(channelId: string, channelName?: string)
 
 
 
+// ds-rust has a per-append body limit (~2.5KB) — >body len causes the JSON
+// serializer to truncate mid-character, which bricks the engine's sequencer
+// (infinite parse-error loop). Cap message bodies at 2000 bytes.
+const MAX_BODY_LEN = 2000;
+
 async function insertMessage(row: {
   id: string;
   channel_id: string;
@@ -77,7 +82,7 @@ async function insertMessage(row: {
     `INSERT INTO messages (id, channel_id, thread_id, author, body, created_at)
      VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (id) DO NOTHING`,
-    [row.id, row.channel_id, row.thread_id, row.author, row.body, row.created_at],
+    [row.id, row.channel_id, row.thread_id, row.author, row.body.slice(0, MAX_BODY_LEN), row.created_at],
   );
 }
 
@@ -394,7 +399,7 @@ type StreamOutcome = {
 // agent thinks/acts. `messages` is a held live shape, so these updates surface
 // in the conversation in real time (unlike the polled activity strip).
 async function updateMessageBody(id: string, body: string) {
-  await pool.query(`UPDATE messages SET body = $2 WHERE id = $1`, [id, body]);
+  await pool.query(`UPDATE messages SET body = $2 WHERE id = $1`, [id, body.slice(0, MAX_BODY_LEN)]);
 }
 
 // Keep the last N chars of streaming thinking so the inline body stays readable

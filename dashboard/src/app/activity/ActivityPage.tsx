@@ -11,6 +11,7 @@ import { acquireShape, releaseShape } from "../shape-registry";
 import { writeRow } from "../writeRow";
 import { CollectionsContent } from "../collections/CollectionsContent";
 import { RunsTab } from "../runs/RunsPage";
+import { Bubble, BubbleContent, Message, MessageAvatar, MessageContent, MessageHeader } from "@/components/ui";
 import { measure } from "@/lib/perf";
 
 const VERDICTS = [
@@ -86,6 +87,30 @@ function DetailValue({ value }: { value: unknown }) {
   if (value === null || value === undefined || value === "") return <span className="text-muted-foreground italic">—</span>;
   if (typeof value === "object") return <pre className="whitespace-pre-wrap break-words text-[11px] leading-snug">{JSON.stringify(value, null, 2)}</pre>;
   return <span className="whitespace-pre-wrap break-words">{String(value)}</span>;
+}
+
+const CHAT_AVATAR_COLORS = [
+  "bg-blue-500 text-white",
+  "bg-emerald-500 text-white",
+  "bg-amber-500 text-white",
+  "bg-purple-500 text-white",
+  "bg-rose-500 text-white",
+  "bg-cyan-500 text-white",
+  "bg-indigo-500 text-white",
+  "bg-teal-500 text-white",
+];
+
+function activitySpeaker(row: { source: string; role: string }): string {
+  if (row.role === "user") return "You";
+  if (row.source === "pi") return "Pi";
+  if (row.source === "claude-code") return "Claude Code";
+  return SOURCE_FULL[row.source] ?? row.source;
+}
+
+function activityAvatarColor(label: string): string {
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) hash = label.charCodeAt(i) + ((hash << 5) - hash);
+  return CHAT_AVATAR_COLORS[Math.abs(hash) % CHAT_AVATAR_COLORS.length];
 }
 
 // ── data ───────────────────────────────────────────────────────────
@@ -495,13 +520,26 @@ function Feed({ shape, collShape, jdgShape }: { shape: ShapeMaterialization; col
           {isSelected && <span className="text-[10px] text-amber-600">✓</span>}
         </button>
       )}
-      {opts?.thread && isMessage ? (
-        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-lg border px-3 py-2 hover:brightness-95 transition-all dark:hover:brightness-110 ${selectMode?"pl-8":""} ${isUser?"border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40":"border-border bg-card dark:border-zinc-800 dark:bg-zinc-900"}`}>
-          <div className="flex items-center gap-1.5 mb-1">
-            <span className={`text-[10px] font-semibold uppercase tracking-wide ${isUser?"text-blue-600 dark:text-blue-300":"text-muted-foreground"}`}>{isUser?"You":SOURCE_FULL[r.source]??r.source}</span>
-            <span className="text-[10px] text-muted-foreground">{relativeTime(r.created_at)}</span>
-          </div>
-          <p className="whitespace-pre-wrap break-words text-sm text-foreground">{r.text||r.summary}</p>
+      {isMessage ? (
+        <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-xl px-1 py-1 transition-colors hover:bg-muted/30 ${selectMode?"pl-8":""}`}>
+          <Message align={isUser ? "end" : "start"}>
+            <MessageAvatar>
+              <span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${activityAvatarColor(activitySpeaker(r))}`}>
+                {activitySpeaker(r).slice(0, 2).toUpperCase()}
+              </span>
+            </MessageAvatar>
+            <MessageContent>
+              <MessageHeader className={isUser ? "justify-end" : ""}>
+                <span className="text-foreground">{activitySpeaker(r)}</span>
+                <span className="ml-2 font-normal">{relativeTime(r.created_at)}</span>
+              </MessageHeader>
+              <Bubble align={isUser ? "end" : "start"} variant={isUser ? "default" : opts?.thread ? "secondary" : "outline"}>
+                <BubbleContent>
+                  <p className="whitespace-pre-wrap break-words text-sm">{r.text||r.summary}</p>
+                </BubbleContent>
+              </Bubble>
+            </MessageContent>
+          </Message>
         </button>
       ) : opts?.thread ? (
         <button onClick={()=>{if(!selectMode)setDetailRow(r)}} className={`w-full text-left rounded-md border border-dashed border-border bg-muted/30 px-2.5 py-1 hover:bg-zinc-100 transition-colors dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/60 ${selectMode?"pl-8":""}`}>

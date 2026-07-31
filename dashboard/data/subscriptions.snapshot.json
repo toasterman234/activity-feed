@@ -18,10 +18,10 @@
           "used": null,
           "limit": null,
           "remaining": null,
-          "used_frac": 0.07,
-          "remaining_frac": 0.93,
+          "used_frac": 1,
+          "remaining_frac": 0,
           "unit": "percent",
-          "status": "ok",
+          "status": "exhausted",
           "resets_at": "2026-08-05T04:12:51+00:00",
           "duration_hours": null
         }
@@ -79,6 +79,43 @@
       "reset_credits": 0
     },
     {
+      "provider": "grok-build",
+      "provider_label": "Grok Build",
+      "account_id": "bencharney234@gmail.com",
+      "email": "bencharney234@gmail.com",
+      "plan": null,
+      "source": "tokscale",
+      "limits": [
+        {
+          "label": "Frequent",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "percent",
+          "status": "ok",
+          "resets_at": null,
+          "duration_hours": null
+        },
+        {
+          "label": "Occasional",
+          "window": null,
+          "used": null,
+          "limit": null,
+          "remaining": null,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "percent",
+          "status": "ok",
+          "resets_at": null,
+          "duration_hours": null
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
       "provider": "anthropic",
       "provider_label": "Claude Code",
       "account_id": "claude",
@@ -95,7 +132,7 @@
           "status": "ok"
         },
         {
-          "label": "97,363,507 tokens · 66,283 msgs",
+          "label": "97,363,507 tokens · 66,284 msgs",
           "used": 5323.8203,
           "used_frac": 0,
           "remaining_frac": 1,
@@ -115,15 +152,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 1365.417,
+          "used": 1464.7506,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "3,251,057,561 tokens · 45,009 msgs",
-          "used": 2200.7466,
+          "label": "3,487,340,586 tokens · 48,543 msgs",
+          "used": 2376.519,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -196,15 +233,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 2.1859,
+          "used": 2.1962,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "4,016,773 tokens · 2,011 msgs",
-          "used": 3.0934,
+          "label": "4,024,495 tokens · 2,047 msgs",
+          "used": 3.1037,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -232,33 +269,6 @@
         {
           "label": "3,077,021 tokens · 2,795 msgs",
           "used": 1.8637,
-          "used_frac": 0,
-          "remaining_frac": 1,
-          "unit": "usd",
-          "status": "ok"
-        }
-      ],
-      "reset_credits": 0
-    },
-    {
-      "provider": "grok-build",
-      "provider_label": "Grok Build",
-      "account_id": "grok",
-      "email": null,
-      "plan": "usage-only",
-      "source": "tokscale-models",
-      "limits": [
-        {
-          "label": "grok-4.5",
-          "used": 0.891,
-          "used_frac": 0,
-          "remaining_frac": 1,
-          "unit": "usd",
-          "status": "ok"
-        },
-        {
-          "label": "445,517 tokens · 10 msgs",
-          "used": 0.891,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -318,5 +328,5 @@
       "reset_credits": 0
     }
   ],
-  "generated_at": "2026-07-30T18:43:35.834Z"
+  "generated_at": "2026-07-31T18:29:19.185Z"
 }
