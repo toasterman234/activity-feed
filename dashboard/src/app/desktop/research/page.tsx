@@ -11,14 +11,20 @@ import {
 import ResearchMap from "./map-view";
 import { NewCaseDialog } from "./NewCaseDialog";
 
-const KIND_LABEL: Record<FinanceResearchContext["kind"], string> = {
+const ALL_KINDS = ["general", "theme", "symbol_thesis", "screen_rule", "trade_doctrine"] as const;
+
+type KindFilter = (typeof ALL_KINDS)[number];
+
+const KIND_LABEL: Record<KindFilter, string> = {
+  general: "General",
   theme: "Theme",
   symbol_thesis: "Symbol thesis",
   screen_rule: "Screener rule",
   trade_doctrine: "Trade doctrine",
 };
 
-const KIND_ORDER: FinanceResearchContext["kind"][] = [
+const KIND_ORDER: KindFilter[] = [
+  "general",
   "theme",
   "screen_rule",
   "trade_doctrine",
@@ -39,7 +45,8 @@ const STATUS_LABEL: Record<FinanceResearchStatus, string> = {
   stale: "Stale",
 };
 
-const KIND_COLOR: Record<FinanceResearchContext["kind"], string> = {
+const KIND_COLOR: Record<KindFilter, string> = {
+  general: "bg-gray-600 text-white",
   theme: "bg-violet-600 text-white",
   screen_rule: "bg-cyan-600 text-white",
   trade_doctrine: "bg-amber-600 text-white",
@@ -317,9 +324,7 @@ export default function DesktopResearchPage() {
   const [contexts, setContexts] = useState<FinanceResearchContext[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [kindFilter, setKindFilter] = useState<
-    FinanceResearchContext["kind"] | "all"
-  >("all");
+  const [kindFilter, setKindFilter] = useState<KindFilter | "all">("all");
   const [statusFilter, setStatusFilter] = useState<
     FinanceResearchStatus | "all"
   >("all");
@@ -459,11 +464,11 @@ export default function DesktopResearchPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">
           Kind
         </span>
-        {(["all", ...KIND_ORDER] as const).map((kind) => (
+        {(["all", ...ALL_KINDS] as const).map((kind) => (
           <button
             key={kind}
             onClick={() =>
-              setKindFilter(kind as FinanceResearchContext["kind"] | "all")
+              setKindFilter(kind as KindFilter | "all")
             }
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               kindFilter === kind

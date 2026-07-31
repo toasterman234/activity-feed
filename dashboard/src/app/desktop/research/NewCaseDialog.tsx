@@ -3,13 +3,14 @@
 import { useState } from "react";
 
 const KIND_LABEL: Record<string, string> = {
+  general: "General",
   theme: "Theme / Sector",
   symbol_thesis: "Symbol Thesis",
   screen_rule: "Screen Rule",
   trade_doctrine: "Trade Doctrine",
 };
 
-const KIND_ORDER = ["theme", "symbol_thesis", "screen_rule", "trade_doctrine"] as const;
+const KIND_ORDER = ["general", "theme", "symbol_thesis", "screen_rule", "trade_doctrine"] as const;
 
 export function NewCaseDialog({
   open,
