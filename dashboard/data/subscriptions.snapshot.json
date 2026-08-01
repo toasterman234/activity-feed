@@ -22,7 +22,7 @@
           "remaining_frac": 1,
           "unit": "percent",
           "status": "ok",
-          "resets_at": "2026-08-08T05:05:24+00:00",
+          "resets_at": "2026-08-08T05:24:01+00:00",
           "duration_hours": null
         }
       ],
@@ -115,15 +115,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 1560.2322,
+          "used": 1562.3197,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "3,704,064,888 tokens · 50,835 msgs",
-          "used": 2472.0006,
+          "label": "3,708,801,869 tokens · 50,903 msgs",
+          "used": 2474.0881,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -318,5 +318,5 @@
       "reset_credits": 0
     }
   ],
-  "generated_at": "2026-08-01T05:05:30.088Z"
+  "generated_at": "2026-08-01T05:24:06.078Z"
 }

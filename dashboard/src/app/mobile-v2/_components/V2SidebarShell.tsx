@@ -10,6 +10,7 @@ import {
   FolderKanban,
   Home,
   Inbox,
+  Landmark,
   Menu,
   Rocket,
   Settings,
@@ -24,6 +25,7 @@ const PRIMARY = [
   { href: "/mobile-v2", label: "Today", icon: Home },
   { href: "/mobile-v2/inbox", label: "Inbox", icon: Inbox },
   { href: "/mobile-v2/projects", label: "Projects", icon: FolderKanban },
+  { href: "/mobile-v2/finance", label: "Finance", icon: Landmark },
   { href: "/mobile-v2/ops", label: "Ops", icon: Wrench },
 ] as const;
 

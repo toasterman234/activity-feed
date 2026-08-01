@@ -122,3 +122,133 @@ body.mobile-v2-active [data-theme-switcher] {
   color: #111318 !important;
   opacity: 1;
 }
+
+/* ── Finance tab — map legacy Tailwind zinc colors to Azure Mono tokens ── */
+
+.mobile-v2-theme .v2-surface [class*="border-zinc-200"] {
+  border-color: var(--border) !important;
+}
+.mobile-v2-theme .v2-surface [class*="border-zinc-100"] {
+  border-color: var(--border) !important;
+}
+.mobile-v2-theme .v2-surface [class*="border-zinc-50"] {
+  border-color: var(--border) !important;
+}
+.mobile-v2-theme .v2-surface [class*="dark:border-zinc-800"] {
+  border-color: var(--border) !important;
+}
+
+/* text foreground */
+.mobile-v2-theme .v2-surface [class*="text-zinc-900"],
+.mobile-v2-theme .v2-surface .dark\:text-zinc-100,
+.mobile-v2-theme .v2-surface .dark\:text-zinc-50 {
+  color: var(--foreground) !important;
+}
+.mobile-v2-theme .v2-surface [class*="text-zinc-800"],
+.mobile-v2-theme .v2-surface .dark\:text-zinc-200 {
+  color: var(--foreground) !important;
+}
+.mobile-v2-theme .v2-surface [class*="text-zinc-700"],
+.mobile-v2-theme .v2-surface .dark\:text-zinc-300 {
+  color: var(--muted-foreground) !important;
+}
+.mobile-v2-theme .v2-surface [class*="text-zinc-600"],
+.mobile-v2-theme .v2-surface .dark\:text-zinc-400 {
+  color: var(--muted-foreground) !important;
+}
+.mobile-v2-theme .v2-surface [class*="text-zinc-500"] {
+  color: var(--muted-foreground) !important;
+}
+.mobile-v2-theme .v2-surface [class*="text-zinc-400"] {
+  color: var(--muted-foreground) !important;
+}
+
+/* bg */
+.mobile-v2-theme .v2-surface [class*="bg-zinc-50"],
+.mobile-v2-theme .v2-surface [class*="bg-zinc-100"] {
+  background-color: var(--muted) !important;
+}
+.mobile-v2-theme .v2-surface [class*="bg-zinc-900"],
+.mobile-v2-theme .v2-surface .dark\:bg-zinc-900,
+.mobile-v2-theme .v2-surface .dark\:bg-zinc-800 {
+  background-color: var(--card) !important;
+}
+
+/* dark text variants */
+.mobile-v2-theme .v2-surface .dark\:text-zinc-100,
+.mobile-v2-theme .v2-surface .dark\:text-zinc-200 {
+  color: var(--foreground) !important;
+}
+.mobile-v2-theme .v2-surface .dark\:text-zinc-300,
+.mobile-v2-theme .v2-surface .dark\:text-zinc-400 {
+  color: var(--muted-foreground) !important;
+}
+
+/* Card component overrides — match v2-surface style */
+.mobile-v2-theme .v2-surface [data-slot="card"] {
+  background: white !important;
+  border-color: var(--border) !important;
+  border-radius: calc(var(--radius) * 1.05) !important;
+}
+
+/* Badge: use primary color for default */
+.mobile-v2-theme .v2-surface .bg-primary {
+  background-color: var(--primary) !important;
+}
+
+/* Separator */
+.mobile-v2-theme .v2-surface [data-slot="separator"] {
+  background: var(--border) !important;
+}
+
+/* Skeleton */
+.mobile-v2-theme .v2-surface .animate-pulse [class*="bg-zinc"] {
+  background-color: var(--muted) !important;
+}
+
+/* Tables — keep them readable */
+.mobile-v2-theme .v2-surface table {
+  color: var(--foreground) !important;
+}
+.mobile-v2-theme .v2-surface th {
+  color: var(--muted-foreground) !important;
+}
+.mobile-v2-theme .v2-surface td {
+  color: var(--foreground) !important;
+}
+
+/* Inputs & selects inside finance */
+.mobile-v2-theme .v2-surface input[class*="border-zinc"],
+.mobile-v2-theme .v2-surface select[class*="border-zinc"] {
+  border-color: var(--border) !important;
+  background: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+.mobile-v2-theme .v2-surface input[class*="placeholder"]::placeholder,
+.mobile-v2-theme .v2-surface input::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+/* Hover states */
+.mobile-v2-theme .v2-surface [class*="hover:bg-zinc-50"]:hover,
+.mobile-v2-theme .v2-surface [class*="hover:bg-zinc-50\/80"]:hover,
+.mobile-v2-theme .v2-surface .dark\:hover\:bg-zinc-900\/70:hover {
+  background-color: var(--muted) !important;
+}
+.mobile-v2-theme .v2-surface [class*="hover:bg-zinc-800"]:hover {
+  background-color: var(--primary) !important;
+}
+
+/* Buttons */
+.mobile-v2-theme .v2-surface button[class*="bg-zinc-900"] {
+  background-color: var(--primary) !important;
+}
+.mobile-v2-theme .v2-surface button[class*="bg-zinc-100"][class*="text-zinc-600"] {
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+}
+
+/* Active pill style */
+.mobile-v2-theme .v2-surface .bg-zinc-900.text-white {
+  background-color: var(--primary) !important;
+}
