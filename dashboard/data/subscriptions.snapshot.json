@@ -18,11 +18,11 @@
           "used": null,
           "limit": null,
           "remaining": null,
-          "used_frac": 1,
-          "remaining_frac": 0,
+          "used_frac": 0,
+          "remaining_frac": 1,
           "unit": "percent",
-          "status": "exhausted",
-          "resets_at": "2026-08-05T04:12:51+00:00",
+          "status": "ok",
+          "resets_at": "2026-08-08T05:05:24+00:00",
           "duration_hours": null
         }
       ],
@@ -88,15 +88,15 @@
       "limits": [
         {
           "label": "claude-opus-4-8",
-          "used": 3063.0362,
+          "used": 3063.937,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "97,446,397 tokens · 66,335 msgs",
-          "used": 5326.6063,
+          "label": "97,586,028 tokens · 66,513 msgs",
+          "used": 5332.7933,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -115,15 +115,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 1551.3988,
+          "used": 1560.2322,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "3,684,022,038 tokens · 50,539 msgs",
-          "used": 2463.1672,
+          "label": "3,704,064,888 tokens · 50,835 msgs",
+          "used": 2472.0006,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -196,15 +196,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 2.2375,
+          "used": 2.2384,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "4,115,074 tokens · 2,059 msgs",
-          "used": 3.145,
+          "label": "4,115,735 tokens · 2,062 msgs",
+          "used": 3.1459,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -318,5 +318,5 @@
       "reset_credits": 0
     }
   ],
-  "generated_at": "2026-08-01T02:55:04.236Z"
+  "generated_at": "2026-08-01T05:05:30.088Z"
 }
