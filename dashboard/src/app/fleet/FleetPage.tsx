@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { FLEET_HOSTS, type BuzzAgentsSnapshot, type FleetActionId, type FleetHost, type FleetSnapshot } from "@/lib/fleet";
 import { Badge, StatusChip, type UiTone } from "@/components/ui";
+import type { NomadComputeSnapshot, NomadJobSummary, NomadAllocation } from "@/lib/nomad";
 
 type AgentHealthEntry = {
   id: string;
@@ -188,6 +189,110 @@ function AgentHealthPanel() {
   );
 }
 
+function jobStatusTone(status: string): UiTone {
+  switch (status) {
+    case "running": return "good";
+    case "pending": return "wait";
+    case "dead": return "neutral";
+    default: return "neutral";
+  }
+}
+
+function allocTone(status: string): UiTone {
+  switch (status) {
+    case "running": return "good";
+    case "pending": return "wait";
+    case "failed": case "lost": return "danger";
+    case "complete": return "neutral";
+    default: return "neutral";
+  }
+}
+
+function NomadJobsPanel({
+  nomad,
+  expandedJob,
+  setExpandedJob,
+}: {
+  nomad: NomadComputeSnapshot;
+  expandedJob: string | null;
+  setExpandedJob: (id: string | null) => void;
+}) {
+  const allocsByJob = useMemo(() => {
+    const map = new Map<string, NomadAllocation[]>();
+    for (const alloc of nomad.allocations ?? []) {
+      const list = map.get(alloc.jobId) || [];
+      list.push(alloc);
+      map.set(alloc.jobId, list);
+    }
+    return map;
+  }, [nomad]);
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 px-1">
+        <h2 className="text-xs font-semibold text-foreground">Nomad Jobs</h2>
+        <span className="text-[10px] text-muted-foreground">
+          {nomad.jobs.length} job{nomad.jobs.length !== 1 ? "s" : ""} · {nomad.allocations?.length ?? 0} allocs
+        </span>
+      </div>
+      {nomad.jobs.map((job) => {
+        const open = expandedJob === job.id;
+        const jobAllocs = allocsByJob.get(job.id) ?? [];
+        const totalRunning = Object.values(job.summary).reduce((s, tg) => s + tg.running, 0);
+        const totalFailed = Object.values(job.summary).reduce((s, tg) => s + tg.failed + tg.lost, 0);
+        return (
+          <div key={job.id} className="rounded-lg border border-border bg-card/50 px-3 py-2 space-y-1">
+            <button
+              onClick={() => setExpandedJob(open ? null : job.id)}
+              className="flex w-full items-center justify-between gap-2 text-left"
+            >
+              <div className="min-w-0 flex items-center gap-2">
+                <span className="text-[11px] font-semibold text-foreground truncate">{job.name}</span>
+                <StatusChip tone={jobStatusTone(job.status)}>{job.status}</StatusChip>
+                <span className="text-[9px] text-muted-foreground">{job.type} · pool {job.nodePool}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[10px] font-mono text-foreground">{totalRunning}r</span>
+                {totalFailed > 0 && (
+                  <span className="text-[10px] font-mono text-red-600 dark:text-red-400">{totalFailed}f</span>
+                )}
+                {detailChevron(open)}
+              </div>
+            </button>
+            {open && (
+              <div className="space-y-1.5 pt-1 border-t border-border/50">
+                {Object.entries(job.summary).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 text-[9px]">
+                    {Object.entries(job.summary).map(([group, s]) => (
+                      <span key={group} className="rounded bg-muted/50 px-1.5 py-0.5">
+                        <span className="font-medium text-foreground">{group}</span>
+                        <span className="text-muted-foreground ml-1">{s.running}r {s.queued>0&&`${s.queued}q `}{s.failed>0&&`${s.failed}f `}{s.complete>0&&`${s.complete}c`}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {jobAllocs.length > 0 && (
+                  <div className="space-y-0.5">
+                    {jobAllocs.map((alloc) => (
+                      <div key={alloc.id} className="flex items-center justify-between rounded bg-muted/20 px-2 py-1 text-[10px]">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-mono text-foreground">{alloc.id.slice(0, 8)}</span>
+                          <span className="text-muted-foreground">on {alloc.nodeName}</span>
+                        </div>
+                        <StatusChip tone={allocTone(alloc.status)}>{alloc.status}</StatusChip>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function FleetPage() {
   const [snapshot, setSnapshot] = useState<FleetSnapshot | null>(null);
   const [snapshotError, setSnapshotError] = useState<string | null>(null);
@@ -202,6 +307,8 @@ export default function FleetPage() {
   const [poolOutput, setPoolOutput] = useState<string | null>(null);
   const [poolStatus, setPoolStatus] = useState<string>("");
   const [macHealth, setMacHealth] = useState<string>("…");
+  const [nomad, setNomad] = useState<NomadComputeSnapshot | null>(null);
+  const [expandedNomadJob, setExpandedNomadJob] = useState<string | null>(null);
 
   const mergedHosts = useMemo(() => {
     const liveById = new Map((snapshot?.hosts || []).map((h) => [h.id, h]));
@@ -287,10 +394,20 @@ export default function FleetPage() {
     }
   }
 
+  async function loadNomad() {
+    try {
+      const res = await fetch("/api/compute", { cache: "no-store" });
+      const data = (await res.json()) as NomadComputeSnapshot;
+      if (data.ok) setNomad(data);
+    } catch { /* Nomad might not be available */ }
+  }
+
   useEffect(() => {
     void loadSnapshot();
+    void loadNomad();
     const timer = window.setInterval(loadSnapshot, 15000);
-    return () => window.clearInterval(timer);
+    const nomadTimer = window.setInterval(loadNomad, 15000);
+    return () => { window.clearInterval(timer); window.clearInterval(nomadTimer); };
   }, []);
 
   const updatedText = snapshot
@@ -577,6 +694,15 @@ export default function FleetPage() {
           );
         })}
       </div>
+
+      {/* ── Nomad Jobs ──────────────────────────────────────────────── */}
+      {nomad && nomad.jobs.length > 0 && (
+        <NomadJobsPanel
+          nomad={nomad}
+          expandedJob={expandedNomadJob}
+          setExpandedJob={setExpandedNomadJob}
+        />
+      )}
 
       {/* Status line */}
       <p className="text-center text-[10px] text-muted-foreground">{statusLine}</p>

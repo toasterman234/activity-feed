@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function OpsIndex() {
   const links = [
     { href: "/ops/fleet", label: "Fleet", desc: "Agent fleet status and controls" },
-    { href: "/ops/compute", label: "Compute", desc: "Nomad cluster — nodes, jobs, allocations" },
     { href: "/ops/activity", label: "Activity", desc: "Live agent activity feed" },
     { href: "/ops/runs", label: "Runs", desc: "Agent run history and metrics" },
     { href: "/ops/registry", label: "Registry", desc: "Tool registrations and subscriptions" },
