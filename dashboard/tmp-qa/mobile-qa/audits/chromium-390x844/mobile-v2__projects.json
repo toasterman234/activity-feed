@@ -1,0 +1,111 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 885,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 68,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 63,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 83,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 54,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 84,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 72,
+      "height": 18
+    },
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 40,
+      "height": 33
+    },
+    {
+      "selector": "button.group/button.inline-flex.items-center",
+      "width": 40,
+      "height": 33
+    },
+    {
+      "selector": "input#base-ui-_R_2aqnpfl5stb_.w-full.min-w-0.border",
+      "width": 153,
+      "height": 21
+    },
+    {
+      "selector": "button.rounded-lg.border.px-2",
+      "width": 68,
+      "height": 21
+    },
+    {
+      "selector": "button.rounded-lg.border.px-2",
+      "width": 89,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_1cqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 68,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_2cqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 55,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_b2npfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 68,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_j2npfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 55,
+      "height": 21
+    },
+    {
+      "selector": "input#base-ui-_R_it2npfl5stb_.h-8.w-full.min-w-0",
+      "width": 153,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_4t2npfl5stb_.flex.items-center.justify-between",
+      "width": 53,
+      "height": 33
+    },
+    {
+      "selector": "input#base-ui-_R_4t2npfl5stb_-hidden-input.",
+      "width": 1,
+      "height": 1
+    }
+  ],
+  "clippedText": []
+}

@@ -1,0 +1,20 @@
+{
+  "route": "/mobile-v2/registry",
+  "slug": "mobile-v2__registry",
+  "project": "webkit-320x568",
+  "viewport": {
+    "width": 320,
+    "height": 568
+  },
+  "timestamp": "2026-07-31T05:00:20.444Z",
+  "navigation": {
+    "ttfb": 2,
+    "fcp": -1,
+    "domComplete": 68,
+    "transferSize": -1,
+    "encodedBodySize": -1
+  },
+  "longtasks": [],
+  "measures": [],
+  "errors": []
+}

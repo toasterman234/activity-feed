@@ -1,0 +1,21 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 844,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button.",
+      "width": 68,
+      "height": 32
+    },
+    {
+      "selector": "button.",
+      "width": 57,
+      "height": 32
+    }
+  ],
+  "clippedText": []
+}

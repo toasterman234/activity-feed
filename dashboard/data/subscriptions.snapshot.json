@@ -46,7 +46,7 @@
           "remaining_frac": 1,
           "unit": "percent",
           "status": "ok",
-          "resets_at": "2026-08-01",
+          "resets_at": "2026-09-01",
           "duration_hours": null
         },
         {
@@ -59,7 +59,7 @@
           "remaining_frac": 1,
           "unit": "percent",
           "status": "ok",
-          "resets_at": "2026-08-01",
+          "resets_at": "2026-09-01",
           "duration_hours": null
         },
         {
@@ -72,44 +72,7 @@
           "remaining_frac": 0,
           "unit": "percent",
           "status": "exhausted",
-          "resets_at": "2026-08-01",
-          "duration_hours": null
-        }
-      ],
-      "reset_credits": 0
-    },
-    {
-      "provider": "grok-build",
-      "provider_label": "Grok Build",
-      "account_id": "bencharney234@gmail.com",
-      "email": "bencharney234@gmail.com",
-      "plan": null,
-      "source": "tokscale",
-      "limits": [
-        {
-          "label": "Frequent",
-          "window": null,
-          "used": null,
-          "limit": null,
-          "remaining": null,
-          "used_frac": 0,
-          "remaining_frac": 1,
-          "unit": "percent",
-          "status": "ok",
-          "resets_at": null,
-          "duration_hours": null
-        },
-        {
-          "label": "Occasional",
-          "window": null,
-          "used": null,
-          "limit": null,
-          "remaining": null,
-          "used_frac": 0,
-          "remaining_frac": 1,
-          "unit": "percent",
-          "status": "ok",
-          "resets_at": null,
+          "resets_at": "2026-09-01",
           "duration_hours": null
         }
       ],
@@ -125,15 +88,15 @@
       "limits": [
         {
           "label": "claude-opus-4-8",
-          "used": 3060.9818,
+          "used": 3063.0362,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "97,363,507 tokens · 66,284 msgs",
-          "used": 5323.8203,
+          "label": "97,446,397 tokens · 66,335 msgs",
+          "used": 5326.6063,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -152,15 +115,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 1480.8263,
+          "used": 1551.3988,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "3,523,748,020 tokens · 49,108 msgs",
-          "used": 2392.5947,
+          "label": "3,684,022,038 tokens · 50,539 msgs",
+          "used": 2463.1672,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -233,15 +196,15 @@
       "limits": [
         {
           "label": "deepseek/deepseek-v4-pro",
-          "used": 2.216,
+          "used": 2.2375,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
           "status": "ok"
         },
         {
-          "label": "4,069,958 tokens · 2,048 msgs",
-          "used": 3.1235,
+          "label": "4,115,074 tokens · 2,059 msgs",
+          "used": 3.145,
           "used_frac": 0,
           "remaining_frac": 1,
           "unit": "usd",
@@ -278,11 +241,38 @@
       "reset_credits": 0
     },
     {
+      "provider": "grok-build",
+      "provider_label": "Grok Build",
+      "account_id": "grok",
+      "email": null,
+      "plan": "usage-only",
+      "source": "tokscale-models",
+      "limits": [
+        {
+          "label": "grok-4.5",
+          "used": 0.9997,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        },
+        {
+          "label": "499,836 tokens · 11 msgs",
+          "used": 0.9997,
+          "used_frac": 0,
+          "remaining_frac": 1,
+          "unit": "usd",
+          "status": "ok"
+        }
+      ],
+      "reset_credits": 0
+    },
+    {
       "provider": "cursor",
       "provider_label": "Cursor",
       "account_id": "bencharney234@gmail.com",
       "email": "bencharney234@gmail.com",
-      "plan": "pro",
+      "plan": "Pro",
       "source": "cursor-local",
       "limits": [
         {
@@ -328,5 +318,5 @@
       "reset_credits": 0
     }
   ],
-  "generated_at": "2026-07-31T20:14:54.538Z"
+  "generated_at": "2026-08-01T02:55:04.236Z"
 }

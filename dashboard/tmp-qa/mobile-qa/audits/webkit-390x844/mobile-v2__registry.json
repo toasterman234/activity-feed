@@ -1,0 +1,118 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 3919,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "input.w-full.rounded-lg.border",
+      "width": 314,
+      "height": 35
+    },
+    {
+      "selector": "button.shrink-0.rounded-lg.bg-[var(--primary)]",
+      "width": 39,
+      "height": 35
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 54,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 66,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 58,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 57,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 67,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 66,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 74,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 60,
+      "height": 25
+    },
+    {
+      "selector": "button.shrink-0.rounded-full.border",
+      "width": 71,
+      "height": 25
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    },
+    {
+      "selector": "button.flex.w-full.items-center",
+      "width": 357,
+      "height": 37
+    }
+  ],
+  "clippedText": [
+    {
+      "selector": "span.min-w-0.flex-1.truncate",
+      "text": "claude · commandcode/deepseek/deepseek-v4-pro",
+      "clientWidth": 270,
+      "scrollWidth": 277
+    }
+  ]
+}

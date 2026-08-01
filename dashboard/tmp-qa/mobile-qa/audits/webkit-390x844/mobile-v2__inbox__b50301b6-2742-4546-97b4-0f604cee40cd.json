@@ -1,0 +1,64 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 844,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "a.inline-flex.items-center.gap-1.5",
+      "width": 48,
+      "height": 17
+    },
+    {
+      "selector": "button.group/button.inline-flex.shrink-0",
+      "width": 36,
+      "height": 32
+    },
+    {
+      "selector": "a.inline-flex.h-8.items-center",
+      "width": 59,
+      "height": 32
+    },
+    {
+      "selector": "button#base-ui-_R_9hbsnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 14,
+      "height": 402
+    },
+    {
+      "selector": "button#base-ui-_R_hhbsnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 14,
+      "height": 402
+    },
+    {
+      "selector": "button#base-ui-_R_phbsnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 14,
+      "height": 402
+    },
+    {
+      "selector": "button#base-ui-_R_11hbsnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 14,
+      "height": 402
+    }
+  ],
+  "clippedText": [
+    {
+      "selector": "div.group/tabs.flex.gap-2",
+      "text": "AllNewWaitArchIii channel threads don’t default to conversation firstnew2 new re",
+      "clientWidth": 359,
+      "scrollWidth": 371
+    },
+    {
+      "selector": "p.truncate.text-[12px].leading-4",
+      "text": "Iii channel threads don’t default to conversation first",
+      "clientWidth": 256,
+      "scrollWidth": 309
+    }
+  ]
+}

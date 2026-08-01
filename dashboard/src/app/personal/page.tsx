@@ -6,8 +6,10 @@ import WatchlistContent from "../finance/watchlist-content";
 import PersonalContent from "../finance/personal-content";
 import ScreenerContent from "../finance/screener-content";
 import MoneyFlowContent from "../finance/money-flow-content";
+import AnalyticsContent from "../finance/analytics-content";
+import AnalyticsHedges from "../finance/analytics-hedges";
 
-const TABS = ["Portfolio", "Flow", "Personal", "Watchlist", "Screener"] as const;
+const TABS = ["Portfolio", "Flow", "Personal", "Watchlist", "Screener", "Analytics", "Hedges"] as const;
 type Tab = (typeof TABS)[number];
 
 const TAB_COMPONENTS: Record<Tab, React.ComponentType> = {
@@ -16,6 +18,8 @@ const TAB_COMPONENTS: Record<Tab, React.ComponentType> = {
   Personal: PersonalContent,
   Watchlist: WatchlistContent,
   Screener: ScreenerContent,
+  Analytics: AnalyticsContent,
+  Hedges: AnalyticsHedges,
 };
 
 export default function PersonalPage() {

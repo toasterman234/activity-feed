@@ -64,6 +64,7 @@ const nextConfig: NextConfig = {
         // /ds is handled by src/app/ds/[...path]/route.ts, not a rewrite — Next's
         // dev-server rewrite proxy resets long-lived long-poll connections.
         { source: "/market-lake/:path*", destination: "http://127.0.0.1:9077/:path*" },
+        { source: "/hedge-api/:path*", destination: "http://127.0.0.1:9080/:path*" },
       ],
     };
   },

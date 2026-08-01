@@ -2,8 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { FLEET_HOSTS, type FleetActionId, type FleetHost, type FleetSnapshot } from "@/lib/fleet";
+import { FLEET_HOSTS, type BuzzAgentsSnapshot, type FleetActionId, type FleetHost, type FleetSnapshot } from "@/lib/fleet";
 import { Badge, StatusChip, type UiTone } from "@/components/ui";
+
+type AgentHealthEntry = {
+  id: string;
+  name: string;
+  host: "ovh" | "mac";
+  runtime: string;
+  status: "running" | "stopped" | "offline" | "error";
+  detail: string;
+  metricLabel: string;
+  metricValue: string;
+  alert: boolean;
+};
+
+type AgentHealthSnapshot = {
+  agents: AgentHealthEntry[];
+  alerts: string[];
+  generated_at: string;
+};
 
 function toneStyles(tone: FleetHost["health"]): string {
   switch (tone) {
@@ -38,6 +56,136 @@ function MetricBar({ label, value, suffix = "%" }: { label: string; value: numbe
 
 function detailChevron(open: boolean) {
   return <span className="shrink-0 text-xs text-muted-foreground">{open ? "▾" : "▸"}</span>;
+}
+
+function BuzzAgentsPanel() {
+  const [buzzAgents, setBuzzAgents] = useState<BuzzAgentsSnapshot | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/agents/buzz-agents", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) { setBuzzAgents(d); setError(null); } })
+      .catch((e) => { if (!cancelled) setError(e.message); });
+    const timer = setInterval(() => {
+      fetch("/api/agents/buzz-agents", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d) => { if (!cancelled) { setBuzzAgents(d); setError(null); } })
+        .catch(() => {});
+    }, 15000);
+    return () => { cancelled = true; clearInterval(timer); };
+  }, []);
+
+  if (error) return null;
+
+  const activeAgents = buzzAgents?.agents?.filter(a => a.is_active && a.pubkey) ?? [];
+  if (!activeAgents.length) return null;
+
+  return (
+    <div className="rounded-md bg-muted/30 px-2.5 py-2 space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-semibold text-foreground">
+          Buzz Agents ({buzzAgents?.running ?? 0}/{buzzAgents?.total ?? 0})
+        </span>
+      </div>
+      <div className="space-y-1">
+        {activeAgents.map((a) => (
+          <div key={a.pubkey || a.name} className="flex items-center justify-between text-[10px]">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${a.running ? "bg-emerald-500" : "bg-zinc-400"}`} />
+              <span className="font-medium text-foreground truncate">{a.name}</span>
+              <span className="text-muted-foreground truncate">{a.runtime}</span>
+            </div>
+            <span className="shrink-0 text-muted-foreground ml-2 font-mono">
+              {a.running ? `PID ${a.pid}` : a.last_stopped_at ? "stopped" : "—"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AgentHealthPanel() {
+  const [health, setHealth] = useState<AgentHealthSnapshot | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchHealth = () => {
+      fetch("/api/agents/health", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d) => { if (!cancelled) setHealth(d); })
+        .catch(() => {});
+    };
+    fetchHealth();
+    const timer = setInterval(fetchHealth, 15000);
+    return () => { cancelled = true; clearInterval(timer); };
+  }, []);
+
+  if (!health || !health.agents.length) return null;
+
+  const runningCount = health.agents.filter(a => a.status === "running").length;
+  const alertCount = health.alerts.length;
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-3 space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-bold text-foreground">Agent Health</h2>
+          <span className="text-[10px] text-muted-foreground">
+            {runningCount}/{health.agents.length} running
+          </span>
+        </div>
+        {alertCount > 0 && (
+          <span className="rounded-full bg-red-100 dark:bg-red-950 px-2 py-0.5 text-[10px] font-semibold text-red-700 dark:text-red-300">
+            {alertCount} alert{alertCount > 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
+
+      {/* Alerts */}
+      {health.alerts.length > 0 && (
+        <div className="rounded-md bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 px-2.5 py-1.5 space-y-0.5">
+          {health.alerts.map((alert, i) => (
+            <p key={i} className="text-[10px] text-red-700 dark:text-red-300 font-medium">{alert}</p>
+          ))}
+        </div>
+      )}
+
+      {/* Agent rows */}
+      <div className="space-y-0.5">
+        {health.agents.map((a) => (
+          <div
+            key={a.id}
+            className={`flex items-center justify-between rounded-md px-2 py-1.5 text-[10px] ${
+              a.alert ? "bg-red-50/50 dark:bg-red-950/30" : "bg-muted/20"
+            }`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span
+                className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
+                  a.status === "running" ? "bg-emerald-500" :
+                  a.status === "stopped" ? "bg-zinc-400" :
+                  a.status === "error" ? "bg-red-500" : "bg-amber-500"
+                }`}
+              />
+              <span className="font-medium text-foreground truncate">{a.name}</span>
+              <span className="text-muted-foreground">{a.runtime}</span>
+              <Badge variant="secondary" className="text-[9px]">{a.host}</Badge>
+            </div>
+            <div className="flex items-center gap-3 shrink-0 ml-2">
+              <span className="text-muted-foreground">{a.detail}</span>
+              <span className={`font-mono ${a.alert ? "text-red-600 dark:text-red-400 font-semibold" : "text-muted-foreground"}`}>
+                {a.metricLabel}: {a.metricValue}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function FleetPage() {
@@ -161,6 +309,9 @@ export default function FleetPage() {
           Models
         </Link>
       </div>
+
+      {/* Agent Health */}
+      <AgentHealthPanel />
 
       {/* Pool Run */}
       <div className="rounded-xl border border-border bg-card p-3 space-y-2">
@@ -311,6 +462,52 @@ export default function FleetPage() {
                   </button>
                 ))}
               </div>
+
+              {/* iii Engine Health (OVH only) */}
+              {host.id === "ovh" && host.iiiHealth && (
+                <div className="rounded-md bg-muted/30 px-2.5 py-2 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-foreground">iii Engine</span>
+                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${host.iiiHealth.active ? "bg-emerald-500" : "bg-red-500"}`} />
+                  </div>
+                  {host.iiiHealth.active ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px]">
+                        <span className="text-muted-foreground">Memory</span>
+                        <span
+                          className={`font-mono text-right ${
+                            host.iiiHealth.memory_pressure_pct >= 80
+                              ? "text-red-600 dark:text-red-400"
+                              : host.iiiHealth.memory_pressure_pct >= 60
+                                ? "text-amber-600 dark:text-amber-400"
+                                : "text-foreground"
+                          }`}
+                        >
+                          {(host.iiiHealth.memory_current_bytes / 1_073_741_824).toFixed(1)}G / {(host.iiiHealth.memory_high_bytes / 1_073_741_824).toFixed(0)}G
+                        </span>
+                        <span className="text-muted-foreground">Sessions</span>
+                        <span className="font-mono text-right text-foreground">
+                          {host.iiiHealth.active_sessions > 0
+                            ? `${host.iiiHealth.active_sessions} active`
+                            : `${host.iiiHealth.total_sessions} total`}
+                          {host.iiiHealth.quarantined_sessions > 0 && (
+                            <span className="text-amber-500"> · {host.iiiHealth.quarantined_sessions} quar</span>
+                          )}
+                        </span>
+                        <span className="text-muted-foreground">Tasks</span>
+                        <span className="font-mono text-right text-foreground">{host.iiiHealth.tasks}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-[10px] text-muted-foreground">Engine inactive</p>
+                  )}
+                </div>
+              )}
+
+              {/* Buzz Agents (Mac only) */}
+              {host.id === "mac" && host.health !== "offline" && (
+                <BuzzAgentsPanel />
+              )}
 
               {/* Processes */}
               {(host.processes?.length ?? 0) > 0 && (

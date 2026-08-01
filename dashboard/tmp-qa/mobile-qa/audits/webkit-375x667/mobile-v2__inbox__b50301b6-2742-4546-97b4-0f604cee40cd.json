@@ -1,0 +1,111 @@
+{
+  "viewportWidth": 375,
+  "viewportHeight": 667,
+  "scrollWidth": 375,
+  "scrollHeight": 739,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_dbabmelb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "a.inline-flex.items-center.gap-1.5",
+      "width": 48,
+      "height": 17
+    },
+    {
+      "selector": "button.group/button.inline-flex.shrink-0",
+      "width": 36,
+      "height": 32
+    },
+    {
+      "selector": "a.inline-flex.h-8.items-center",
+      "width": 59,
+      "height": 32
+    },
+    {
+      "selector": "button#base-ui-_R_j4lritpetabmelb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 81,
+      "height": 20
+    },
+    {
+      "selector": "button#base-ui-_R_134lritpetabmelb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 81,
+      "height": 20
+    },
+    {
+      "selector": "button#base-ui-_R_1j4lritpetabmelb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 81,
+      "height": 20
+    },
+    {
+      "selector": "button#base-ui-_R_234lritpetabmelb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 81,
+      "height": 20
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 87,
+      "height": 29
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 87,
+      "height": 29
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 87,
+      "height": 29
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 87,
+      "height": 29
+    },
+    {
+      "selector": "button.rounded-md.p-0.5.text-zinc-500",
+      "width": 12,
+      "height": 23
+    },
+    {
+      "selector": "button.h-5.w-5.rounded-full",
+      "width": 20,
+      "height": 20
+    },
+    {
+      "selector": "button.h-5.w-5.rounded-full",
+      "width": 22,
+      "height": 22
+    },
+    {
+      "selector": "button.h-5.w-5.rounded-full",
+      "width": 20,
+      "height": 20
+    },
+    {
+      "selector": "button.h-5.w-5.rounded-full",
+      "width": 20,
+      "height": 20
+    },
+    {
+      "selector": "button.h-5.w-5.rounded-full",
+      "width": 20,
+      "height": 20
+    },
+    {
+      "selector": "button.h-5.w-5.rounded-full",
+      "width": 20,
+      "height": 20
+    },
+    {
+      "selector": "button.h-4.w-4.rounded-full",
+      "width": 16,
+      "height": 16
+    }
+  ],
+  "clippedText": []
+}

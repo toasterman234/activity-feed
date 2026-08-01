@@ -2,12 +2,14 @@ import os from "os";
 import { execFileNoStdin } from "@/lib/execFileNoStdin";
 import {
   FLEET_HOSTS,
+  type BuzzAgentsSnapshot,
   type FleetContainer,
   type FleetHost,
   type FleetHostId,
   type FleetHealth,
   type FleetProcess,
   type FleetSnapshot,
+  type IiiHealth,
 } from "./fleet";
 
 const FLEET_METRICS_URLS = {
@@ -290,8 +292,11 @@ async function readOvhMetrics(host: FleetHost): Promise<FleetHost> {
   const uptimeHours = Math.floor(os.uptime() / 3600);
   const uptime = uptimeHours >= 24 ? `${Math.floor(uptimeHours / 24)}d ${uptimeHours % 24}h` : `${uptimeHours}h`;
 
-  const { processes, containers } = await readLocalProcessAndContainerData();
-  const diskProbe = await execFileNoStdin("df", ["-Ph", "/"], { timeout: 3000, maxBuffer: 64 * 1024 });
+  const [{ processes, containers }, diskProbe, iiiHealth] = await Promise.all([
+    readLocalProcessAndContainerData(),
+    execFileNoStdin("df", ["-Ph", "/"], { timeout: 3000, maxBuffer: 64 * 1024 }),
+    fetchIiiHealth().catch(() => null),
+  ]);
   const diskRow = diskProbe.stdout.split("\n").map(parseDiskRow).find(Boolean) as LocalDisk | undefined;
   const storage = diskRow?.usePct ?? 0;
   const health = computeHealth(cpu, memory, storage, load[0], true);
@@ -327,17 +332,98 @@ async function readOvhMetrics(host: FleetHost): Promise<FleetHost> {
     services: host.services,
   };
 
-  return formatHostStats(
-    {
-      ...host,
-      processes,
-      containers,
-      containerCount: containers.length,
-      unhealthyCount: containers.filter((container) => container.unhealthy).length,
-      stacks: [...stacks.values()].sort((a, b) => b.count - a.count || a.stack.localeCompare(b.stack)),
-    },
-    stats,
-  );
+  return {
+    ...formatHostStats(
+      {
+        ...host,
+        processes,
+        containers,
+        containerCount: containers.length,
+        unhealthyCount: containers.filter((container) => container.unhealthy).length,
+        stacks: [...stacks.values()].sort((a, b) => b.count - a.count || a.stack.localeCompare(b.stack)),
+      },
+      stats,
+    ),
+    iiiHealth,
+  };
+}
+
+async function fetchIiiHealth(): Promise<IiiHealth | null> {
+  try {
+    const { stdout } = await execFileNoStdin(
+      "systemctl",
+      [
+        "show", "iii",
+        "--property=ActiveState,SubState,MainPID,MemoryCurrent,TasksCurrent,ActiveEnterTimestamp,CPUUsageNSec",
+        "--no-page",
+      ],
+      { timeout: 5000, maxBuffer: 64 * 1024 },
+    );
+
+    const props: Record<string, string> = {};
+    for (const line of stdout.trim().split("\n")) {
+      const eq = line.indexOf("=");
+      if (eq > 0) props[line.slice(0, eq)] = line.slice(eq + 1);
+    }
+
+    const active = props.ActiveState === "active";
+    const pid = props.MainPID && props.MainPID !== "0" ? Number(props.MainPID) : null;
+    const memory = Number(props.MemoryCurrent || "0");
+    const tasks = Number(props.TasksCurrent || "0");
+    const cpuNs = Number(props.CPUUsageNSec || "0");
+
+    let uptimeSeconds: number | null = null;
+    if (props.ActiveEnterTimestamp) {
+      const entered = new Date(props.ActiveEnterTimestamp).getTime();
+      if (!isNaN(entered)) uptimeSeconds = Math.floor((Date.now() - entered) / 1000);
+    }
+
+    return {
+      active,
+      pid,
+      uptime_seconds: uptimeSeconds,
+      memory_current_bytes: memory,
+      memory_high_bytes: 5_368_709_120,
+      memory_max_bytes: 8_589_934_592,
+      memory_pressure_pct: memory > 0 ? Math.round((memory / 5_368_709_120) * 100) : 0,
+      tasks,
+      cpu_usage_seconds: Math.round((cpuNs / 1_000_000_000) * 100) / 100,
+      active_sessions: 0,
+      errored_sessions: 0,
+      completed_sessions: 0,
+      quarantined_sessions: 0,
+      total_sessions: 0,
+      generated_at: new Date().toISOString(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchBuzzAgents(): Promise<BuzzAgentsSnapshot | null> {
+  try {
+    const { stdout } = await execFileNoStdin(
+      "ssh",
+      [
+        "-o", "ConnectTimeout=10",
+        "-o", "StrictHostKeyChecking=no",
+        "macmini",
+        "python3",
+        "/Users/bencharney/activity-feed/dashboard/scripts/buzz-agents-status.py",
+      ],
+      { timeout: 15000, maxBuffer: 256 * 1024 },
+    );
+    const data = JSON.parse(stdout.trim() || "{}");
+    return {
+      agents: data.agents || [],
+      running: data.running || 0,
+      total: data.total || 0,
+      generated_at: new Date().toISOString(),
+    };
+  } catch (err) {
+    console.error("[buzz-agents] fetch failed:", err);
+    return null;
+  }
 }
 
 async function readRemoteMetrics(host: FleetHost, url: string, timeoutMs = 5000): Promise<FleetHost> {
@@ -460,12 +546,17 @@ async function fetchDaguDags(url: string, auth?: { username: string; password: s
 
 export async function buildFleetSnapshot(): Promise<FleetSnapshot> {
   const baseById = new Map(FLEET_HOSTS.map((host) => [host.id, host]));
-  const [ovh, mac, zima] = await Promise.all([
+  const [ovh, mac, zima, buzzAgents] = await Promise.all([
     readOvhMetrics(baseById.get("ovh")!),
     readRemoteMetrics(baseById.get("mac")!, FLEET_METRICS_URLS.mac, FLEET_TIMEOUT_MS.mac),
     readRemoteMetrics(baseById.get("zima")!, FLEET_METRICS_URLS.zima, FLEET_TIMEOUT_MS.zima),
+    fetchBuzzAgents().catch(() => null),
   ]);
   const hosts = [mac, zima, ovh];
+  // Attach buzz agent data to Mac host
+  if (buzzAgents && hosts[0]) {
+    hosts[0] = { ...hosts[0], buzzAgents };
+  }
   // Enrich with live Dagu DAG counts (merge into static URLs, don't replace)
   const enriched = await Promise.all(
     hosts.map(async (host) => {

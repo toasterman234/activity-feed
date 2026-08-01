@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity Dashboard — UI to Code Map</title>
+<script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  header {
+    padding: 12px 20px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f0f6fc;
+  }
+
+  header .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #1f6feb22;
+    color: #58a6ff;
+    border: 1px solid #1f6feb44;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 0 20px;
+    flex-shrink: 0;
+  }
+
+  .tab-btn {
+    padding: 10px 18px;
+    border: none;
+    background: none;
+    color: #8b949e;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .tab-btn:hover { color: #c9d1d9; }
+  .tab-btn.active {
+    color: #f0f6fc;
+    border-bottom-color: #f78166;
+  }
+
+  .view {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .view.active { display: flex; }
+
+  #nav-cy, #flow-cy {
+    width: 100%;
+    height: 100%;
+    background: #0d1117;
+  }
+
+  /* Component tree view */
+  #comp-view {
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  #comp-view.active { display: flex; }
+
+  .tab-section {
+    margin-bottom: 24px;
+  }
+
+  .tab-section h2 {
+    font-size: 15px;
+    color: #f78166;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  .tree {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .tree-node {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .tree-node .toggle {
+    display: inline-block;
+    width: 16px;
+    color: #8b949e;
+    text-align: center;
+  }
+
+  .tree-node .label {
+    color: #c9d1d9;
+  }
+
+  .tree-node .label.file {
+    color: #7ee787;
+  }
+
+  .tree-node .label.route {
+    color: #a5d6ff;
+  }
+
+  .tree-node .label.api {
+    color: #d2a8ff;
+  }
+
+  .tree-node .label.component {
+    color: #f0f6fc;
+    font-weight: 500;
+  }
+
+  .tree-children {
+    padding-left: 20px;
+    display: none;
+  }
+
+  .tree-children.open {
+    display: block;
+  }
+
+  /* Legend */
+  .legend {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: #161b22ee;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: absolute;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 20;
+    display: none;
+    max-width: 320px;
+  }
+
+  .tooltip.visible { display: block; }
+
+  .tooltip h3 {
+    font-size: 13px;
+    color: #f0f6fc;
+    margin-bottom: 6px;
+  }
+
+  .tooltip .detail {
+    color: #8b949e;
+    line-height: 1.5;
+  }
+
+  .tooltip .detail span.tag {
+    display: inline-block;
+    padding: 1px 6px;
+    background: #1f6feb22;
+    color: #58a6ff;
+    border-radius: 3px;
+    margin: 1px 2px;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Activity Dashboard — UI to Code Map</h1>
+  <span class="badge">886 nodes</span>
+  <span class="badge">1,243 edges</span>
+  <span class="badge">92 routes</span>
+  <span class="badge">32 nav links</span>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-view="nav-graph">Navigation Graph</button>
+  <button class="tab-btn" data-view="flow">Lifecycle Engine Flow</button>
+  <button class="tab-btn" data-view="comp">Component Trees</button>
+</div>
+
+<!-- View 1: Navigation Graph -->
+<div id="nav-graph" class="view active">
+  <div id="nav-cy"></div>
+  <div class="legend" id="nav-legend"></div>
+  <div class="tooltip" id="nav-tooltip"></div>
+</div>
+
+<!-- View 2: Lifecycle Engine Flow -->
+<div id="flow" class="view">
+  <div id="flow-cy"></div>
+  <div class="legend" id="flow-legend"></div>
+  <div class="tooltip" id="flow-tooltip"></div>
+</div>
+
+<!-- View 3: Component Trees -->
+<div id="comp" class="view" id="comp-view"></div>
+
+<script>
+// ── Tab switching ──────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.view).classList.add('active');
+    // Redraw cytoscape on resize
+    setTimeout(() => { cyNav.resize(); cyFlow.resize(); }, 50);
+  });
+});
+
+// ── Color palette by section ───────────────────────────────
+const sectionColors = {
+  'Home':       '#f78166',
+  'Activity':   '#f0883e',
+  'Channels':   '#58a6ff',
+  'Finance':    '#3fb950',
+  'Fleet':      '#bc8cff',
+  'Ops':        '#f778ba',
+  'Projects':   '#d2a8ff',
+  'Models':     '#79c0ff',
+  'Settings':   '#8b949e',
+  'Other':      '#6e7681',
+  'Infrastructure': '#e3b341',
+};
+
+// Helpers for tooltip
+function showTooltip(el, evt, cy, cyId) {
+  const node = evt.target;
+  const tip = document.getElementById(cyId === 'nav-cy' ? 'nav-tooltip' : 'flow-tooltip');
+  const section = node.data('section') || '';
+  const desc = node.data('desc') || '';
+  const apis = node.data('apis') || [];
+  const comps = node.data('comps') || [];
+  const kind = node.data('kind') || '';
+
+  let html = `<h3>${node.data('label')}</h3>`;
+  if (section) html += `<div class="detail" style="color:${sectionColors[section] || '#8b949e'}">${section}</div>`;
+  if (kind) html += `<div class="detail">${kind}</div>`;
+  if (desc) html += `<div class="detail" style="margin-top:4px">${desc}</div>`;
+  if (apis.length) html += `<div class="detail" style="margin-top:4px">APIs: ${apis.map(a => `<span class="tag">${a}</span>`).join(' ')}</div>`;
+  if (comps.length) html += `<div class="detail">Components: ${comps.map(c => `<span class="tag">${c}</span>`).join(' ')}</div>`;
+
+  tip.innerHTML = html;
+  tip.classList.add('visible');
+
+  const cyContainer = document.getElementById(cyId);
+  const rect = cyContainer.getBoundingClientRect();
+  tip.style.left = (evt.originalEvent.clientX - rect.left + 15) + 'px';
+  tip.style.top = (evt.originalEvent.clientY - rect.top - 10) + 'px';
+}
+
+function hideTooltip(cyId) {
+  document.getElementById(cyId === 'nav-cy' ? 'nav-tooltip' : 'flow-tooltip').classList.remove('visible');
+}
+
+// ════════════════════════════════════════════════════════════
+// VIEW 1: NAVIGATION GRAPH
+// ════════════════════════════════════════════════════════════
+
+const navElements = [];
+
+// Define nodes — grouped by section
+const navNodes = [
+  // Home
+  { id:'/',              label:'Home /',              section:'Home',     kind:'Page', desc:'HomeDashboard — triage & overview'},
+  // Activity
+  { id:'/activity',      label:'Activity',            section:'Activity', kind:'Page', desc:'Activity log feed'},
+  // Channels
+  { id:'/channels',                            label:'/channels',                      section:'Channels', kind:'Page', desc:'Channel list with live activity'},
+  { id:'/channels/:channelId',                 label:'/channels/:channelId',            section:'Channels', kind:'Page', desc:'Channel detail + thread list'},
+  { id:'/channels/:channelId/:threadId',       label:'/channels/:channelId/:threadId',  section:'Channels', kind:'Page', desc:'Thread detail — messages, GuideBar, workflows', apis:['/api/channels/advance','/api/channels/trigger','/api/channels/promote','/api/channels/archive-thread'], comps:['GuideBar','ThreadConversationTab','ThreadWorkTab','PlanWorkspace','ExecutionHandoffWorkspace']},
+  { id:'/channels/continuity',                 label:'/channels/continuity',            section:'Channels', kind:'Page', desc:'Graph continuity overview'},
+  { id:'/channels/continuity/:id',             label:'/channels/continuity/:id',        section:'Channels', kind:'Page', desc:'Initiative detail'},
+  { id:'/channels/continuity/inbox',           label:'/channels/continuity/inbox',      section:'Channels', kind:'Page', desc:'Graph inbox'},
+  // Finance
+  { id:'/finance',       label:'Finance',             section:'Finance',  kind:'Page', desc:'Portfolio, screener, trades, banking'},
+  // Fleet
+  { id:'/fleet',         label:'Fleet',               section:'Fleet',    kind:'Page', desc:'Agent fleet dashboard'},
+  // Ops
+  { id:'/ops',           label:'Ops',                 section:'Ops',      kind:'Page', desc:'Ops overview'},
+  { id:'/ops/config',    label:'Ops / Config',         section:'Ops',      kind:'Page', desc:'Configuration — models, workflows'},
+  { id:'/ops/activity',  label:'Ops / Activity',       section:'Ops',      kind:'Page', desc:'Activity collections'},
+  { id:'/ops/runs',      label:'Ops / Runs',           section:'Ops',      kind:'Page', desc:'Agent run history'},
+  // Projects
+  { id:'/projects',            label:'/projects',           section:'Projects', kind:'Page', desc:'Project list'},
+  { id:'/projects/:repoId',    label:'/projects/:repoId',   section:'Projects', kind:'Page', desc:'Project detail + threads'},
+  // Models
+  { id:'/models',        label:'Models',               section:'Models',   kind:'Page', desc:'AI model status & subscriptions'},
+  // Settings
+  { id:'/settings',      label:'Settings',             section:'Settings', kind:'Page', desc:'General, perf, evidence'},
+  // Other
+  { id:'/research',      label:'Research',             section:'Other',    kind:'Page'},
+  { id:'/screener',      label:'Screener',             section:'Other',    kind:'Page'},
+  { id:'/trades',        label:'Trades',               section:'Other',    kind:'Page'},
+  { id:'/watchlist',     label:'Watchlist',            section:'Other',    kind:'Page'},
+  { id:'/portfolio',     label:'Portfolio',            section:'Other',    kind:'Page'},
+  { id:'/runs',          label:'/runs',                section:'Other',    kind:'Page'},
+  { id:'/workflows',     label:'/workflows',           section:'Other',    kind:'Page'},
+  { id:'/collections',   label:'/collections',         section:'Other',    kind:'Page'},
+  { id:'/perf',          label:'/perf',                section:'Other',    kind:'Page'},
+];
+
+// NAVIGATES_TO edges
+const navEdges = [
+  // Home → detail
+  { from:'/', to:'/channels',                            label:'InMotionPanel / SystemPanel' },
+  { from:'/', to:'/channels/:channelId',                 label:'SystemPanel' },
+  { from:'/', to:'/ops/config',                          label:'SystemPanel (models tab)' },
+  { from:'/', to:'/ops/runs',                            label:'AgentHealthCard' },
+
+  // Channels → everywhere
+  { from:'/channels', to:'/channels/continuity',         label:'ChannelsPage' },
+  { from:'/channels', to:'/projects',                    label:'ChannelsPage' },
+  { from:'/channels/:channelId', to:'/channels/:channelId/:threadId', label:'ChannelDetail / ThreadList' },
+  { from:'/channels/:channelId', to:'/channels',         label:'ChannelDetail (back)' },
+  { from:'/channels/:channelId/:threadId', to:'/channels/:channelId/:threadId', label:'ThreadContent (move-thread)' },
+  { from:'/channels/:channelId/:threadId', to:'/channels/:channelId', label:'ThreadContent (back)' },
+  { from:'/channels/:channelId/:threadId', to:'/projects', label:'ThreadContent (promote)' },
+  { from:'/channels/:channelId/:threadId', to:'/channels/continuity/inbox', label:'ThreadConversationTab' },
+
+  // Continuity
+  { from:'/channels/continuity', to:'/channels',         label:'ContinuityLayout (back)' },
+  { from:'/channels/continuity', to:'/channels/continuity/inbox', label:'InitiativesPage' },
+  { from:'/channels/continuity', to:'/channels/continuity/:id', label:'InitiativesPage' },
+  { from:'/channels/continuity/:id', to:'/channels/continuity', label:'InitiativeDetail (back)' },
+  { from:'/channels/continuity/inbox', to:'/channels/:channelId/:threadId', label:'InboxPage' },
+
+  // Finance → channels
+  { from:'/finance', to:'/channels/:channelId/:threadId', label:'CandidateInspectionSheet' },
+
+  // Fleet → ops
+  { from:'/fleet', to:'/ops/runs',                       label:'AgentEvidencePanel' },
+  { from:'/fleet', to:'/ops/activity',                    label:'AgentEvidencePanel (collections)' },
+  { from:'/fleet', to:'/ops/config',                      label:'RegistryPanel (workflows tab)' },
+
+  // Projects → channels
+  { from:'/projects', to:'/channels',                    label:'ProjectsPage' },
+  { from:'/projects', to:'/projects/:repoId',            label:'ProjectCard' },
+  { from:'/projects', to:'/channels/:channelId/:threadId', label:'ProjectCard (source thread)' },
+  { from:'/projects/:repoId', to:'/projects',            label:'Shell (back)' },
+  { from:'/projects/:repoId', to:'/channels/:channelId/:threadId', label:'ThreadGroup / Detail' },
+];
+
+navNodes.forEach(n => {
+  navElements.push({
+    data: {
+      id: n.id,
+      label: n.label,
+      section: n.section,
+      kind: n.kind || '',
+      desc: n.desc || '',
+      apis: n.apis || [],
+      comps: n.comps || [],
+    }
+  });
+});
+
+navEdges.forEach(e => {
+  navElements.push({
+    data: {
+      id: e.from + '→' + e.to + '#' + e.label,
+      source: e.from,
+      target: e.to,
+      label: e.label,
+    }
+  });
+});
+
+const cyNav = cytoscape({
+  container: document.getElementById('nav-cy'),
+  elements: navElements,
+  style: [
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(label)',
+        'font-size': '11px',
+        'color': '#c9d1d9',
+        'text-valign': 'center',
+        'text-halign': 'center',
+        'background-color': (ele) => sectionColors[ele.data('section')] || '#6e7681',
+        'width': (ele) => Math.max(80, ele.data('label').length * 7.5),
+        'height': 28,
+        'shape': 'round-rectangle',
+        'border-width': 1,
+        'border-color': '#30363d',
+        'text-wrap': 'wrap',
+        'text-max-width': '120px',
+        'padding': '6px',
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 1.2,
+        'line-color': '#30363d',
+        'target-arrow-color': '#484f58',
+        'target-arrow-shape': 'triangle',
+        'arrow-scale': 0.8,
+        'curve-style': 'bezier',
+        'label': 'data(label)',
+        'font-size': '9px',
+        'color': '#484f58',
+        'text-rotation': 'autorotate',
+        'text-margin-y': -6,
+      }
+    },
+    {
+      selector: 'node:selected',
+      style: {
+        'border-color': '#f78166',
+        'border-width': 2,
+      }
+    },
+    {
+      selector: 'edge:selected',
+      style: {
+        'line-color': '#f78166',
+        'target-arrow-color': '#f78166',
+        'color': '#f78166',
+      }
+    },
+  ],
+  layout: {
+    name: 'cose',
+    idealEdgeLength: 100,
+    nodeOverlap: 30,
+    refresh: 20,
+    fit: true,
+    padding: 40,
+    randomize: false,
+    componentSpacing: 80,
+    nodeRepulsion: 8000,
+    edgeElasticity: 100,
+    nestingFactor: 5,
+    gravity: 30,
+    numIter: 1000,
+    initialTemp: 200,
+    coolingFactor: 0.95,
+    minTemp: 1.0,
+  },
+  wheelSensitivity: 0.3,
+});
+
+cyNav.on('tap', 'node', function(evt) { showTooltip(this, evt, cyNav, 'nav-cy'); });
+cyNav.on('tap', function(evt) {
+  if (evt.target === cyNav) { hideTooltip('nav-cy'); }
+});
+cyNav.on('mouseover', 'node', function(evt) { showTooltip(this, evt, cyNav, 'nav-cy'); });
+cyNav.on('mouseout', 'node', function() { hideTooltip('nav-cy'); });
+
+// Build legend
+const navLegend = document.getElementById('nav-legend');
+let legendHtml = '';
+for (const [section, color] of Object.entries(sectionColors)) {
+  legendHtml += `<div class="legend-item"><span class="legend-dot" style="background:${color}"></span>${section}</div>`;
+}
+navLegend.innerHTML = legendHtml;
+
+// ════════════════════════════════════════════════════════════
+// VIEW 2: LIFECYCLE ENGINE FLOW
+// ════════════════════════════════════════════════════════════
+
+// Flow graph nodes
+const allFlowElements = [
+  { data: { id:'GuideBar',       label:'GuideBar\n"Do it for me"',   kind:'UI',      section:'UI' } },
+  { data: { id:'MentionInput',   label:'@agent mention\nin thread',   kind:'UI',      section:'UI' } },
+  { data: { id:'AdvanceBtn',     label:'AdvanceStateButtons\n(manual)', kind:'UI',     section:'UI' } },
+  { data: { id:'POST_advance',   label:'POST\n/api/channels/advance', kind:'API', section:'API' } },
+  { data: { id:'POST_trigger',   label:'POST\n/api/channels/trigger', kind:'API', section:'API' } },
+  { data: { id:'POST_transition',label:'POST\n/api/channels/transition', kind:'API', section:'API' } },
+  { data: { id:'advanceFn',      label:'advance()',                   kind:'Function', section:'Core', desc:'upsertWorkflowStep → resolveCwd → buildPrompt → runAgentPrompt → transitionThreadState' } },
+  { data: { id:'runMentionJob',  label:'runMentionJob()\n(centrality 7.5)', kind:'Function', section:'Core', desc:'insertMessage → buildPrompt → runAgent → streamActivity → writePlan/Artifact → transitionThreadState' } },
+  { data: { id:'runAgentPrompt', label:'runAgentPrompt()',            kind:'Function', section:'Core', desc:'execFileNoStdin → pi -p ...' } },
+  { data: { id:'transitionThread', label:'transitionThreadState()\n★ CENTRAL HUB', kind:'Function', section:'Core', desc:'evaluateGates → runVerification → writeArtifact → recordEvent → insertMessage → upsertStep → emitEvent' } },
+  { data: { id:'lifecycles',     label:'lifecycles.ts',               kind:'Lib', section:'Support' } },
+  { data: { id:'graphContinuity',label:'Graph Continuity',            kind:'Lib', section:'Support' } },
+  { data: { id:'workRuns',       label:'WorkRuns',                    kind:'Lib', section:'Support' } },
+  { data: { id:'verification',   label:'runThreadVerification()',     kind:'Lib', section:'Support' } },
+  { data: { id:'stageModules',   label:'Stage Modules',               kind:'Lib', section:'Support' } },
+  { data: { id:'piExec',         label:'pi -p\n(agent process)',      kind:'Infra', section:'Infra' } },
+  { data: { id:'pgDB',           label:'PostgreSQL\n(thread_meta,\nworkflow_steps,\nactivity_events)', kind:'Infra', section:'Infra' } },
+  { data: { id:'electric',       label:'Electric SQL\n(live shapes)',  kind:'Infra', section:'Infra' } },
+];
+
+const flowSectionColors = {
+  'UI':      '#f78166',
+  'API':     '#58a6ff',
+  'Core':    '#3fb950',
+  'Support': '#d2a8ff',
+  'Infra':   '#8b949e',
+};
+
+const flowEdges = [
+  { data: { source:'GuideBar',       target:'POST_advance',    label:'tap' } },
+  { data: { source:'MentionInput',   target:'POST_trigger',    label:'enter' } },
+  { data: { source:'AdvanceBtn',     target:'POST_transition', label:'tap' } },
+  { data: { source:'POST_advance',   target:'advanceFn' } },
+  { data: { source:'POST_trigger',   target:'runMentionJob' } },
+  { data: { source:'POST_transition',target:'transitionThread' } },
+  { data: { source:'advanceFn',      target:'runAgentPrompt', label:'calls' } },
+  { data: { source:'runMentionJob',  target:'runAgentPrompt', label:'calls' } },
+  { data: { source:'advanceFn',      target:'transitionThread', label:'then' } },
+  { data: { source:'runMentionJob',  target:'transitionThread', label:'then' } },
+  { data: { source:'runMentionJob',  target:'graphContinuity', label:'in Graph mode' } },
+  { data: { source:'runMentionJob',  target:'workRuns',       label:'queues' } },
+  { data: { source:'transitionThread', target:'verification', label:'calls' } },
+  { data: { source:'transitionThread', target:'stageModules', label:'calls' } },
+  { data: { source:'transitionThread', target:'pgDB',         label:'writes' } },
+  { data: { source:'advanceFn',      target:'lifecycles',     label:'uses' } },
+  { data: { source:'runMentionJob',  target:'lifecycles',     label:'uses' } },
+  { data: { source:'transitionThread',target:'lifecycles',    label:'uses' } },
+  { data: { source:'runAgentPrompt', target:'piExec',         label:'spawns' } },
+  { data: { source:'POST_trigger',   target:'electric',       label:'streams to' } },
+];
+
+const cyFlow = cytoscape({
+  container: document.getElementById('flow-cy'),
+  elements: [...allFlowElements, ...flowEdges.map(e => ({ data: { id: e.data.source+'→'+e.data.target, source: e.data.source, target: e.data.target, label: e.data.label || '' } }))],
+  style: [
+    {
+      selector: 'node',
+      style: {
+        'label': 'data(label)',
+        'font-size': '10px',
+        'color': '#c9d1d9',
+        'text-valign': 'center',
+        'text-halign': 'center',
+        'background-color': (ele) => flowSectionColors[ele.data('section')] || '#6e7681',
+        'width': (ele) => Math.max(100, ele.data('label').split('\n').reduce((m,l) => Math.max(m, l.length), 0) * 7),
+        'height': (ele) => Math.max(30, ele.data('label').split('\n').length * 16 + 10),
+        'shape': 'round-rectangle',
+        'border-width': 1.5,
+        'border-color': '#30363d',
+        'text-wrap': 'wrap',
+        'padding': '8px',
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 1.5,
+        'line-color': '#30363d',
+        'target-arrow-color': '#484f58',
+        'target-arrow-shape': 'triangle',
+        'arrow-scale': 0.9,
+        'curve-style': 'bezier',
+        'label': 'data(label)',
+        'font-size': '9px',
+        'color': '#484f58',
+        'text-rotation': 'autorotate',
+      }
+    },
+    {
+      selector: 'node:selected',
+      style: { 'border-color': '#f78166', 'border-width': 2 }
+    },
+  ],
+  layout: {
+    name: 'breadthfirst',
+    directed: true,
+    padding: 30,
+    spacingFactor: 1.2,
+    avoidOverlap: true,
+    grid: false,
+  },
+  wheelSensitivity: 0.3,
+});
+
+cyFlow.on('tap', 'node', function(evt) { showTooltip(this, evt, cyFlow, 'flow-cy'); });
+cyFlow.on('tap', function(evt) { if (evt.target === cyFlow) hideTooltip('flow-cy'); });
+cyFlow.on('mouseover', 'node', function(evt) { showTooltip(this, evt, cyFlow, 'flow-cy'); });
+cyFlow.on('mouseout', 'node', function() { hideTooltip('flow-cy'); });
+
+const flowLegend = document.getElementById('flow-legend');
+flowLegend.innerHTML = Object.entries(flowSectionColors).map(([k,c]) =>
+  `<div class="legend-item"><span class="legend-dot" style="background:${c}"></span>${k}</div>`
+).join('');
+
+// ════════════════════════════════════════════════════════════
+// VIEW 3: COMPONENT TREES
+// ════════════════════════════════════════════════════════════
+
+const compData = [
+  {
+    section: 'Home (/)',
+    tree: {
+      label: 'HomePage', cls: 'component', path: 'src/app/page.tsx',
+      children: [
+        { label: 'HomeDashboard', cls: 'component', path: 'src/app/home/HomeDashboard.tsx',
+          children: [
+            { label: 'InMotionPanel', cls: 'component' },
+            { label: 'SystemPanel', cls: 'component' },
+            { label: 'AgentHealthCard', cls: 'component' },
+          ]
+        },
+      ]
+    }
+  },
+  {
+    section: 'Activity (/activity)',
+    tree: {
+      label: 'ActivityPage', cls: 'route', path: 'src/app/activity/page.tsx',
+      children: [
+        { label: 'GET /api/activity-log-cutoff', cls: 'api' },
+      ]
+    }
+  },
+  {
+    section: 'Channels (/channels)',
+    tree: {
+      label: '/channels', cls: 'route',
+      children: [
+        { label: 'ChannelsPage', cls: 'component',
+          children: [
+            { label: 'ChannelsContent', cls: 'component',
+              children: [
+                { label: 'useChannelActivity → GET /api/channels/activity', cls: 'api' },
+                { label: 'GET /api/workflows', cls: 'api' },
+              ]
+            },
+          ]
+        },
+        { label: 'ChannelDetailPage', cls: 'component', path: ':channelId',
+          children: [
+            { label: 'ChannelDetail', cls: 'component',
+              children: [
+                { label: 'GET /api/repos', cls: 'api' },
+                { label: 'GET /api/agents/list', cls: 'api' },
+                { label: 'POST /api/channels/trigger', cls: 'api' },
+              ]
+            },
+            { label: 'ThreadList', cls: 'component',
+              children: [
+                { label: 'POST /api/channels/trigger', cls: 'api' },
+              ]
+            },
+          ]
+        },
+        { label: 'ThreadPage', cls: 'component', path: ':channelId/:threadId',
+          children: [
+            { label: 'GuideBar', cls: 'component', path: 'src/app/channels/GuideBar.tsx',
+              children: [
+                { label: 'POST /api/channels/advance', cls: 'api' },
+              ]
+            },
+            { label: 'ThreadTabs', cls: 'component',
+              children: [
+                { label: 'ThreadConversationTab', cls: 'component',
+                  children: [
+                    { label: 'POST /api/channels/graph-inbox', cls: 'api' },
+                  ]
+                },
+                { label: 'ThreadWorkTab', cls: 'component' },
+                { label: 'ThreadOverviewTab', cls: 'component' },
+                { label: 'ThreadArtifactsTab', cls: 'component' },
+              ]
+            },
+            { label: 'PlanWorkspace', cls: 'component',
+              children: [
+                { label: 'POST /api/channels/plans', cls: 'api' },
+                { label: 'POST /api/channels/transition', cls: 'api' },
+              ]
+            },
+            { label: 'ExecutionHandoffWorkspace', cls: 'component',
+              children: [
+                { label: 'POST /api/channels/execution-handoff', cls: 'api' },
+                { label: 'POST /api/channels/promote', cls: 'api' },
+              ]
+            },
+            { label: 'WorkflowCockpit', cls: 'component' },
+            { label: 'WorkRunsPanel', cls: 'component',
+              children: [
+                { label: 'GET /api/work-runs', cls: 'api' },
+                { label: 'POST /api/work-runs', cls: 'api' },
+              ]
+            },
+          ]
+        },
+      ]
+    }
+  },
+  {
+    section: 'Finance (/finance)',
+    tree: {
+      label: 'FinancePage', cls: 'route',
+      children: [
+        { label: 'PortfolioContent', cls: 'component' },
+        { label: 'WatchlistContent', cls: 'component' },
+        { label: 'ScreenerContent', cls: 'component',
+          children: [
+            { label: 'CandidateInspectionSheet', cls: 'component' },
+          ]
+        },
+        { label: 'TradesContent', cls: 'component' },
+        { label: 'FinancePublisherPanel', cls: 'component',
+          children: [
+            { label: 'POST /api/finance/publications', cls: 'api' },
+          ]
+        },
+      ]
+    }
+  },
+  {
+    section: 'Fleet (/fleet)',
+    tree: {
+      label: 'FleetPage', cls: 'route',
+      children: [
+        { label: 'GET /api/fleet', cls: 'api' },
+        { label: 'POST /api/fleet/action', cls: 'api' },
+        { label: 'RegistryPanel', cls: 'component',
+          children: [
+            { label: 'GET /api/registry', cls: 'api' },
+            { label: 'AgentEvidencePanel', cls: 'component' },
+          ]
+        },
+      ]
+    }
+  },
+  {
+    section: 'Projects (/projects)',
+    tree: {
+      label: 'ProjectsPage', cls: 'route',
+      children: [
+        { label: 'GET /api/repos', cls: 'api' },
+        { label: 'ProjectCard', cls: 'component' },
+        { label: 'ProjectDetailPage (:repoId)', cls: 'component',
+          children: [
+            { label: 'GET /api/projects/detail', cls: 'api' },
+            { label: 'ThreadGroup', cls: 'component' },
+            { label: 'ThreadActionButton → POST /api/projects/thread-action', cls: 'api' },
+            { label: 'ProjectQuickWorkComposer', cls: 'component',
+              children: [
+                { label: 'POST /api/projects/work', cls: 'api' },
+                { label: 'POST /api/channels/trigger', cls: 'api' },
+              ]
+            },
+          ]
+        },
+      ]
+    }
+  },
+  {
+    section: 'Ops (/ops)',
+    tree: {
+      label: 'Ops', cls: 'route',
+      children: [
+        { label: 'ConfigPage (/ops/config)', cls: 'component' },
+        { label: 'ActivityPage (/ops/activity)', cls: 'component' },
+        { label: 'OpsRunsPage (/ops/runs)', cls: 'component' },
+        { label: 'GET /api/ops/evidence', cls: 'api' },
+        { label: 'POST /api/run-eval', cls: 'api' },
+      ]
+    }
+  },
+  {
+    section: 'Models (/models)',
+    tree: {
+      label: 'ModelsPanel', cls: 'component',
+      children: [
+        { label: 'GET /api/models/status', cls: 'api' },
+        { label: 'POST /api/models/swap', cls: 'api' },
+        { label: 'GET /api/models/subscriptions', cls: 'api' },
+      ]
+    }
+  },
+  {
+    section: 'Shared Infrastructure',
+    tree: {
+      label: 'infra', cls: 'component',
+      children: [
+        { label: '_db.ts — Postgres pool', cls: 'file', path: 'src/app/api/_db.ts' },
+        { label: 'electric.ts — Electric SQL client', cls: 'file', path: 'src/app/electric.ts' },
+        { label: 'shape-registry.ts — shape lifecycle', cls: 'file', path: 'src/app/shape-registry.ts' },
+        { label: 'runAgentPrompt.ts — shared agent runner', cls: 'file', path: 'src/lib/runAgentPrompt.ts' },
+        { label: 'work-runs.ts — queue/start/heartbeat/finish', cls: 'file', path: 'src/lib/work-runs.ts' },
+        { label: 'verification-profiles.ts — runThreadVerification', cls: 'file', path: 'src/lib/verification-profiles.ts' },
+        { label: 'graph-initiatives.ts — graph continuity', cls: 'file', path: 'src/lib/graph-initiatives.ts' },
+        { label: 'perf.ts — measure() telemetry', cls: 'file', path: 'src/lib/perf.ts' },
+        { label: 'fleet.ts / fleet-server.ts / registry.ts', cls: 'file', path: 'src/lib/' },
+      ]
+    }
+  },
+];
+
+function renderTree(node) {
+  const children = node.children || [];
+  const hasKids = children.length > 0;
+  const pathStr = node.path ? ` <span style="color:#484f58;font-size:10px">${node.path}</span>` : '';
+  return `
+    <div class="tree-node" onclick="toggleTree(event)">
+      <span class="toggle">${hasKids ? '▶' : '·'}</span>
+      <span class="label ${node.cls}">${node.label}${pathStr}</span>
+    </div>
+    <div class="tree-children${hasKids ? '' : ' open'}">
+      ${children.map(renderTree).join('')}
+    </div>
+  `;
+}
+
+const compView = document.getElementById('comp');
+compView.innerHTML = compData.map(tab => `
+  <div class="tab-section">
+    <h2>${tab.section}</h2>
+    <div class="tree">${renderTree(tab.tree)}</div>
+  </div>
+`).join('');
+
+function toggleTree(evt) {
+  evt.stopPropagation();
+  const node = evt.currentTarget;
+  const children = node.nextElementSibling;
+  const toggle = node.querySelector('.toggle');
+  if (children) {
+    children.classList.toggle('open');
+    toggle.textContent = children.classList.contains('open') ? '▼' : '▶';
+  }
+}
+
+// Init all tree-children with children as open
+document.querySelectorAll('.tree-children').forEach(el => {
+  if (el.previousElementSibling?.querySelector('.toggle')?.textContent !== '·') {
+    el.classList.add('open');
+  }
+});
+document.querySelectorAll('.tree-node .toggle').forEach(t => {
+  const children = t.parentElement.nextElementSibling;
+  if (children && children.children.length > 0) {
+    t.textContent = children.classList.contains('open') ? '▼' : '▶';
+  }
+});
+</script>
+</body>
+</html>

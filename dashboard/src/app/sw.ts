@@ -130,11 +130,30 @@ const runtimeCaching = [
       cacheName: "static-assets",
       expiration: {
         maxEntries: 100,
-        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        maxAgeSeconds: 60 * 60, // 1 hour (short; build hashes change per deploy)
       },
     },
   },
 ];
+
+// Purge stale caches on activation so old-version chunk hashes
+// don't break the app after deploy.
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      const keys = await self.caches.keys();
+      // Keep ONLY the current precache (versioned by build ID)
+      // and delete everything else including stale static-assets
+      await Promise.all(
+        keys
+          .filter((k) => !k.startsWith("workbox-precache") && !k.startsWith("serwist"))
+          .map((k) => self.caches.delete(k)),
+      );
+      // @ts-expect-error — SW global
+      await self.clients.claim();
+    })(),
+  );
+});
 
 installSerwist({
   precacheEntries: self.__SW_MANIFEST,

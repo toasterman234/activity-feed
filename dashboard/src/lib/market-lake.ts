@@ -8,9 +8,15 @@
 const API_BASE = "/market-lake";
 
 async function fetchJSON<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, init);
-  if (!res.ok) throw new Error(`Market Lake ${path}: ${res.status}`);
-  return res.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8_000); // 8s timeout
+  try {
+    const res = await fetch(`${API_BASE}${path}`, { ...init, signal: controller.signal });
+    if (!res.ok) throw new Error(`Market Lake ${path}: ${res.status}`);
+    return res.json();
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // ── Quotes ──

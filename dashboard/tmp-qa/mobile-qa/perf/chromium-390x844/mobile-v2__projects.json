@@ -1,0 +1,20 @@
+{
+  "route": "/mobile-v2/projects",
+  "slug": "mobile-v2__projects",
+  "project": "chromium-390x844",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "timestamp": "2026-07-31T05:02:41.902Z",
+  "navigation": {
+    "ttfb": 3,
+    "fcp": 72,
+    "domComplete": 71,
+    "transferSize": -1,
+    "encodedBodySize": -1
+  },
+  "longtasks": [],
+  "measures": [],
+  "errors": []
+}

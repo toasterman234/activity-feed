@@ -1,0 +1,21 @@
+{
+  "viewportWidth": 430,
+  "viewportHeight": 932,
+  "scrollWidth": 430,
+  "scrollHeight": 932,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "button.v2-pill.inline-flex.items-center",
+      "width": 97,
+      "height": 37
+    }
+  ],
+  "clippedText": []
+}

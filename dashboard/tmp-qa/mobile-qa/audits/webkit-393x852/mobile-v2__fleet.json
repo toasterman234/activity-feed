@@ -1,0 +1,31 @@
+{
+  "viewportWidth": 393,
+  "viewportHeight": 852,
+  "scrollWidth": 393,
+  "scrollHeight": 852,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "a.text-[10px].text-[var(--primary)]",
+      "width": 35,
+      "height": 15
+    },
+    {
+      "selector": "input.min-w-0.flex-1.rounded-md",
+      "width": 284,
+      "height": 31
+    },
+    {
+      "selector": "button.shrink-0.rounded-md.bg-[var(--primary)]",
+      "width": 45,
+      "height": 31
+    }
+  ],
+  "clippedText": []
+}

@@ -59,6 +59,8 @@ export type FleetHost = {
   sourceLabel?: string;
   updatedAt?: string;
   dagu?: { url?: string; dags?: number; ok: boolean };
+  iiiHealth?: IiiHealth | null;
+  buzzAgents?: BuzzAgentsSnapshot | null;
 };
 
 export type FleetSnapshot = {
@@ -71,6 +73,48 @@ export type FleetSnapshot = {
     offline: number;
   };
   error?: string;
+};
+
+export type IiiHealth = {
+  active: boolean;
+  pid: number | null;
+  uptime_seconds: number | null;
+  memory_current_bytes: number;
+  memory_high_bytes: number;
+  memory_max_bytes: number;
+  memory_pressure_pct: number;
+  tasks: number;
+  cpu_usage_seconds: number;
+  active_sessions: number;
+  errored_sessions: number;
+  completed_sessions: number;
+  quarantined_sessions: number;
+  total_sessions: number;
+  generated_at: string;
+};
+
+export type BuzzAgentStatus = {
+  pubkey: string;
+  name: string;
+  runtime: string;
+  provider: string | null;
+  model: string | null;
+  is_active: boolean;
+  running: boolean;
+  pid: number | null;
+  started_at: string | null;
+  last_stopped_at: string | null;
+  last_exit_code: number | null;
+  last_error: string | null;
+  start_on_app_launch: boolean;
+  relay_url: string;
+};
+
+export type BuzzAgentsSnapshot = {
+  agents: BuzzAgentStatus[];
+  running: number;
+  total: number;
+  generated_at: string;
 };
 
 export const FLEET_HOSTS: FleetHost[] = [

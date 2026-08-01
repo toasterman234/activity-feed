@@ -1,0 +1,86 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 878,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 68,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 63,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 83,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 54,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 84,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 72,
+      "height": 18
+    },
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 40,
+      "height": 33
+    },
+    {
+      "selector": "a.inline-flex.items-center.gap-2",
+      "width": 116,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.justify-between",
+      "width": 198,
+      "height": 18
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 39,
+      "height": 18
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 52,
+      "height": 18
+    },
+    {
+      "selector": "a.relative.flex-1.rounded-md",
+      "width": 26,
+      "height": 18
+    }
+  ],
+  "clippedText": []
+}

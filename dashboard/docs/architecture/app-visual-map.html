@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity Dashboard — Visual Code Map</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #f78166;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --purple: #bc8cff;
+    --pink: #f778ba;
+    --yellow: #e3b341;
+    --cyan: #79c0ff;
+    --nav-h: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #010409;
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  /* ── Phone frame ── */
+  .phone {
+    width: 420px;
+    height: 92vh;
+    max-height: 900px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,.6);
+  }
+  /* ── Dev mode toggle ── */
+  .dev-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 22px;
+    background: #1a0a00;
+    border-bottom: 1px solid #f7816644;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 10px;
+    color: var(--accent);
+    z-index: 100;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .dev-bar .dot { width: 6px; height: 6px; border-radius: 50%; background: #f78166; }
+  .dev-bar.off .dot { background: #30363d; }
+  .dev-bar.off { color: #484f58; border-bottom-color: #30363d44; }
+  /* ── Annotations ── */
+  .anno {
+    position: absolute;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  body.dev .anno { opacity: 1; }
+  .anno-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    transform: translate(-50%, -50%);
+    z-index: 51;
+  }
+  .anno-line {
+    position: absolute;
+    width: 1px;
+    background: var(--accent);
+    opacity: 0.7;
+    z-index: 50;
+  }
+  .anno-tag {
+    position: absolute;
+    font-size: 9px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: #161b22ee;
+    border: 1px solid #f7816644;
+    border-radius: 3px;
+    padding: 2px 5px;
+    white-space: nowrap;
+    color: var(--accent);
+    z-index: 52;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* ── Main content area ── */
+  .screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 28px 16px 16px;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: #30363d #0d1117;
+  }
+  .screen.active { display: flex; }
+  .screen-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f0f6fc;
+    margin-bottom: 16px;
+  }
+  /* ── Card style ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f0f6fc;
+    margin-bottom: 6px;
+  }
+  .card-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .card-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .chip {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .chip-blue { background: #1f6feb22; color: var(--blue); border: 1px solid #1f6feb44; }
+  .chip-green { background: #23863622; color: var(--green); border: 1px solid #23863644; }
+  .chip-yellow { background: #9e6a0322; color: var(--yellow); border: 1px solid #9e6a0344; }
+  .chip-purple { background: #8957e522; color: var(--purple); border: 1px solid #8957e544; }
+  .chip-pink { background: #db61a222; color: var(--pink); border: 1px solid #db61a244; }
+  /* ── GuideBar ── */
+  .guidebar {
+    background: linear-gradient(135deg, #1a2332, #0d1b2a);
+    border: 1px solid #1f6feb44;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .guidebar-text { font-size: 12px; color: var(--text); flex: 1; min-width: 180px; }
+  .guidebar-text strong { color: var(--blue); }
+  .guidebar-actions { display: flex; gap: 6px; }
+  .btn {
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid;
+    cursor: pointer;
+    font-weight: 500;
+    background: none;
+  }
+  .btn-primary { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+  .btn-secondary { color: var(--muted); border-color: #30363d; }
+  .btn-small { font-size: 10px; padding: 3px 8px; }
+  /* ── Thread message ── */
+  .msg {
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .msg-user { background: #1a2332; border: 1px solid #1f6feb22; }
+  .msg-agent { background: #122020; border: 1px solid #23863622; }
+  .msg-system { background: #1a1410; border: 1px solid #9e6a0322; font-size: 11px; }
+  .msg-author { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .tab {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  .tab.active { color: #f0f6fc; border-bottom-color: var(--accent); }
+  /* ── Detail panel ── */
+  .detail-panel {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: #161b22ee;
+    border-top: 1px solid var(--border);
+    padding: 14px 16px;
+    z-index: 200;
+    display: none;
+    max-height: 45%;
+    overflow-y: auto;
+    backdrop-filter: blur(12px);
+  }
+  .detail-panel.show { display: block; }
+  .detail-panel h3 {
+    font-size: 13px;
+    color: #f0f6fc;
+    margin-bottom: 8px;
+  }
+  .detail-panel .row {
+    font-size: 11px;
+    line-height: 1.6;
+    margin-bottom: 4px;
+  }
+  .detail-panel .row .key { color: var(--muted); }
+  .detail-panel .row .val { color: var(--text); font-family: 'SF Mono', monospace; }
+  .detail-panel .row .val.api { color: var(--blue); }
+  .detail-panel .row .val.fn { color: var(--green); }
+  .detail-panel .row .val.file { color: var(--cyan); }
+  .detail-panel .close {
+    position: absolute;
+    top: 8px; right: 12px;
+    background: none; border: none;
+    color: var(--muted); font-size: 16px; cursor: pointer;
+  }
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    height: var(--nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-nav::-webkit-scrollbar { display: none; }
+  .nav-item {
+    flex: 1;
+    min-width: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 9px;
+    border: none;
+    background: none;
+    padding: 4px;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-item .icon { font-size: 16px; line-height: 1; }
+  /* ── Clickable annotation targets ── */
+  .click-target { cursor: pointer; position: relative; }
+  body.dev .click-target:hover { outline: 1px dashed #f7816666; outline-offset: 2px; }
+  /* ── Thread list item ── */
+  .thread-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .thread-item .meta { font-size: 10px; color: var(--muted); }
+  .thread-item .state { font-size: 10px; }
+  /* ── On-screen annotations ── */
+  .inline-anno {
+    font-size: 8px;
+    font-family: 'SF Mono', monospace;
+    color: var(--accent);
+    background: #f7816611;
+    border: 1px solid #f7816622;
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-left: 4px;
+    display: none;
+  }
+  body.dev .inline-anno { display: inline; }
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+
+  <!-- Dev mode bar -->
+  <div class="dev-bar off" id="devToggle" onclick="toggleDev()">
+    <span class="dot"></span> DEV MODE OFF — click to enable
+  </div>
+
+  <!-- ═══════════════ SCREENS ═══════════════ -->
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="screen-title">Home</div>
+
+    <div class="card click-target" onclick="showDetail('home-inmotion')" id="el-home-inmotion">
+      <div class="card-title">In Motion <span class="inline-anno">→ /channels</span></div>
+      <div class="card-sub">3 threads active across 2 channels</div>
+      <div class="card-row">
+        <span class="chip chip-blue">2 running</span>
+        <span class="chip chip-yellow">1 gated</span>
+      </div>
+    </div>
+
+    <div class="card click-target" onclick="showDetail('home-system')" id="el-home-system">
+      <div class="card-title">System <span class="inline-anno">→ /channels, /ops/config</span></div>
+      <div class="card-sub">1 agent idle · 2 models online · pi 2.4.1</div>
+      <div class="card-row">
+        <span class="chip chip-green">healthy</span>
+      </div>
+    </div>
+
+    <div class="card click-target" onclick="showDetail('home-agent-health')" id="el-home-agent-health">
+      <div class="card-title">Agent Health <span class="inline-anno">→ /ops/runs</span></div>
+      <div class="card-sub">Last run: 3m ago · 12 runs today · 0 failures</div>
+      <div class="card-row">
+        <span class="chip chip-green">98% success</span>
+        <span class="chip chip-blue">GET /api/agent-runs/overview</span>
+      </div>
+    </div>
+
+    <div class="card" style="opacity:.5">
+      <div class="card-title">Continuity Snapshot</div>
+      <div class="card-sub">7 open proposals · 2 decisions pending</div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY -->
+  <div class="screen" id="screen-activity">
+    <div class="screen-title">Activity</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+      <span class="inline-anno">GET /api/activity-log-cutoff</span> Live activity feed
+    </div>
+    <div class="msg msg-system"><div class="msg-author">System · 2m ago</div>Thread "fix-nav-overflow" advanced to Review</div>
+    <div class="msg msg-agent"><div class="msg-author">pi-agent · 5m ago</div>Build succeeded. 0 type errors.</div>
+    <div class="msg msg-system"><div class="msg-author">System · 12m ago</div>Channel #dev activated with lifecycle: coding</div>
+  </div>
+
+  <!-- CHANNELS LIST -->
+  <div class="screen" id="screen-channels">
+    <div class="screen-title">Channels</div>
+    <div class="click-target thread-item" onclick="showDetail('channel-item')" id="el-channel-item">
+      <div>
+        <div>#dev <span class="inline-anno">→ /channels/:id</span></div>
+        <div class="meta">4 threads · last active 3m ago</div>
+      </div>
+      <div class="card-row">
+        <span class="chip chip-blue">active</span>
+      </div>
+    </div>
+    <div class="thread-item" style="opacity:.6">
+      <div>
+        <div>#ops</div>
+        <div class="meta">1 thread · last active 2h ago</div>
+      </div>
+    </div>
+    <div class="thread-item" style="opacity:.4">
+      <div>
+        <div>#research</div>
+        <div class="meta">0 threads</div>
+      </div>
+    </div>
+
+    <!-- Thread list preview (when channel selected) -->
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:12px">
+      <div style="font-size:13px;font-weight:600;color:#f0f6fc;margin-bottom:8px">#dev — Threads</div>
+
+      <div class="click-target thread-item" onclick="switchScreen('screen-thread')" id="el-thread-item">
+        <div>
+          <div>fix-nav-overflow <span class="inline-anno">→ /channels/:id/:threadId</span></div>
+          <div class="meta">coding · step 2 of 5 · 12 messages</div>
+        </div>
+        <span class="state chip chip-yellow">in_progress</span>
+      </div>
+      <div class="click-target thread-item" onclick="switchScreen('screen-thread-promoted')" id="el-thread-promoted-item">
+        <div>
+          <div>add-dark-mode <span class="inline-anno">→ /channels/:id/:threadId</span></div>
+          <div class="meta">coding · step 5 of 5 · 34 messages</div>
+        </div>
+        <span class="state chip chip-green">complete</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREAD DETAIL (the big one) -->
+  <div class="screen" id="screen-thread">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:11px;color:var(--blue);cursor:pointer" onclick="switchScreen('screen-channels')">← #dev</span>
+      <span class="screen-title" style="margin:0;font-size:15px">fix-nav-overflow</span>
+    </div>
+
+    <!-- GUIDEBAR -->
+    <div class="guidebar click-target" onclick="showDetail('guidebar')" id="el-guidebar">
+      <div class="guidebar-text">
+        <strong>Coding</strong> · Step 2 of 5: <strong>In Progress</strong><br>
+        Next: run tests, then move to Review
+        <span class="inline-anno">lifecycles.ts → nextStepSummary()</span>
+      </div>
+      <div class="guidebar-actions">
+        <div class="click-target" onclick="showDetail('guidebar-do-it')" id="el-guidebar-do">
+          <button class="btn btn-primary">Do it for me</button>
+          <span class="inline-anno">POST /api/channels/advance → advance() → runAgentPrompt() → transitionThreadState()</span>
+        </div>
+        <div class="click-target" onclick="showDetail('guidebar-mark-done')" id="el-guidebar-mark">
+          <button class="btn btn-secondary">Mark done myself</button>
+          <span class="inline-anno">POST /api/channels/transition → transitionThreadState()</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thread Tabs -->
+    <div class="tabs">
+      <span class="tab active">Conversation</span>
+      <span class="tab">Work</span>
+      <span class="tab">Overview</span>
+      <span class="tab">Artifacts</span>
+      <span class="tab" style="opacity:.5">History</span>
+    </div>
+
+    <!-- Messages -->
+    <div class="msg msg-user">
+      <div class="msg-author">ben · 22m ago</div>
+      the bottom nav overflows on small screens — can you fix it?
+    </div>
+    <div class="msg msg-agent">
+      <div class="msg-author">pi-agent · 20m ago</div>
+      Checked the layout. The nav items don't wrap. Adding overflow-x:auto and min-width constraints. <strong>Running tests now…</strong>
+    </div>
+    <div class="msg msg-system" style="cursor:pointer" onclick="showDetail('trigger-flow')" id="el-trigger-flow">
+      <div class="msg-author">System · 20m ago</div>
+      ✅ Workflow step complete: <strong>implement</strong> — agent responded
+      <span class="inline-anno">trigger/route.ts → runMentionJob() → streamPiActivity() → transitionThreadState()</span>
+    </div>
+
+    <!-- PlanWorkspace (collapsed) -->
+    <div class="card click-target" style="margin-top:8px;opacity:.7" onclick="showDetail('plan-workspace')" id="el-plan-workspace">
+      <div class="card-title">📋 Plan <span class="inline-anno">POST /api/channels/plans</span></div>
+      <div class="card-sub">3 tasks · 2 complete · 1 in progress</div>
+    </div>
+
+    <!-- WorkRuns -->
+    <div class="card click-target" style="margin-top:8px;opacity:.7" onclick="showDetail('work-runs')" id="el-work-runs">
+      <div class="card-title">⚡ Work Runs <span class="inline-anno">GET/POST /api/work-runs</span></div>
+      <div class="card-sub">Last run: 2m ago · duration 45s · exit 0</div>
+    </div>
+
+    <!-- Collapsed: StateFlow, Workflow Checkboxes, AdvanceButtons (pre-GuideBar legacy) -->
+    <details style="margin-top:12px;font-size:11px;color:var(--muted);cursor:pointer">
+      <summary>Details (legacy UI — collapsed)</summary>
+      <div style="padding:8px;font-size:10px;color:var(--muted)">
+        StateFlow diagram · Workflow checkboxes · AdvanceStateButtons — all demoted behind GuideBar (Phase 5)
+      </div>
+    </details>
+
+    <!-- Promotion area (would show when complete/terminal) -->
+    <div class="card click-target" style="margin-top:8px;opacity:.4" onclick="showDetail('promote')" id="el-promote">
+      <div class="card-title">🚀 Promote to Project <span class="inline-anno">POST /api/channels/promote</span></div>
+      <div class="card-sub">Only available in terminal/done state</div>
+    </div>
+  </div>
+
+  <!-- THREAD DETAIL — promoted/terminal state -->
+  <div class="screen" id="screen-thread-promoted">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:11px;color:var(--blue);cursor:pointer" onclick="switchScreen('screen-channels')">← #dev</span>
+      <span class="screen-title" style="margin:0;font-size:15px">add-dark-mode</span>
+    </div>
+
+    <div class="guidebar" style="border-color:#23863644;background:linear-gradient(135deg,#122020,#0a1a1a)">
+      <div class="guidebar-text">
+        <strong style="color:var(--green)">Coding</strong> · Step 5 of 5: <strong style="color:var(--green)">Done ✓</strong><br>
+        All steps complete. Promote to project?
+      </div>
+      <div class="guidebar-actions">
+        <div class="click-target" onclick="showDetail('promote-action')" id="el-promote-action">
+          <button class="btn btn-primary" style="background:#238636;border-color:#238636">Promote to Project</button>
+          <span class="inline-anno">POST /api/channels/promote → projects</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <span class="tab active">Conversation</span>
+      <span class="tab">Work</span>
+      <span class="tab">Overview</span>
+      <span class="tab">Artifacts</span>
+    </div>
+
+    <div class="msg msg-system">
+      <div class="msg-author">System · 1h ago</div>
+      ✅ Thread complete — all 5 workflow steps passed. Ready for promotion.
+    </div>
+    <div class="msg msg-agent">
+      <div class="msg-author">pi-agent · 1h ago</div>
+      Dark mode implemented across all 12 components. Theme provider added. Build passes.
+    </div>
+
+    <div class="card click-target" style="margin-top:8px" onclick="showDetail('promote-action')" id="el-promote-action2">
+      <div class="card-title">🚀 Ready to Promote</div>
+      <div class="card-sub">This will create a project repo from this thread's work. <span class="inline-anno">POST /api/channels/promote → transitionThreadState → projects table</span></div>
+      <button class="btn btn-primary" style="margin-top:8px;background:#238636;border-color:#238636">Promote to Project</button>
+    </div>
+  </div>
+
+  <!-- FINANCE -->
+  <div class="screen" id="screen-finance">
+    <div class="screen-title">Finance</div>
+    <div class="card click-target" onclick="showDetail('finance-publish')" id="el-finance-publish">
+      <div class="card-title">Research Publication <span class="inline-anno">POST /api/finance/publications</span></div>
+      <div class="card-sub">Publish research findings to a channel thread</div>
+    </div>
+    <div class="card" style="opacity:.6">
+      <div class="card-title">Portfolio</div>
+      <div class="card-sub">portfolio-risk-model.ts</div>
+    </div>
+    <div class="card" style="opacity:.6">
+      <div class="card-title">Screener</div>
+      <div class="card-sub">screener-model.ts</div>
+    </div>
+    <div class="card click-target" onclick="showDetail('finance-candidate')" id="el-finance-candidate">
+      <div class="card-title">Candidate Inspection <span class="inline-anno">→ /channels/:id/:threadId</span></div>
+      <div class="card-sub">Opens research thread for a candidate</div>
+    </div>
+  </div>
+
+  <!-- FLEET -->
+  <div class="screen" id="screen-fleet">
+    <div class="screen-title">Fleet</div>
+    <div class="card click-target" onclick="showDetail('fleet-action')" id="el-fleet-action">
+      <div class="card-title">Agent Fleet <span class="inline-anno">GET /api/fleet · POST /api/fleet/action</span></div>
+      <div class="card-sub">3 agents registered · 2 online</div>
+      <div class="card-row">
+        <span class="chip chip-green">pi-worker</span>
+        <span class="chip chip-green">pi-reviewer</span>
+        <span class="chip chip-yellow">pi-scout (idle)</span>
+      </div>
+    </div>
+    <div class="card click-target" onclick="showDetail('fleet-registry')" id="el-fleet-registry">
+      <div class="card-title">Registry <span class="inline-anno">GET /api/registry</span></div>
+      <div class="card-sub">5 subagents · 12 workflows</div>
+    </div>
+    <div class="card click-target" onclick="showDetail('fleet-evidence')" id="el-fleet-evidence">
+      <div class="card-title">Agent Evidence <span class="inline-anno">→ /ops/runs · → /ops/activity</span></div>
+      <div class="card-sub">Run history and evaluation collections</div>
+    </div>
+  </div>
+
+  <!-- OPS -->
+  <div class="screen" id="screen-ops">
+    <div class="screen-title">Ops</div>
+    <div class="card">
+      <div class="card-title">Configuration <span class="inline-anno">/ops/config</span></div>
+      <div class="card-sub">Models · Workflows · Agent settings</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Runs <span class="inline-anno">/ops/runs</span></div>
+      <div class="card-sub">Agent run history and diagnostics</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Activity Collections <span class="inline-anno">/ops/activity · POST /api/run-eval</span></div>
+      <div class="card-sub">Evaluation collections and run analysis</div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="screen" id="screen-projects">
+    <div class="screen-title">Projects</div>
+    <div class="card click-target" onclick="showDetail('project-list')" id="el-project-list">
+      <div class="card-title">activity-feed <span class="inline-anno">GET /api/repos</span></div>
+      <div class="card-sub">dashboard · 2 open threads</div>
+      <div class="card-row">
+        <span class="chip chip-blue">→ /projects/:repoId</span>
+      </div>
+    </div>
+    <div class="card click-target" onclick="showDetail('project-detail')" id="el-project-detail">
+      <div class="card-title">Project Detail <span class="inline-anno">GET /api/projects/detail</span></div>
+      <div class="card-sub">Source thread · Quick work composer</div>
+      <div class="card-row">
+        <span class="chip chip-blue">ThreadGroup → /channels/:id/:threadId</span>
+        <span class="chip chip-purple">POST /api/projects/thread-action</span>
+      </div>
+    </div>
+    <div class="card click-target" onclick="showDetail('project-quick-work')" id="el-project-quick-work">
+      <div class="card-title">Quick Work Composer <span class="inline-anno">POST /api/projects/work · POST /api/channels/trigger</span></div>
+      <div class="card-sub">Fire a one-shot agent task on this project</div>
+    </div>
+  </div>
+
+  <!-- MODELS -->
+  <div class="screen" id="screen-models">
+    <div class="screen-title">Models</div>
+    <div class="card click-target" onclick="showDetail('models-status')" id="el-models-status">
+      <div class="card-title">Model Status <span class="inline-anno">GET /api/models/status</span></div>
+      <div class="card-sub">Claude Sonnet 4 · GPT-4o · Gemini 2.5 Pro</div>
+      <div class="card-row">
+        <span class="chip chip-green">all online</span>
+      </div>
+    </div>
+    <div class="card click-target" onclick="showDetail('models-subscriptions')" id="el-models-subscriptions">
+      <div class="card-title">Subscriptions <span class="inline-anno">GET /api/models/subscriptions</span></div>
+      <div class="card-sub">3 active · $47.20 this month</div>
+    </div>
+    <div class="card click-target" onclick="showDetail('models-swap')" id="el-models-swap">
+      <div class="card-title">Swap Model <span class="inline-anno">POST /api/models/swap</span></div>
+      <div class="card-sub">Switch the active model for agent runs</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="screen-title">Settings</div>
+    <div class="card">
+      <div class="card-title">General</div>
+    </div>
+    <div class="card click-target" onclick="showDetail('settings-perf')" id="el-settings-perf">
+      <div class="card-title">Performance <span class="inline-anno">GET /api/perf/summary · POST /api/perf/write</span></div>
+      <div class="card-sub">perf.ts measure() → perf_metrics (unlogged, Electric-replicated)</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Evidence</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ DETAIL PANEL ═══════════════ -->
+  <div class="detail-panel" id="detailPanel">
+    <button class="close" onclick="hideDetail()">✕</button>
+    <div id="detailContent"></div>
+  </div>
+
+  <!-- ═══════════════ BOTTOM NAV ═══════════════ -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchScreen('screen-home')" id="nav-home">
+      <span class="icon">🏠</span> Home
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-activity')" id="nav-activity">
+      <span class="icon">📊</span> Activity
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-channels')" id="nav-channels">
+      <span class="icon">💬</span> Channels
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-finance')" id="nav-finance">
+      <span class="icon">💰</span> Finance
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-fleet')" id="nav-fleet">
+      <span class="icon">🤖</span> Fleet
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-ops')" id="nav-ops">
+      <span class="icon">⚙️</span> Ops
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-projects')" id="nav-projects">
+      <span class="icon">📁</span> Projects
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-models')" id="nav-models">
+      <span class="icon">🧠</span> Models
+    </button>
+    <button class="nav-item" onclick="switchScreen('screen-settings')" id="nav-settings">
+      <span class="icon">🔧</span> Settings
+    </button>
+  </div>
+
+</div>
+
+<script>
+// ── Screen switching ──
+const screenNavMap = {
+  'screen-home': 'nav-home',
+  'screen-activity': 'nav-activity',
+  'screen-channels': 'nav-channels',
+  'screen-thread': 'nav-channels',
+  'screen-thread-promoted': 'nav-channels',
+  'screen-finance': 'nav-finance',
+  'screen-fleet': 'nav-fleet',
+  'screen-ops': 'nav-ops',
+  'screen-projects': 'nav-projects',
+  'screen-models': 'nav-models',
+  'screen-settings': 'nav-settings',
+};
+
+function switchScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navId = screenNavMap[screenId];
+  if (navId) document.getElementById(navId).classList.add('active');
+  hideDetail();
+}
+
+// ── Dev mode ──
+function toggleDev() {
+  document.body.classList.toggle('dev');
+  const bar = document.getElementById('devToggle');
+  const isDev = document.body.classList.contains('dev');
+  bar.classList.toggle('off', !isDev);
+  bar.innerHTML = isDev
+    ? '<span class="dot"></span> DEV MODE ON — annotations visible'
+    : '<span class="dot"></span> DEV MODE OFF — click to enable';
+}
+
+// ── Detail panel ──
+const details = {
+  'home-inmotion': {
+    title: 'InMotionPanel',
+    rows: [
+      ['Component', 'InMotionPanel'],
+      ['File', 'src/app/home/HomeDashboard.tsx'],
+      ['API calls', 'useHomeOverview → GET /api/home/overview'],
+      ['Navigation', 'NAVIGATES_TO /channels'],
+      ['What it does', 'Shows threads currently in motion across channels. Tapping navigates to /channels.'],
+      ['Underlying process', 'Polls home overview API. No writes. Read-only dashboard card.'],
+    ]
+  },
+  'home-system': {
+    title: 'SystemPanel',
+    rows: [
+      ['Component', 'SystemPanel'],
+      ['File', 'src/app/home/HomeDashboard.tsx'],
+      ['API calls', 'useHomeOverview → GET /api/home/overview'],
+      ['Navigation', 'NAVIGATES_TO /channels, /ops/config?tab=models'],
+      ['What it does', 'Shows system health: agents online, pi version, model status.'],
+      ['Underlying process', 'Read-only. Links out to channels and config.'],
+    ]
+  },
+  'home-agent-health': {
+    title: 'AgentHealthCard',
+    rows: [
+      ['Component', 'AgentHealthCard'],
+      ['File', 'src/app/home/HomeDashboard.tsx'],
+      ['API calls', 'GET /api/agent-runs/overview'],
+      ['Navigation', 'NAVIGATES_TO /ops/runs'],
+      ['Underlying process', 'Polls agent run stats. Tapping opens run history.'],
+    ]
+  },
+  'channel-item': {
+    title: 'Channel List Item',
+    rows: [
+      ['Component', 'ChannelsContent → channel item'],
+      ['File', 'src/app/channels/ChannelsContent.tsx'],
+      ['API calls', 'useChannelActivity → GET /api/channels/activity (Electric shape)'],
+      ['Navigation', 'NAVIGATES_TO /channels/:channelId'],
+      ['Underlying process', 'Electric SQL live shape streams channel activity in real-time.'],
+    ]
+  },
+  'guidebar': {
+    title: 'GuideBar (the bar itself)',
+    rows: [
+      ['Component', 'GuideBar'],
+      ['File', 'src/app/channels/GuideBar.tsx'],
+      ['Data source', 'thread_meta.lifecycle + state + enabled_workflows'],
+      ['Helper', 'lifecycles.ts → nextStepSummary() → mainPathOrder()'],
+      ['Renders', 'Lifecycle name · Step N of M · Current state · Next action summary'],
+      ['4 states', 'active (normal) · working (agent running) · error (retry) · terminal (done, promote)'],
+    ]
+  },
+  'guidebar-do-it': {
+    title: 'GuideBar — "Do it for me" button',
+    rows: [
+      ['Trigger', 'Button tap → POST /api/channels/advance'],
+      ['Route file', 'src/app/api/channels/advance/route.ts'],
+      ['Flow', 'advance() → upsertWorkflowStep() → buildWorkflowPrompt() → runAgentPrompt() → transitionThreadState()'],
+      ['Agent runner', 'src/lib/runAgentPrompt.ts → execFileNoStdin() → pi -p ...'],
+      ['State hub', 'transitionThreadState() in src/app/channels/transitionThread.ts'],
+      ['What happens', '1. Writes workflow step record\n2. Resolves repo CWD\n3. Builds agent prompt from workflow\n4. Runs pi agent\n5. On success: auto-transitions to next state\n6. On failure: marks step failed, shows retry'],
+      ['Live feedback', 'GuideBar shows spinner + "Working…" while agent runs. Live activity trace streams in real-time via Electric.'],
+      ['Auto-advance', 'Intermediate states auto-advance after agent success. Terminal/proven states require confirmation.'],
+    ]
+  },
+  'guidebar-mark-done': {
+    title: 'GuideBar — "Mark done myself" button',
+    rows: [
+      ['Trigger', 'Button tap → POST /api/channels/transition'],
+      ['Route file', 'API route: transition endpoint'],
+      ['Flow', 'transitionThreadState() — skips agent run, just advances state'],
+      ['State hub', 'transitionThreadState() in src/app/channels/transitionThread.ts'],
+      ['What happens', '1. Validates transition is legal (canTransition)\n2. Evaluates stage exit gates\n3. Runs verification if configured\n4. Records workflow event\n5. Posts system message to thread\n6. Advances to next state'],
+    ]
+  },
+  'trigger-flow': {
+    title: '@agent mention → Trigger flow',
+    rows: [
+      ['Trigger', 'User types @agent in thread input → POST /api/channels/trigger'],
+      ['Route file', 'src/app/api/channels/trigger/route.ts'],
+      ['Core function', 'runMentionJob() — centrality score 7.5 (most-connected function)'],
+      ['Full flow', 'insertMessage() → upsertWorkflowStep() → buildPrompt() → piInvocationForHandle() → execFileNoStdin() → pi -p ... → streamPiActivity() → writePlan/Artifact/Graph* → transitionThreadState()'],
+      ['Streaming', 'streamPiActivity() → upsertActivityEvent() → tail() → updateMessageBody() → flush() — live streaming via Electric shapes'],
+      ['Graph mode', 'If channel is in Graph mode: buildGraphFold() → writeGraphMemoryCandidates() → writeGraphProposal() → writeGraphDecision()'],
+      ['Work runs', 'queueWorkRun() → startWorkRun() → heartbeatWorkRun() → prepareRunWorktree()'],
+    ]
+  },
+  'plan-workspace': {
+    title: 'PlanWorkspace',
+    rows: [
+      ['Component', 'PlanWorkspace (in thread tabs)'],
+      ['File', 'src/app/channels/PlanWorkspace.tsx'],
+      ['API calls', 'POST /api/channels/plans · POST /api/channels/transition'],
+      ['What it does', 'Shows plan items (tasks) from the thread plan. Can mark complete, advance manually.'],
+      ['Underlying process', 'Writes to thread_workflow_steps. Manual advance calls transitionThreadState().'],
+    ]
+  },
+  'work-runs': {
+    title: 'WorkRunsPanel',
+    rows: [
+      ['Component', 'WorkRunsPanel'],
+      ['API calls', 'GET /api/work-runs · POST /api/work-runs'],
+      ['Lib', 'src/lib/work-runs.ts — queue/start/heartbeat/finish'],
+      ['What it does', 'Shows agent work-run history for this thread. Can trigger new runs.'],
+      ['Underlying process', 'Each run: queue → start (spawns pi in worktree) → heartbeat (keeps alive) → finish (collects output).'],
+    ]
+  },
+  'promote': {
+    title: 'Promote to Project (inactive)',
+    rows: [
+      ['Component', 'PromoteStatusPanel'],
+      ['API call', 'POST /api/channels/promote'],
+      ['Navigation', 'NAVIGATES_TO /projects'],
+      ['When active', 'Only shows when thread state is terminal (done/failed).'],
+      ['What it does', 'Creates a project repo from the thread work. Writes to projects table.'],
+    ]
+  },
+  'promote-action': {
+    title: 'Promote to Project (active)',
+    rows: [
+      ['Trigger', 'Button tap → POST /api/channels/promote'],
+      ['Flow', 'Creates project record → transitions thread to promoted state → posts system message → navigates to /projects'],
+      ['Navigation', 'NAVIGATES_TO /projects'],
+      ['DB writes', 'projects table (new row), thread_meta.promoted_to (set)'],
+    ]
+  },
+  'finance-publish': {
+    title: 'FinancePublisherPanel',
+    rows: [
+      ['Component', 'FinancePublisherPanel'],
+      ['API call', 'POST /api/finance/publications'],
+      ['What it does', 'Publishes finance research findings to a channel thread. Creates a thread message with structured research data.'],
+    ]
+  },
+  'finance-candidate': {
+    title: 'CandidateInspectionSheet',
+    rows: [
+      ['Component', 'CandidateInspectionSheet'],
+      ['Navigation', 'NAVIGATES_TO /channels/:channelId/:threadId'],
+      ['What it does', 'Opens a research thread for a stock candidate. This is how finance crosses into the channels lifecycle engine.'],
+    ]
+  },
+  'fleet-action': {
+    title: 'Fleet Dashboard',
+    rows: [
+      ['API calls', 'GET /api/fleet · POST /api/fleet/action'],
+      ['Lib', 'src/lib/fleet.ts · src/lib/fleet-server.ts'],
+      ['What it does', 'Shows all registered agents and their status. Can send actions to agents.'],
+    ]
+  },
+  'fleet-registry': {
+    title: 'RegistryPanel',
+    rows: [
+      ['Component', 'RegistryPanel'],
+      ['API calls', 'GET /api/registry · GET /api/workflows'],
+      ['Navigation', 'NAVIGATES_TO /ops/config?tab=workflows'],
+      ['What it does', 'Shows registered subagents, workflows, and their definitions.'],
+    ]
+  },
+  'fleet-evidence': {
+    title: 'AgentEvidencePanel',
+    rows: [
+      ['Component', 'AgentEvidencePanel'],
+      ['Navigation', 'NAVIGATES_TO /ops/runs · NAVIGATES_TO /ops/activity?tab=collections'],
+      ['What it does', 'Links to agent run history and evaluation collections.'],
+    ]
+  },
+  'project-list': {
+    title: 'ProjectsPage',
+    rows: [
+      ['Component', 'ProjectsPage'],
+      ['API calls', 'GET /api/repos'],
+      ['Navigation', 'NAVIGATES_TO /channels · NAVIGATES_TO /projects/:repoId'],
+      ['What it does', 'Lists all project repos. Each card navigates to project detail or source thread.'],
+    ]
+  },
+  'project-detail': {
+    title: 'ProjectDetailPage',
+    rows: [
+      ['Component', 'ProjectDetailPage'],
+      ['API calls', 'GET /api/projects/detail'],
+      ['Sub-components', 'ThreadGroup → /channels/:id/:threadId · ThreadActionButton → POST /api/projects/thread-action · Shell → /projects (back)'],
+      ['What it does', 'Shows project detail: active thread, thread groups, actions.'],
+    ]
+  },
+  'project-quick-work': {
+    title: 'ProjectQuickWorkComposer',
+    rows: [
+      ['Component', 'ProjectQuickWorkComposer'],
+      ['API calls', 'POST /api/projects/work · POST /api/channels/trigger'],
+      ['What it does', 'Compose and fire a one-shot agent task directly on a project. Bypasses the full thread lifecycle for quick operations.'],
+    ]
+  },
+  'models-status': {
+    title: 'ModelsPanel — Status',
+    rows: [
+      ['Component', 'ModelsPanel'],
+      ['API call', 'GET /api/models/status'],
+      ['What it does', 'Shows which AI models are configured and their current status.'],
+    ]
+  },
+  'models-subscriptions': {
+    title: 'ModelsPanel — Subscriptions',
+    rows: [
+      ['API call', 'GET /api/models/subscriptions'],
+      ['What it does', 'Shows API subscription usage and billing.'],
+    ]
+  },
+  'models-swap': {
+    title: 'ModelsPanel — Swap',
+    rows: [
+      ['API call', 'POST /api/models/swap'],
+      ['What it does', 'Switches the active model for agent runs. Takes effect on next trigger.'],
+    ]
+  },
+  'settings-perf': {
+    title: 'Performance Telemetry',
+    rows: [
+      ['API calls', 'GET /api/perf/summary · POST /api/perf/write'],
+      ['Lib', 'src/lib/perf.ts → measure()'],
+      ['DB', 'perf_metrics (unlogged table, Electric-replicated)'],
+      ['What it does', 'Client-side measure() sends timing data. Unlogged for speed. Electric SQL replicates to UI in real-time.'],
+    ]
+  },
+};
+
+function showDetail(key) {
+  const d = details[key];
+  if (!d) return;
+  let html = `<h3>${d.title}</h3>`;
+  d.rows.forEach(([k, v]) => {
+    let cls = 'val';
+    if (v.startsWith('GET ') || v.startsWith('POST ')) cls += ' api';
+    else if (v.endsWith('.ts') || v.endsWith('.tsx') || v.endsWith('.js')) cls += ' file';
+    else if (v.includes('()')) cls += ' fn';
+    html += `<div class="row"><span class="key">${k}:</span> <span class="${cls}">${v}</span></div>`;
+  });
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailPanel').classList.add('show');
+}
+
+function hideDetail() {
+  document.getElementById('detailPanel').classList.remove('show');
+}
+
+// Keyboard: D to toggle dev mode
+document.addEventListener('keydown', e => {
+  if (e.key === 'd' && !e.metaKey && !e.ctrlKey && e.target === document.body) {
+    toggleDev();
+  }
+  if (e.key === 'Escape') hideDetail();
+});
+</script>
+</body>
+</html>

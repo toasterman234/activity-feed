@@ -3,6 +3,8 @@ import { pool } from "@/app/api/_db";
 const SOURCES: Record<string, string[]> = {
   "agent:claude": ["claude-code"],
   "agent:pi": ["omp"],
+  "iii-harness": ["iii"],
+  "agent:buzz": ["buzz-agent"],
 };
 
 export async function getAgentEvidence(agentId: string) {

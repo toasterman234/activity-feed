@@ -1,0 +1,20 @@
+{
+  "route": "/mobile-v2/ops",
+  "slug": "mobile-v2__ops",
+  "project": "webkit-393x852",
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "timestamp": "2026-07-31T05:01:06.646Z",
+  "navigation": {
+    "ttfb": 3,
+    "fcp": -1,
+    "domComplete": 71,
+    "transferSize": -1,
+    "encodedBodySize": -1
+  },
+  "longtasks": [],
+  "measures": [],
+  "errors": []
+}

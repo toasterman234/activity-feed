@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -37,6 +38,12 @@ REQUIRED_TABLES = [
     "portfolio_net_worth",
     "portfolio_benchmarks",
     "portfolio_allocation",
+]
+
+# Tables that exist but are NOT streamed by electric-circuits (hedge engine
+# reads them directly). Don't add to REQUIRED_TABLES / REPLICA IDENTITY FULL.
+DIRECT_READ_TABLES = [
+    "portfolio_option_positions",
 ]
 
 # ── DB helpers ──
@@ -120,6 +127,23 @@ def ensure_pg_tables(conn: psycopg.Connection) -> None:
             target_pct DOUBLE PRECISION,
             current_pct DOUBLE PRECISION,
             drift_pct DOUBLE PRECISION,
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        )
+    """)
+
+    # Portfolio option positions — materialised from trade netting.
+    # Read directly by the hedge engine, NOT streamed via electric-circuits.
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS portfolio_option_positions (
+            position_id TEXT PRIMARY KEY,
+            symbol TEXT NOT NULL,
+            underlying TEXT NOT NULL,
+            option_type TEXT NOT NULL,
+            option_strike DOUBLE PRECISION NOT NULL,
+            option_expiry TEXT NOT NULL,
+            quantity DOUBLE PRECISION NOT NULL,
+            multiplier INTEGER DEFAULT 100,
+            institution TEXT,
             updated_at TIMESTAMPTZ DEFAULT NOW()
         )
     """)
@@ -268,6 +292,85 @@ def sync_benchmarks(duck: duckdb.DuckDBPyConnection, pg: psycopg.Connection) -> 
     return count
 
 
+def sync_option_positions(duck: duckdb.DuckDBPyConnection, pg: psycopg.Connection) -> int:
+    """Net option trades to find open positions and materialise them.
+
+    Matches the logic in dashboard/src/app/finance/use-option-greeks.ts
+    (computeOpenOptions) but runs server-side during ingestion.
+    """
+    rows = duck.execute("""
+        SELECT
+            symbol, option_type, option_strike, option_expiry,
+            side, quantity, institution
+        FROM finance.trades
+        WHERE is_option = true
+          AND option_type IS NOT NULL
+          AND option_strike IS NOT NULL
+          AND option_expiry IS NOT NULL
+        ORDER BY date
+    """).fetchall()
+
+    # Net by contract key: symbol|option_type|option_strike|option_expiry
+    contracts: dict[str, dict] = {}
+    for row in rows:
+        symbol, opt_type, strike, expiry, side, qty, institution = row
+        # Skip rows with NULL key fields
+        if not symbol or not opt_type or strike is None or not expiry:
+            continue
+        key = f"{symbol}|{opt_type}|{strike}|{expiry}"
+        if key not in contracts:
+            contracts[key] = {
+                "symbol": symbol,
+                "option_type": opt_type.lower(),
+                "option_strike": float(strike),
+                "option_expiry": expiry,
+                "quantity": 0.0,
+                "institution": institution,
+            }
+        # sell increases short (subtract), buy reduces (add)
+        if (side or "").upper() == "SELL":
+            contracts[key]["quantity"] -= float(qty)
+        else:
+            contracts[key]["quantity"] += float(qty)
+
+    now = datetime.now(timezone.utc).isoformat()
+    count = 0
+
+    for key, c in contracts.items():
+        qty = c["quantity"]
+        # Skip closed positions (net zero within tolerance)
+        if abs(qty) < 0.001:
+            continue
+
+        # Extract underlying from option symbol (OCC format: AAPL250117P00180000 → AAPL)
+        m = re.match(r"^([A-Z]+)\d{6}", c["symbol"])
+        underlying = m.group(1) if m else c["symbol"][:5]
+
+        position_id = key
+        pg.execute("""
+            INSERT INTO portfolio_option_positions
+                (position_id, symbol, underlying, option_type, option_strike,
+                 option_expiry, quantity, multiplier, institution, updated_at)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            ON CONFLICT (position_id) DO UPDATE SET
+                symbol=EXCLUDED.symbol,
+                underlying=EXCLUDED.underlying,
+                option_type=EXCLUDED.option_type,
+                option_strike=EXCLUDED.option_strike,
+                option_expiry=EXCLUDED.option_expiry,
+                quantity=EXCLUDED.quantity,
+                institution=EXCLUDED.institution,
+                updated_at=EXCLUDED.updated_at
+        """, (
+            position_id,
+            c["symbol"], underlying, c["option_type"], c["option_strike"],
+            c["option_expiry"], qty, 100, c["institution"], now,
+        ))
+        count += 1
+
+    return count
+
+
 def sync_allocation(duck: duckdb.DuckDBPyConnection, pg: psycopg.Connection) -> int:
     """Compute allocation from positions + balances + home value using finance views."""
     rows = duck.execute("SELECT * FROM finance.v_allocation").fetchall()
@@ -307,6 +410,7 @@ def sync_all() -> dict[str, int]:
         ("balances", sync_balances),
         ("net_worth", sync_net_worth),
         ("benchmarks", sync_benchmarks),
+        ("option_positions", sync_option_positions),
         ("allocation", sync_allocation),
     ]:
         try:

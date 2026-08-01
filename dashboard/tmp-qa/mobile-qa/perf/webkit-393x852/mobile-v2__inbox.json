@@ -1,0 +1,20 @@
+{
+  "route": "/mobile-v2/inbox",
+  "slug": "mobile-v2__inbox",
+  "project": "webkit-393x852",
+  "viewport": {
+    "width": 393,
+    "height": 852
+  },
+  "timestamp": "2026-07-31T05:01:02.525Z",
+  "navigation": {
+    "ttfb": 2,
+    "fcp": -1,
+    "domComplete": 72,
+    "transferSize": -1,
+    "encodedBodySize": -1
+  },
+  "longtasks": [],
+  "measures": [],
+  "errors": []
+}

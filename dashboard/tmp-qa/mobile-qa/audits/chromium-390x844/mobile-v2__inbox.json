@@ -1,0 +1,166 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 1089,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 68,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 63,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 83,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 54,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 84,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 60,
+      "height": 18
+    },
+    {
+      "selector": "a.flex.items-center.gap-3",
+      "width": 72,
+      "height": 18
+    },
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 40,
+      "height": 33
+    },
+    {
+      "selector": "button.group/button.inline-flex.items-center",
+      "width": 63,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_kqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 31,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_14qnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 43,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_1kqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 42,
+      "height": 21
+    },
+    {
+      "selector": "input#base-ui-_R_4mqnpfl5stb_.h-8.w-full.min-w-0",
+      "width": 153,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_16qnpfl5stb_.flex.w-fit.items-center",
+      "width": 82,
+      "height": 33
+    },
+    {
+      "selector": "input#base-ui-_R_16qnpfl5stb_-hidden-input.",
+      "width": 1,
+      "height": 1
+    },
+    {
+      "selector": "button#base-ui-_R_5bf2npfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 33,
+      "height": 36
+    },
+    {
+      "selector": "button#base-ui-_R_9bf2npfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 33,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_dbf2npfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 33,
+      "height": 21
+    },
+    {
+      "selector": "button#base-ui-_R_2bf2npfl5stb_.flex.w-fit.items-center",
+      "width": 33,
+      "height": 48
+    }
+  ],
+  "clippedText": [
+    {
+      "selector": "div.hidden.md:block",
+      "text": "BenQueue mailbox⌄Channels0Needs Review0Waiting0Active0",
+      "clientWidth": 22,
+      "scrollWidth": 77
+    },
+    {
+      "selector": "div.space-y-1.p-2",
+      "text": "Channels0Needs Review0Waiting0Active0",
+      "clientWidth": 22,
+      "scrollWidth": 77
+    },
+    {
+      "selector": "div.",
+      "text": "All mailUnreadWaitingunread▼",
+      "clientWidth": 33,
+      "scrollWidth": 153
+    },
+    {
+      "selector": "div.border-b.border-[var(--border)].p-4",
+      "text": "All mailUnreadWaitingunread▼",
+      "clientWidth": 33,
+      "scrollWidth": 153
+    },
+    {
+      "selector": "div.flex.items-center.justify-between",
+      "text": "All mailUnreadWaitingunread▼",
+      "clientWidth": 33,
+      "scrollWidth": 52
+    },
+    {
+      "selector": "div.group/tabs.flex.gap-2",
+      "text": "All mailUnreadWaiting",
+      "clientWidth": 33,
+      "scrollWidth": 52
+    },
+    {
+      "selector": "div.group/tabs-list.inline-flex.w-fit",
+      "text": "All mailUnreadWaiting",
+      "clientWidth": 33,
+      "scrollWidth": 52
+    },
+    {
+      "selector": "div.",
+      "text": "Select a channel to preview it here.",
+      "clientWidth": 45,
+      "scrollWidth": 57
+    },
+    {
+      "selector": "div.p-6.text-sm.text-[var(--muted-foreground)]",
+      "text": "Select a channel to preview it here.",
+      "clientWidth": 45,
+      "scrollWidth": 57
+    }
+  ]
+}

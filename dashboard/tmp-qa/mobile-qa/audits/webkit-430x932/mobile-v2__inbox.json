@@ -1,0 +1,82 @@
+{
+  "viewportWidth": 430,
+  "viewportHeight": 932,
+  "scrollWidth": 430,
+  "scrollHeight": 1142,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "button.group/button.inline-flex.items-center",
+      "width": 69,
+      "height": 28
+    },
+    {
+      "selector": "button#base-ui-_R_kqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 130,
+      "height": 22
+    },
+    {
+      "selector": "button#base-ui-_R_14qnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 130,
+      "height": 22
+    },
+    {
+      "selector": "button#base-ui-_R_1kqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 130,
+      "height": 22
+    },
+    {
+      "selector": "input#base-ui-_R_4mqnpfl5stb_.h-8.w-full.min-w-0",
+      "width": 396,
+      "height": 32
+    },
+    {
+      "selector": "button#base-ui-_R_16qnpfl5stb_.flex.w-fit.items-center",
+      "width": 84,
+      "height": 28
+    },
+    {
+      "selector": "input#base-ui-_R_16qnpfl5stb_-hidden-input.",
+      "width": 1,
+      "height": 1
+    }
+  ],
+  "clippedText": [
+    {
+      "selector": "p.mt-0.5.truncate.text-[11px]",
+      "text": "Hey! I'm here. What's up? Anything you need on the Mira mobile AI supercycle th…",
+      "clientWidth": 335,
+      "scrollWidth": 432
+    },
+    {
+      "selector": "p.mt-0.5.truncate.text-[11px]",
+      "text": "Bound to iii session **s_02270d085d754fe3acac10d2c0a8502a**. Tasks written via …",
+      "clientWidth": 337,
+      "scrollWidth": 451
+    },
+    {
+      "selector": "p.mt-0.5.truncate.text-[11px]",
+      "text": "Done. Here's the deeper picture: --- ## Regulatory Landscape — Three Forces Sha…",
+      "clientWidth": 335,
+      "scrollWidth": 444
+    },
+    {
+      "selector": "p.mt-0.5.truncate.text-[11px]",
+      "text": "Look up active graph on Twitter. There’s a bunch of people who use design princ…",
+      "clientWidth": 335,
+      "scrollWidth": 431
+    },
+    {
+      "selector": "p.mt-0.5.truncate.text-[11px]",
+      "text": "✅ Decision accepted: Decision 86c487fd-dc10-4887-9934-ffdd452f167c upheld — the…",
+      "clientWidth": 335,
+      "scrollWidth": 476
+    }
+  ]
+}

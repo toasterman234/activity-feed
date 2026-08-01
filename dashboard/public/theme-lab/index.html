@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Theme Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#18181b;color:#e4e4e7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  .shell{max-width:480px;margin:0 auto;padding:12px 12px 40px}
+  h1{font-size:18px;font-weight:700;padding:8px 0}
+  .hint{font-size:11px;color:#71717a;margin-bottom:16px;line-height:1.5}
+  .warn{background:#422006;color:#fbbf24;border-radius:12px;padding:10px 12px;font-size:11px;line-height:1.5;margin-bottom:16px}
+  .warn a{color:#fbbf24;font-weight:600}
+  .controls{background:#27272a;border-radius:16px;padding:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;gap:8px;align-items:center}
+  .row label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:#a1a1aa;min-width:52px}
+  .row select{flex:1;background:#18181b;border:1px solid #3f3f46;border-radius:10px;color:#e4e4e7;font-size:13px;padding:10px 12px;appearance:none;-webkit-appearance:none}
+  .row input[type=checkbox]{width:18px;height:18px;accent-color:#a78bfa}
+  .grid{display:flex;flex-direction:column;gap:12px}
+  .theme-card{border-radius:16px;overflow:hidden;border:1px solid #3f3f46}
+  .theme-header{background:#27272a;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+  .theme-header-left{display:flex;flex-direction:column;gap:2px}
+  .theme-header-left .name{font-size:14px;font-weight:600}
+  .theme-header-left .palette{font-size:10px;color:#a1a1aa}
+  .theme-header-right{display:flex;gap:6px}
+  .theme-header button{background:#3f3f46;border:none;color:#e4e4e7;font-size:11px;padding:6px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .theme-header button:active{background:#52525b}
+  .css-vars{font-family:var(--font-body);color:var(--fg);background:var(--bg);font-size:var(--text-sm);line-height:var(--leading-body);letter-spacing:var(--letter-spacing-body)}
+  .preview{padding:14px;display:flex;flex-direction:column;gap:14px;min-height:300px}
+  .preview.dark{background:var(--bg);color:var(--fg)}
+  .mode-badge{font-size:10px;padding:3px 10px;border-radius:9999px;align-self:flex-start;background:var(--elevated);color:var(--muted);font-family:var(--font-body);font-weight:var(--font-weight-normal)}
+  .sample-card{border-radius:var(--radius-card);border:1px solid var(--border);padding:var(--card-padding);background:var(--surface)}
+  .sample-card h2{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--font-weight-display);color:var(--fg);letter-spacing:var(--tracking-display)}
+  .sample-card p{color:var(--muted);font-size:var(--text-sm);line-height:var(--leading-body);margin-top:6px}
+  .sample-card .btns{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .sample-card .btn-primary{border-radius:var(--radius-btn);background:var(--accent);color:var(--accent-on);border:none;padding:8px 16px;font-size:var(--text-sm);font-family:var(--font-body);font-weight:var(--font-weight-strong);cursor:default}
+  .sample-card .btn-secondary{border-radius:var(--radius-btn);border:1px solid var(--border);background:var(--elevated);color:var(--fg);padding:8px 16px;font-size:var(--text-sm);font-family:var(--font-body);font-weight:var(--font-weight-normal);cursor:default}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-size:var(--text-xs);padding:3px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);font-family:var(--font-body)}
+  .type-scale{display:flex;flex-direction:column;gap:4px}
+  .type-scale p{color:var(--fg-2);line-height:var(--leading-body)}
+  .list-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);font-family:var(--font-body)}
+  .list-row .dot{width:8px;height:8px;border-radius:9999px;flex-shrink:0}
+  .list-row .text{flex:1;font-size:var(--text-sm);font-weight:var(--font-weight-strong);color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .list-row .time{font-size:var(--text-xs);color:var(--muted);flex-shrink:0}
+  .divider{border:none;border-top:1px solid var(--border);margin:0 -14px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#22c55e;color:#000;padding:10px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.show{opacity:1}
+  .nav-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .nav-row button{flex-shrink:0;border:1px solid #3f3f46;background:#27272a;color:#a1a1aa;padding:8px 16px;border-radius:9999px;font-size:12px;white-space:nowrap;cursor:pointer}
+  .nav-row button.active{background:#a78bfa;color:#000;border-color:#a78bfa;font-weight:600}
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>🎨 Theme Lab</h1>
+  <p class="hint">Design system previewer. Pick palettes + style → see components in light &amp; dark.<br>JSON copies to clipboard; paste into <code>themes/tokens.json</code> in the activity-feed repo.</p>
+  <div class="warn">
+    ⚠️ This page is on your <strong>tailnet</strong> — not the open internet. It binds to 0.0.0.0 so your
+    phone at <code>100.71.118.10:3099</code> can reach it. Keep the terminal running.
+  </div>
+
+  <div class="controls">
+    <div class="row">
+      <label>Neutral</label>
+      <select id="neutral"></select>
+      <label>Accent</label>
+      <select id="accent"></select>
+    </div>
+    <div class="row">
+      <label>Style</label>
+      <select id="style"></select>
+      <label>Dark only</label>
+      <input type="checkbox" id="darkOnly">
+    </div>
+    <div class="row" style="justify-content:flex-end">
+      <button onclick="refresh()" style="background:#a78bfa;color:#000;border:none;padding:8px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Refresh Preview</button>
+    </div>
+  </div>
+
+  <div id="themeGrid" class="grid"></div>
+</div>
+<div id="toast" class="toast">Copied!</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  Palette data — mirrors themes/generate-from-palette.ts
+// ═══════════════════════════════════════════════════════════════
+const PALETTES = {
+  gray:   {L:["#fcfcfc","#f9f9f9","#f0f0f0","#e8e8e8","#e0e0e0","#d9d9d9","#cecece","#bbbbbb","#8d8d8d","#838383","#646464","#202020"],D:["#111111","#191919","#222222","#2a2a2a","#313131","#3a3a3a","#484848","#606060","#6e6e6e","#7b7b7b","#b4b4b4","#eeeeee"]},
+  mauve:  {L:["#fdfcfd","#faf9fb","#f2eff3","#eae7ec","#e3dfe6","#dbd8e0","#d0cdd7","#bcbac7","#8e8c99","#84828e","#65636d","#211f26"],D:["#121113","#1a191b","#232225","#2b292d","#323035","#3c393f","#49474e","#625f69","#6f6d78","#7c7a85","#b5b2bc","#eeeeef"]},
+  slate:  {L:["#fcfcfd","#f9f9fb","#f0f0f3","#e8e8ec","#e0e1e6","#d9d9e0","#cdced6","#b9bbc6","#8b8d98","#80838d","#60646c","#1c2024"],D:["#111113","#18191b","#212225","#272a2d","#2e3135","#363a3f","#43484e","#5a6169","#696e77","#777b84","#b0b4ba","#edeef0"]},
+  sage:   {L:["#fbfdfc","#f7f9f8","#eef1f0","#e6e9e8","#dfe2e0","#d7dad9","#cbcfcd","#b8bcba","#868e8b","#7c8481","#5f6563","#1a211e"],D:["#101211","#171918","#202221","#272a29","#2e3130","#373b39","#444947","#5b625f","#63706b","#717d79","#adb5b1","#eceeed"]},
+  olive:  {L:["#fcfdfc","#f8faf8","#eff1ef","#e7e9e7","#dfe2df","#d7dad7","#cccfcc","#b9bcb8","#898e87","#7f847d","#60655f","#1d211c"],D:["#111210","#191a18","#212320","#282b28","#2f312e","#383b37","#454843","#5c615b","#667066","#757e74","#afb5ad","#eceeec"]},
+  sand:   {L:["#fdfdfc","#f9f9f8","#f1f0ef","#e9e8e6","#e2e1de","#dad9d6","#cfceca","#bcbbb5","#8d8d86","#82827c","#63635e","#21201c"],D:["#111110","#191918","#222220","#2a2a28","#31312e","#3b3a37","#494844","#62605b","#6f6d66","#7c7b74","#b5b3ad","#eeeeec"]},
+  tomato: {L:["#fffcfc","#fff8f7","#feebe7","#ffdcd3","#ffcdc2","#fdbdaf","#f5a898","#ec8e7b","#e54d2e","#dd4425","#d13415","#5c271f"],D:["#181111","#1f1513","#391714","#4e1511","#5e1c16","#6e2920","#853a2d","#ac4d39","#e54d2e","#ec6142","#f07a60","#fed5cc"]},
+  red:    {L:["#fffcfc","#fff7f7","#feebec","#ffdbdc","#ffcdce","#fdbdbe","#f4a9aa","#eb8e90","#e5484d","#dc3e42","#ce2c31","#641723"],D:["#191111","#201314","#3b1219","#500f1c","#611623","#72232d","#8c333a","#b54548","#e5484d","#ec5d5e","#f07173","#fdd3d4"]},
+  ruby:   {L:["#fffcfd","#fff7f8","#feeaed","#ffdce1","#ffced6","#f8bfc8","#efacb8","#e592a3","#e54666","#dc3b5d","#ca244d","#64172b"],D:["#191113","#1e1517","#3a1419","#4e111b","#611623","#71232b","#8c3440","#b74958","#e54666","#ec5d72","#f07384","#fdd2d8"]},
+  crimson:{L:["#fffcfd","#fef7f9","#ffe9f0","#fedce7","#facedd","#f3bed1","#eaacc3","#e093b2","#e93d82","#df3478","#cb1d63","#621639"],D:["#191114","#201318","#381525","#4d122f","#5c1839","#6d2545","#873356","#b0436e","#e93d82","#ee518a","#f06897","#fed2e1"]},
+  pink:   {L:["#fffcfe","#fef7fb","#fee9f5","#fbdcef","#f6cee7","#efbfdd","#e7acd0","#dd93c2","#d6409f","#cf3897","#c2298a","#651249"],D:["#191117","#21121d","#37172f","#4b143d","#5c1c4a","#6d2859","#88366d","#b2478a","#d6409f","#e34ba5","#f060b3","#fed2e7"]},
+  plum:   {L:["#fefcff","#fdf7fd","#fbebfb","#f7def8","#f2d1f3","#e9c2ec","#deade3","#cf91d8","#ab4aba","#a144af","#953ea3","#53195d"],D:["#181118","#201320","#351a35","#451d47","#512454","#5e3061","#734079","#92549c","#ab4aba","#b658c4","#c56dd0","#f2d5f6"]},
+  purple: {L:["#fefcfe","#fbf7fe","#f7edfe","#f2e2fc","#ead5f9","#e0c4f4","#d1afec","#be93e4","#8e4ec6","#8347b9","#8145b5","#402060"],D:["#18111b","#1e1523","#301c3b","#3d224e","#48295c","#54346b","#664282","#8456aa","#8e4ec6","#9a5cd0","#af6ede","#ecd9fc"]},
+  violet: {L:["#fdfcfe","#faf8ff","#f4f0fe","#ebe4ff","#e1d9ff","#d4cafe","#c2b5f5","#aa99ec","#6e56cf","#654dc4","#6550b9","#2f265f"],D:["#14121f","#1b1725","#2d2546","#362a5b","#42336a","#503e7c","#5d4d91","#7965b7","#6e56cf","#7c66dc","#917dea","#e4defc"]},
+  iris:   {L:["#fdfdff","#f8f8ff","#f0f1fe","#e6e7ff","#dadcff","#cbcdff","#b8baf8","#9b9ef0","#5b5bd6","#5151cd","#5753c6","#272962"],D:["#13131e","#171625","#202248","#262a65","#303274","#3d3e85","#4a4a98","#5958b8","#5b5bd6","#6e6ade","#8481f0","#e0dffe"]},
+  indigo: {L:["#fdfdfe","#f7f9ff","#edf2fe","#e1e9ff","#d2deff","#c1d0ff","#abbdf9","#8da4ef","#3e63dd","#3358d4","#3a5bc7","#1f2d5c"],D:["#11131f","#141726","#182449","#1d2e62","#253974","#304384","#3a4f97","#435db1","#3e63dd","#5472e4","#6e89ed","#e0e4fd"]},
+  blue:   {L:["#fbfdff","#f4faff","#e6f4fe","#d5efff","#c2e5ff","#acd8fc","#8ec8f6","#5eb1ef","#0090ff","#0588f0","#0d74ce","#113264"],D:["#0d1520","#111927","#0d2847","#003362","#004074","#104d87","#205d9e","#2870bd","#0090ff","#3b9eff","#70b8ff","#c2e6ff"]},
+  cyan:   {L:["#fafdfe","#f2fafb","#def7f9","#caf1f6","#b5e9f0","#9ddde7","#7dcedc","#3db9cf","#00a2c7","#0797b9","#107d98","#0d3c48"],D:["#0b161a","#101b20","#082c36","#003848","#004558","#045468","#12677e","#11809c","#00a2c7","#23afd3","#4ccce6","#b6ecf7"]},
+  teal:   {L:["#fafefd","#f3fbf9","#e0f8f3","#ccf3ea","#b8eae0","#a1ded2","#83cdc1","#53b9ab","#12a594","#0d9b8a","#008573","#0d3d38"],D:["#0d1514","#111c1b","#0d2d2a","#023b37","#084843","#115550","#1d6961","#2a8076","#12a594","#35b1a3","#5acec1","#b7ece5"]},
+  jade:   {L:["#fbfefd","#f4fbf7","#e6f7ed","#d6f1e3","#c3e9d7","#acdec8","#8bceb6","#56ba9f","#29a383","#26997b","#208368","#1d3b31"],D:["#0d1512","#121c18","#0f2e22","#0b3b2c","#114837","#1b5745","#246854","#2e7f68","#29a383","#3bb395","#55ccad","#b7ece0"]},
+  green:  {L:["#fbfefc","#f4fbf6","#e6f6eb","#d6f1df","#c4e8d1","#adddc0","#8eceaa","#5bb98b","#30a46c","#2b9a66","#218358","#193b2d"],D:["#0e1512","#121b17","#132d21","#113b29","#174933","#20573d","#28684a","#2f7c57","#30a46c","#33b074","#45cc8a","#b9ecd0"]},
+  grass:  {L:["#fbfefb","#f5fbf5","#e9f6e9","#daf1db","#c9e8ca","#b2ddb5","#94ce9a","#65ba74","#46a758","#3e9b4f","#2a7e3b","#203c25"],D:["#0e1511","#141a15","#1b2a1e","#1d3a24","#25482d","#2d5736","#366740","#3e7b49","#46a758","#53b364","#6fcf7f","#bfedc7"]},
+  brown:  {L:["#fefdfc","#fcf9f6","#f6eee7","#f0e4d9","#ebdaca","#e4cdb7","#dcbc9f","#cea37e","#ad7f58","#a07553","#815e46","#3e332e"],D:["#12110f","#1c1816","#28211d","#322922","#3c3128","#483a2f","#574439","#6d5343","#ad7f58","#b58b67","#cba78b","#f2e1d4"]},
+  bronze: {L:["#fdfcfc","#fdf7f5","#f6edea","#efe4df","#e7d9d3","#dfcdc5","#d3bcb3","#c2a499","#a18072","#957468","#7d5e54","#43302b"],D:["#141110","#1c1917","#26211e","#2f2925","#38312c","#433b35","#514741","#655b53","#a18072","#ae8d7f","#caae9f","#f3e3db"]},
+  gold:   {L:["#fdfdfc","#faf9f2","#f2f0e7","#eae6db","#e1dccf","#d8d0bf","#cbc0aa","#b9a88d","#978365","#8c7a5e","#71624b","#3b352b"],D:["#121211","#1b1a17","#24231f","#2d2b26","#38352e","#444039","#544f46","#696254","#978365","#a59071","#bfac8d","#f2e8d5"]},
+  sky:    {L:["#f9feff","#f1fafd","#e1f6fd","#d1f0fa","#bee7f5","#a9daed","#8dcae3","#60b3d7","#7ce2fe","#74daf8","#00749e","#1d3e56"],D:["#0d141f","#111a27","#112840","#113555","#154467","#1b537b","#1f6692","#1e7cb5","#7ce2fe","#a8eeff","#75c7f0","#c2f3ff"]},
+};
+
+const STYLES = {
+  tight: {
+    desc:"Tight, sharp, compact",
+    t:{
+      "--font-body":'"Inter",-apple-system,sans-serif',"--font-display":'"Inter",-apple-system,sans-serif',
+      "--font-mono":'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace',
+      "--text-xs":"0.625rem","--text-sm":"0.6875rem","--text-base":"0.75rem",
+      "--text-lg":"0.8125rem","--text-xl":"0.875rem","--text-2xl":"0.9375rem","--text-3xl":"1rem","--text-4xl":"1.125rem",
+      "--leading-body":"1.35","--leading-tight":"1.15","--meta":"0.5625rem",
+      "--font-weight-normal":"400","--font-weight-strong":"500","--font-weight-display":"600",
+      "--letter-spacing-body":"0em","--letter-spacing-display":"0em",
+      "--space-1":"0.125rem","--space-2":"0.25rem","--space-3":"0.375rem","--space-4":"0.5rem","--space-5":"0.625rem",
+      "--space-6":"0.75rem","--space-8":"1rem","--space-12":"1.5rem",
+      "--card-padding":"0.5rem","--card-gap":"0.25rem","--section-gap":"0.375rem",
+      "--radius-sm":"0","--radius-md":"0","--radius-lg":"0","--radius-xl":"0","--radius-pill":"0",
+      "--radius-card":"0","--radius-btn":"0","--elev-raised":"none","--motion-base":"100ms","--motion-fast":"50ms"
+    }
+  },
+  comfortable:{
+    desc:"Balanced, readable",
+    t:{
+      "--font-body":'"Inter",-apple-system,BlinkMacSystemFont,sans-serif',"--font-display":'"Inter",-apple-system,sans-serif',
+      "--font-mono":'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace',
+      "--text-xs":"0.688rem","--text-sm":"0.813rem","--text-base":"0.875rem",
+      "--text-lg":"1rem","--text-xl":"1.125rem","--text-2xl":"1.25rem","--text-3xl":"1.5rem","--text-4xl":"1.875rem",
+      "--leading-body":"1.5","--leading-tight":"1.25","--tracking-display":"-0.01em","--meta":"0.625rem",
+      "--font-weight-normal":"400","--font-weight-strong":"600","--font-weight-display":"700",
+      "--letter-spacing-body":"normal","--letter-spacing-display":"-0.01em",
+      "--space-1":"0.25rem","--space-2":"0.5rem","--space-3":"0.75rem","--space-4":"1rem","--space-5":"1.25rem",
+      "--space-6":"1.5rem","--space-8":"2rem","--space-12":"3rem",
+      "--card-padding":"0.875rem","--card-gap":"0.625rem","--section-gap":"1rem",
+      "--radius-sm":"0.25rem","--radius-md":"0.375rem","--radius-lg":"0.5rem","--radius-xl":"0.75rem","--radius-pill":"9999px",
+      "--radius-card":"0.5rem","--radius-btn":"0.375rem","--elev-raised":"none","--motion-base":"150ms","--motion-fast":"100ms"
+    }
+  },
+  airy:{
+    desc:"Serif, relaxed",
+    t:{
+      "--font-body":'Georgia,"Times New Roman","Palatino Linotype",serif',"--font-display":'Georgia,"Times New Roman",serif',
+      "--font-mono":'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace',
+      "--text-xs":"0.75rem","--text-sm":"0.875rem","--text-base":"1rem",
+      "--text-lg":"1.1875rem","--text-xl":"1.375rem","--text-2xl":"1.6875rem","--text-3xl":"2rem","--text-4xl":"2.5rem",
+      "--leading-body":"1.75","--leading-tight":"1.35","--tracking-display":"-0.005em","--meta":"0.6875rem",
+      "--font-weight-normal":"400","--font-weight-strong":"600","--font-weight-display":"700",
+      "--letter-spacing-body":"0.003em","--letter-spacing-display":"-0.005em",
+      "--space-1":"0.3125rem","--space-2":"0.625rem","--space-3":"0.9375rem","--space-4":"1.25rem","--space-5":"1.5625rem",
+      "--space-6":"1.875rem","--space-8":"2.5rem","--space-12":"3.75rem",
+      "--card-padding":"1.125rem","--card-gap":"0.9375rem","--section-gap":"1.5rem",
+      "--radius-sm":"0.1875rem","--radius-md":"0.25rem","--radius-lg":"0.375rem","--radius-xl":"0.5rem","--radius-pill":"9999px",
+      "--radius-card":"0.25rem","--radius-btn":"0.1875rem",
+      "--elev-raised":"0 1px 3px rgba(0,0,0,0.06)","--motion-base":"200ms","--motion-fast":"120ms"
+    }
+  },
+  pill:{
+    desc:"Modern, pill buttons",
+    t:{
+      "--font-body":'"Geist","Inter",-apple-system,BlinkMacSystemFont,sans-serif',"--font-display":'"Geist","Inter",-apple-system,sans-serif',
+      "--font-mono":'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace',
+      "--text-xs":"0.625rem","--text-sm":"0.75rem","--text-base":"0.875rem",
+      "--text-lg":"1.125rem","--text-xl":"1.25rem","--text-2xl":"1.5rem","--text-3xl":"1.875rem","--text-4xl":"2.25rem",
+      "--leading-body":"1.6","--leading-tight":"1.3","--tracking-display":"-0.02em","--meta":"0.625rem",
+      "--font-weight-normal":"400","--font-weight-strong":"500","--font-weight-display":"600",
+      "--letter-spacing-body":"-0.005em","--letter-spacing-display":"-0.02em",
+      "--space-1":"0.25rem","--space-2":"0.5rem","--space-3":"0.75rem","--space-4":"1rem","--space-5":"1.5rem",
+      "--space-6":"2rem","--space-8":"2.5rem","--space-12":"4rem",
+      "--card-padding":"1.25rem","--card-gap":"1rem","--section-gap":"1.5rem",
+      "--radius-sm":"0.5rem","--radius-md":"0.75rem","--radius-lg":"1rem","--radius-xl":"1.25rem","--radius-pill":"9999px",
+      "--radius-card":"0.75rem","--radius-btn":"9999px",
+      "--elev-raised":"0 1px 2px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.04)","--motion-base":"200ms","--motion-fast":"100ms"
+    }
+  },
+  brutal:{
+    desc:"Bold, square, high contrast",
+    t:{
+      "--font-body":'"Arial Black","Impact","Franklin Gothic Heavy",-apple-system,sans-serif',"--font-display":'"Arial Black","Impact","Franklin Gothic Heavy",sans-serif',
+      "--font-mono":'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace',
+      "--text-xs":"0.625rem","--text-sm":"0.6875rem","--text-base":"0.75rem",
+      "--text-lg":"0.875rem","--text-xl":"1rem","--text-2xl":"1.25rem","--text-3xl":"1.5rem","--text-4xl":"2rem",
+      "--leading-body":"1.25","--leading-tight":"1","--meta":"0.5625rem",
+      "--font-weight-normal":"700","--font-weight-strong":"800","--font-weight-display":"900",
+      "--letter-spacing-body":"-0.015em","--letter-spacing-display":"-0.02em",
+      "--space-1":"0.25rem","--space-2":"0.375rem","--space-3":"0.5rem","--space-4":"0.75rem","--space-5":"1rem",
+      "--space-6":"1.25rem","--space-8":"1.5rem","--space-12":"2rem",
+      "--card-padding":"0.75rem","--card-gap":"0.5rem","--section-gap":"0.75rem",
+      "--radius-sm":"0","--radius-md":"0","--radius-lg":"0","--radius-xl":"0","--radius-pill":"0",
+      "--radius-card":"0","--radius-btn":"0",
+      "--elev-raised":"3px 3px 0 0 var(--border)","--motion-base":"80ms","--motion-fast":"40ms"
+    }
+  }
+};
+
+const RED_L = PALETTES.red.L[8], RED_D = PALETTES.red.D[8];
+const GREEN_L = PALETTES.green.L[8], GREEN_D = PALETTES.green.D[8];
+
+function mapColors(neut, acc, dark){
+  const s = dark ? neut.D : neut.L;
+  const a = dark ? acc.D : acc.L;
+  return {
+    "--bg":s[0],"--surface":s[0],"--elevated":s[1],
+    "--fg":s[11],"--fg-2":s[10],"--muted":s[9],"--disabled":s[7],
+    "--border":s[5],"--border-soft":s[4],
+    "--accent":a[8],"--accent-hover":a[7],"--accent-on":dark?"#000":"#fff",
+    "--tab-active-bg":s[11],"--tab-active-fg":s[0],
+    "--danger":dark?RED_D:RED_L,"--success":dark?GREEN_D:GREEN_L,
+    "--warn":dark?"#fbbf24":"#f59e0b"
+  };
+}
+
+function buildTheme(nId,aId,sId,darkOnly){
+  const n = PALETTES[nId], a = PALETTES[aId], s = STYLES[sId];
+  if(!n||!a||!s)return null;
+  const light={...mapColors(n,a,!!darkOnly),...s.t};
+  let dark=null;
+  if(!darkOnly) dark={...mapColors(n,a,true)};
+  return {id:`${nId}-${aId}-${sId}`,name:nId[0].toUpperCase()+nId.slice(1)+" "+aId,desc:`${nId} · ${aId} · ${sId}${darkOnly?" (dark)":""}`,light,dark,darkOnly};
+}
+
+function themeToCss(tokens){
+  let s="";
+  for(const[k,v]of Object.entries(tokens||{})) s+=`${k}:${v};`;
+  return s;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Rendering
+// ═══════════════════════════════════════════════════════════════
+
+function themeCard(t){
+  return `<div class="theme-card">
+    <div class="theme-header">
+      <div class="theme-header-left">
+        <div class="name">${t.name}</div>
+        <div class="palette">${t.desc}</div>
+      </div>
+      <div class="theme-header-right">
+        <button onclick="copyTheme('${t.id}')">Copy JSON</button>
+      </div>
+    </div>
+    <div class="preview css-vars" style="${themeToCss(t.light)}">
+      <span class="mode-badge">light</span>
+      <div class="sample-card">
+        <h2>Overview</h2>
+        <p>Sample card showing typography, spacing, and button styles under this design system.</p>
+        <div class="btns">
+          <span class="btn-primary">Primary</span>
+          <span class="btn-secondary">Secondary</span>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">Active</span>
+        <span class="chip">Warning</span>
+        <span class="chip">Error</span>
+      </div>
+      <div class="type-scale">
+        <p style="font-size:var(--text-xs)">XS · The quick brown fox</p>
+        <p style="font-size:var(--text-sm)">SM · The quick brown fox</p>
+        <p style="font-size:var(--text-base)">BASE · The quick brown fox</p>
+        <p style="font-size:var(--text-lg)">LG · The quick brown fox</p>
+        <p style="font-size:var(--text-xl)">XL · The quick brown fox</p>
+      </div>
+      <div class="list-row"><span class="dot" style="background:var(--accent)"></span><span class="text">Research topic</span><span class="time">Today</span></div>
+      <div class="list-row"><span class="dot" style="background:var(--warn)"></span><span class="text">Write proposal</span><span class="time">Yesterday</span></div>
+      <div class="list-row"><span class="dot" style="background:var(--success)"></span><span class="text">Deploy staging</span><span class="time">3d ago</span></div>
+    </div>${t.dark?`
+    <hr class="divider">
+    <div class="preview dark css-vars" style="${themeToCss(t.dark)}">
+      <span class="mode-badge">dark</span>
+      <div class="sample-card">
+        <h2>Dark view</h2>
+        <p>Same design system in dark mode — colors, contrast, and readability.</p>
+        <div class="btns">
+          <span class="btn-primary">Primary</span>
+          <span class="btn-secondary">Secondary</span>
+        </div>
+      </div>
+      <div class="list-row"><span class="dot" style="background:var(--accent)"></span><span class="text">Research topic</span><span class="time">Today</span></div>
+      <div class="list-row"><span class="dot" style="background:var(--warn)"></span><span class="text">Write proposal</span><span class="time">Yesterday</span></div>
+    </div>`:""}
+  </div>`;
+}
+
+let currentTheme = null;
+function refresh(){
+  const n = document.getElementById("neutral").value;
+  const a = document.getElementById("accent").value;
+  const s = document.getElementById("style").value;
+  const d = document.getElementById("darkOnly").checked;
+  const t = buildTheme(n,a,s,d);
+  currentTheme = t;
+  document.getElementById("themeGrid").innerHTML = t ? themeCard(t) : "<p style='color:#a1a1aa;font-size:13px'>Select palette and style options.</p>";
+}
+
+function copyTheme(id){
+  if(!currentTheme) return;
+  // Build JSON in the format expected by tokens.json
+  const themeDef = {
+    name: currentTheme.name,
+    description: currentTheme.desc,
+    light: currentTheme.light,
+    dark: currentTheme.dark || undefined,
+    darkAlways: currentTheme.darkOnly || undefined,
+  };
+  navigator.clipboard.writeText(JSON.stringify({[id]:themeDef},null,2)).then(()=>{
+    const t = document.getElementById("toast");
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),2000);
+  });
+}
+
+// Init
+(function(){
+  const neutrals = Object.keys(PALETTES).filter(k=>["gray","mauve","slate","sage","olive","sand"].includes(k));
+  const accents = Object.keys(PALETTES).filter(k=>!neutrals.includes(k));
+  document.getElementById("neutral").innerHTML = neutrals.map(n=>`<option value="${n}"${n==="mauve"?" selected":""}>${n}</option>`).join("");
+  document.getElementById("accent").innerHTML = accents.map(a=>`<option value="${a}"${a==="violet"?" selected":""}>${a}</option>`).join("");
+  document.getElementById("style").innerHTML = Object.entries(STYLES).map(([k,v])=>`<option value="${k}"${k==="comfortable"?" selected":""}>${k} — ${v.desc}</option>`).join("");
+  refresh();
+})();
+</script>
+</body>
+</html>

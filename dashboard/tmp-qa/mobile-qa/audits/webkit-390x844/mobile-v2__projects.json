@@ -1,0 +1,46 @@
+{
+  "viewportWidth": 390,
+  "viewportHeight": 844,
+  "scrollWidth": 390,
+  "scrollHeight": 844,
+  "hasHorizontalOverflow": false,
+  "overflowElements": [],
+  "touchTargets": [
+    {
+      "selector": "button#base-ui-_R_1ld5stb_.group/button.inline-flex.shrink-0",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "selector": "button.group/button.inline-flex.items-center",
+      "width": 38,
+      "height": 28
+    },
+    {
+      "selector": "input#base-ui-_R_2aqnpfl5stb_.w-full.min-w-0.border",
+      "width": 341,
+      "height": 36
+    },
+    {
+      "selector": "button.rounded-lg.border.px-2",
+      "width": 167,
+      "height": 29
+    },
+    {
+      "selector": "button.rounded-lg.border.px-2",
+      "width": 167,
+      "height": 29
+    },
+    {
+      "selector": "button#base-ui-_R_1cqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 141,
+      "height": 32
+    },
+    {
+      "selector": "button#base-ui-_R_2cqnpfl5stb_.relative.inline-flex.h-[calc(100%-1px)]",
+      "width": 141,
+      "height": 32
+    }
+  ],
+  "clippedText": []
+}
