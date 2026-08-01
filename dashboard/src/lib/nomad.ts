@@ -1,5 +1,5 @@
 // Server-only Nomad API client. Never imported in client components.
-// Reads NOMAD_ADDR and NOMAD_TOKEN from env.
+// Reads NOMAD_ADDR and NOMAD_*_TOKEN from env.
 
 const NOMAD_ADDR =
   process.env.NOMAD_ADDR || "http://100.101.106.60:4646";
@@ -7,6 +7,8 @@ const NOMAD_TOKEN =
   process.env.NOMAD_TOKEN || "700b7f70-830a-0254-3098-bccc4d7988f3";
 const NOMAD_DISPATCH_TOKEN =
   process.env.NOMAD_DISPATCH_TOKEN || "0a02932f-d675-979a-8948-2e572a67d42b";
+const NOMAD_MGMT_TOKEN =
+  process.env.NOMAD_MGMT_TOKEN || "50b1bb76-879f-a62c-d15a-6ca63e7ec67b";
 const NOMAD_TIMEOUT_MS = Number(process.env.NOMAD_TIMEOUT_MS || 8000);
 
 // ── Job allowlist ────────────────────────────────────────────────────
@@ -76,6 +78,21 @@ export type DispatchResult = {
   message: string;
 };
 
+export type NomadAction = {
+  ok: boolean;
+  message: string;
+  evalId?: string;
+};
+
+export type NomadEvent = {
+  topic: string;
+  type: string;
+  index: number;
+  key: string;
+  message: string;
+  timestamp: string;
+};
+
 export type NomadComputeSnapshot = {
   ok: boolean;
   generatedAt: string;
@@ -85,7 +102,7 @@ export type NomadComputeSnapshot = {
   error?: string;
 };
 
-// ── Fetch helper ───────────────────────────────────────────────────────
+// ── Fetch helper (reader token) ────────────────────────────────────────
 
 async function nomadFetch<T>(path: string): Promise<T> {
   const controller = new AbortController();
@@ -154,6 +171,167 @@ export async function dispatchJob(
     };
   } finally {
     clearTimeout(timer);
+  }
+}
+
+// ── Management actions (management token) ─────────────────────────────
+
+export async function stopJob(jobName: string): Promise<NomadAction> {
+  try {
+    const res = await fetch(`${NOMAD_ADDR}/v1/job/${encodeURIComponent(jobName)}?purge=false`, {
+      method: "DELETE",
+      cache: "no-store",
+      headers: { "X-Nomad-Token": NOMAD_MGMT_TOKEN, accept: "application/json" },
+    });
+    if (!res.ok) {
+      const err = await res.text().catch(() => "");
+      return { ok: false, message: err.slice(0, 200) };
+    }
+    const data = await res.json() as { EvalID?: string };
+    return { ok: true, message: `Stopped ${jobName}`, evalId: data.EvalID };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function restartAlloc(allocId: string): Promise<NomadAction> {
+  try {
+    const res = await fetch(`${NOMAD_ADDR}/v1/client/allocation/${encodeURIComponent(allocId)}/restart`, {
+      method: "PUT",
+      cache: "no-store",
+      headers: { "X-Nomad-Token": NOMAD_MGMT_TOKEN, accept: "application/json" },
+    });
+    if (!res.ok) {
+      const err = await res.text().catch(() => "");
+      return { ok: false, message: err.slice(0, 200) };
+    }
+    return { ok: true, message: `Restarted alloc ${allocId.slice(0, 8)}` };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function scaleJob(
+  jobName: string,
+  group: string,
+  count: number,
+): Promise<NomadAction> {
+  try {
+    const res = await fetch(`${NOMAD_ADDR}/v1/job/${encodeURIComponent(jobName)}`, {
+      cache: "no-store",
+      headers: { "X-Nomad-Token": NOMAD_MGMT_TOKEN, accept: "application/json" },
+    });
+    if (!res.ok) return { ok: false, message: `Failed to read job: ${res.status}` };
+    const job = await res.json() as Record<string, unknown>;
+    const groups = (job.TaskGroups as Array<Record<string, unknown>>) || [];
+    const tg = groups.find((g) => g.Name === group);
+    if (!tg) return { ok: false, message: `Task group "${group}" not found` };
+    tg.Count = count;
+
+    const updateRes = await fetch(`${NOMAD_ADDR}/v1/job/${encodeURIComponent(jobName)}`, {
+      method: "PUT",
+      cache: "no-store",
+      headers: { "X-Nomad-Token": NOMAD_MGMT_TOKEN, "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ Job: job, EnforceIndex: false }),
+    });
+    if (!updateRes.ok) {
+      const err = await updateRes.text().catch(() => "");
+      return { ok: false, message: err.slice(0, 200) };
+    }
+    const data = await updateRes.json() as { EvalID?: string };
+    return { ok: true, message: `Scaled ${group} to ${count}`, evalId: data.EvalID };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+export async function getAllocLogs(allocId: string, task: string): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), NOMAD_TIMEOUT_MS);
+  try {
+    const res = await fetch(
+      `${NOMAD_ADDR}/v1/client/fs/logs/${encodeURIComponent(allocId)}?task=${encodeURIComponent(task)}&type=stdout&plain=true&origin=start`,
+      {
+        cache: "no-store",
+        signal: controller.signal,
+        headers: { "X-Nomad-Token": NOMAD_MGMT_TOKEN },
+      },
+    );
+    if (!res.ok) {
+      const err = await res.text().catch(() => "");
+      return `Error: ${res.status} - ${err.slice(0, 300)}`;
+    }
+    const text = await res.text();
+    return text || "(no output)";
+  } catch (e) {
+    return `Error: ${e instanceof Error ? e.message : String(e)}`;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ── Event stream ──────────────────────────────────────────────────────
+
+export async function streamNomadEvents(
+  onEvent: (event: NomadEvent) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  let idx = 0;
+  while (!signal.aborted) {
+    try {
+      const res = await fetch(
+        `${NOMAD_ADDR}/v1/event/stream?topic=*&index=${idx}`,
+        {
+          cache: "no-store",
+          signal,
+          headers: { "X-Nomad-Token": NOMAD_TOKEN, accept: "application/json" },
+        },
+      );
+      if (!res.ok || !res.body) {
+        await new Promise((r) => setTimeout(r, 5000));
+        continue;
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (!signal.aborted) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const frame = JSON.parse(line) as { Index?: number; Events?: Array<{ Topic?: string; Type?: string; Key?: string; Payload?: Record<string, unknown> }> };
+            idx = (frame.Index || idx + 1);
+            for (const ev of frame.Events || []) {
+              const topic = ev.Topic || "";
+              const type = ev.Type || "";
+              const key = ev.Key || "";
+              let message = `${topic}/${type}`;
+              const payload = ev.Payload || {};
+              if (payload.Job) {
+                const j = payload.Job as Record<string, unknown>;
+                message = `Job ${j.Name || j.ID}: ${type}`;
+              } else if (payload.Allocation) {
+                const a = payload.Allocation as Record<string, unknown>;
+                message = `Alloc ${String(a.ID || "").slice(0, 8)} ${String(a.TaskGroup || "")}: ${a.ClientStatus || a.DesiredStatus}`;
+              } else if (payload.Evaluation) {
+                const e = payload.Evaluation as Record<string, unknown>;
+                message = `Eval ${String(e.ID || "").slice(0, 8)}: ${e.Status} (${e.Type})`;
+              } else if (payload.Deployment) {
+                const d = payload.Deployment as Record<string, unknown>;
+                message = `Deploy ${String(d.ID || "").slice(0, 8)}: ${d.Status}`;
+              }
+              onEvent({ topic, type, index: idx, key, message, timestamp: new Date().toISOString() });
+            }
+          } catch { /* skip */ }
+        }
+      }
+    } catch {
+      if (!signal.aborted) await new Promise((r) => setTimeout(r, 5000));
+    }
   }
 }
 
@@ -280,7 +458,6 @@ export async function buildComputeSnapshot(): Promise<NomadComputeSnapshot> {
       modifiedAt: String(a.ModifyTime ? new Date(Number(a.ModifyTime) / 1_000_000).toISOString() : ""),
     }));
 
-    // Attach node names to allocations
     const nodeNameById = new Map(nodes.map((n) => [n.id, n.name]));
     for (const alloc of allocs) {
       if (!alloc.nodeName) {
