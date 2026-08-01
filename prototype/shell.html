@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Theme Lab – Activity Feed</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #09090b; font-family: system-ui, -apple-system, sans-serif; }
+  iframe { width: 100%; height: 100vh; border: none; }
+  #picker {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 99999;
+    background: rgba(24, 24, 27, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid #27272a;
+    border-radius: 14px;
+    padding: 14px;
+    color: #f4f4f5;
+    min-width: 230px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    font-size: 13px;
+  }
+  #picker select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #18181b;
+    color: #f4f4f5;
+    border: 1px solid #3f3f46;
+    font-size: 14px;
+    margin-top: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1aa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  #picker label {
+    display: block;
+    font-size: 11px;
+    color: #a1a1aa;
+    margin-top: 10px;
+    letter-spacing: 0.02em;
+  }
+  #picker label:first-of-type { margin-top: 0; }
+  #picker .hdr {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #picker .badge {
+    font-size: 10px;
+    background: #3b82f6;
+    color: white;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  #toggle-mode {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  #toggle-mode button {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 8px;
+    border: 1px solid #3f3f46;
+    background: #18181b;
+    color: #a1a1aa;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  #toggle-mode button.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  #minimize {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #52525b;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  #minimize:hover { color: #f4f4f5; }
+  #picker.minimized select,
+  #picker.minimized label,
+  #picker.minimized #toggle-mode {
+    display: none;
+  }
+  #picker.minimized {
+    min-width: 0;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  #picker.minimized .hdr { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<iframe id="app" src="about:blank"></iframe>
+
+<div id="picker">
+  <button id="minimize" title="Minimize">−</button>
+  <div class="hdr">🎨 Theme Lab <span class="badge" id="theme-count"></span></div>
+  <label>Theme
+    <select id="theme-select"></select>
+  </label>
+  <label>Mode</label>
+  <div id="toggle-mode">
+    <button id="btn-light" class="active">Light</button>
+    <button id="btn-dark">Dark</button>
+  </div>
+  <label>Neutral Palette
+    <select id="neutral-select"></select>
+  </label>
+  <label>Accent Palette
+    <select id="accent-select"></select>
+  </label>
+  <label>Style Preset
+    <select id="style-select"></select>
+  </label>
+  <button id="btn-generate" style="margin-top:10px;width:100%;padding:8px;border-radius:8px;background:#3b82f6;color:white;border:none;font-size:13px;font-weight:500;cursor:pointer;">+ Generate New Theme</button>
+  <button id="btn-copy" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;background:#18181b;color:#a1a1aa;border:1px solid #3f3f46;font-size:12px;cursor:pointer;">📋 Copy JSON</button>
+</div>
+
+<script>
+// All themes from tokens.json — embedded at build time
+(async function() {
+  const resp = await fetch('/api/themes');
+  const tokens = await resp.json();
+  init(tokens);
+})();
+
+function init(TOKENS) {
+  const themeNames = Object.keys(TOKENS);
+  document.getElementById('theme-count').textContent = themeNames.length;
+
+  const themeSelect = document.getElementById('theme-select');
+  themeNames.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n;
+    themeSelect.appendChild(opt);
+  });
+
+  // Palettes
+  const neutrals = ['gray','mauve','slate','sage','olive','sand'];
+  const accents = ['tomato','red','ruby','crimson','pink','plum','purple','violet','iris','indigo','blue','cyan','teal','jade','green','grass','brown','bronze','gold','sky'];
+  const styles = ['tight','comfortable','airy','pill','brutal'];
+
+  [['neutral-select', neutrals], ['accent-select', accents], ['style-select', styles]].forEach(([id, opts]) => {
+    const sel = document.getElementById(id);
+    opts.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o;
+      opt.textContent = o;
+      sel.appendChild(opt);
+    });
+  });
+
+  // Start with the first theme
+  applyTheme(themeNames[0], 'light');
+
+  themeSelect.addEventListener('change', () => {
+    applyTheme(themeSelect.value, getMode());
+  });
+
+  document.getElementById('btn-light').addEventListener('click', () => setMode('light'));
+  document.getElementById('btn-dark').addEventListener('click', () => setMode('dark'));
+
+  // Generate
+  document.getElementById('btn-generate').addEventListener('click', async () => {
+    const neutral = document.getElementById('neutral-select').value;
+    const accent = document.getElementById('accent-select').value;
+    const style = document.getElementById('style-select').value;
+    const id = neutral + '-' + accent + '-' + style;
+
+    const resp = await fetch('/api/generate-theme?' + new URLSearchParams({ neutral, accent, style, id }));
+    const theme = await resp.json();
+
+    TOKENS[id] = theme;
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = id;
+    themeSelect.appendChild(opt);
+    themeSelect.value = id;
+    document.getElementById('theme-count').textContent = Object.keys(TOKENS).length;
+    applyTheme(id, getMode());
+  });
+
+  // Copy
+  document.getElementById('btn-copy').addEventListener('click', () => {
+    const id = themeSelect.value;
+    const mode = getMode();
+    const json = JSON.stringify({ [id]: TOKENS[id] }, null, 2);
+    navigator.clipboard.writeText(json).then(() => {
+      const btn = document.getElementById('btn-copy');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy JSON', 1500);
+    });
+  });
+
+  // Minimize
+  let minimized = false;
+  document.getElementById('minimize').addEventListener('click', (e) => {
+    e.stopPropagation();
+    minimized = !minimized;
+    document.getElementById('picker').classList.toggle('minimized', minimized);
+    document.getElementById('minimize').textContent = minimized ? '+' : '−';
+  });
+  document.getElementById('picker').addEventListener('click', (e) => {
+    if (minimized && e.target === document.getElementById('picker')) {
+      minimized = false;
+      document.getElementById('picker').classList.remove('minimized');
+      document.getElementById('minimize').textContent = '−';
+    }
+  });
+
+  function getMode() {
+    return document.getElementById('btn-light').classList.contains('active') ? 'light' : 'dark';
+  }
+
+  function setMode(mode) {
+    document.getElementById('btn-light').classList.toggle('active', mode === 'light');
+    document.getElementById('btn-dark').classList.toggle('active', mode === 'dark');
+    applyTheme(themeSelect.value, mode);
+  }
+
+  function applyTheme(themeId, mode) {
+    const theme = TOKENS[themeId];
+    if (!theme || !theme[mode]) return;
+
+    // Apply to shell (so picker styling updates too)
+    const vars = theme[mode];
+    for (const [key, value] of Object.entries(vars)) {
+      document.documentElement.style.setProperty(key, value);
+    }
+
+    // Post to iframe
+    const iframe = document.getElementById('app');
+    if (iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ type: 'THEME_APPLY', theme: vars }, '*');
+    }
+  }
+
+  // Set iframe src after setting up listeners
+  const meta = document.querySelector('meta[name="theme-color"]');
+  document.getElementById('app').src = 'https://bens-mac-mini.taila1553c.ts.net:3090';
+}
+</script>
+</body>
+</html>

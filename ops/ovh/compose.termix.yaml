@@ -1,0 +1,52 @@
+# Termix — self-hosted SSH/terminal/web remote desktop on OVH.
+#
+# Deploy:
+#   rsync -avz ops/ovh/compose.termix.yaml ovhvps:~/activity-feed/ops/ovh/
+#   ssh ovhvps 'cd ~/activity-feed && sudo docker compose -f ops/ovh/compose.termix.yaml up -d'
+#
+# Repeat this runbook for repeatable decomposability.
+#
+# Expose (once):
+#   ssh ovhvps 'tailscale serve --bg --https=8447 http://127.0.0.1:8080'
+#
+# Then open:
+#   https://ovh-vps.taila1553c.ts.net:8447
+#
+# Security: everything binds loopback. Only Tailscale Serve (HTTPS 8447)
+# exposes anything, and only to the tailnet. Nothing on the public NIC
+# except SSH. Same pattern as the dashboard and postgres.
+
+name: termix
+
+services:
+  termix:
+    image: ghcr.io/lukegus/termix:latest
+    container_name: termix-server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - termix-data:/app/data
+    environment:
+      PORT: "8080"
+    depends_on:
+      - guacd
+    networks:
+      - termix-net
+
+  guacd:
+    image: guacamole/guacd:1.6.0
+    container_name: termix-guacd
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4822:4822"
+    networks:
+      - termix-net
+
+volumes:
+  termix-data:
+    driver: local
+
+networks:
+  termix-net:
+    driver: bridge

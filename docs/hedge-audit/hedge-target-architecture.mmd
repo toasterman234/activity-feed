@@ -1,0 +1,80 @@
+# Hedge Engine Integration — Target Architecture
+
+```mermaid
+graph TB
+    subgraph "Existing (unchanged)"
+        DUCK[("Life OS<br/>DuckDB")]
+        PG[("PostgreSQL<br/>activity_log")]
+        ML["Market Lake API<br/>:9077"]
+        EC["Electric Circuits<br/>tRPC + Durable Streams"]
+        NEXT["Dashboard PWA<br/>Next.js"]
+        SYNC["sync_lifeos_to_pg.py<br/>hourly ingestion"]
+    end
+
+    subgraph "New: Hedge Engine"
+        direction TB
+        HEDGE_API["Hedge API Service<br/>Python/FastAPI<br/>:9080"]
+        HEDGE_WORKER["Hedge Worker<br/>same process, async loop<br/>polls hedge.jobs table"]
+        HEDGE_SCHEMA[("hedge schema<br/>in activity_log DB")]
+
+        subgraph "Hedge Modules"
+            SCANNER["Candidate Scanner"]
+            OPTIMIZER["Combination Optimizer"]
+            SIMULATOR["Rolling Simulator"]
+            VALIDATOR["Walk-Forward Validator"]
+            BSM["BSM Pricing Module<br/>(extracted from hedge-lab)"]
+        end
+
+        HEDGE_TABLES["hedge.runs<br/>hedge.assumption_sets<br/>hedge.candidates<br/>hedge.candidate_legs<br/>hedge.scenario_results<br/>hedge.historical_results<br/>hedge.rolling_results<br/>hedge.optimization_frontiers<br/>hedge.validation_results<br/>hedge.data_quality_events<br/>hedge.jobs<br/>hedge.portfolio_snapshots"]
+    end
+
+    subgraph "New: Frontend"
+        HEDGE_PAGE["/personal → Hedges tab<br/>/desktop/hedges"]
+        HEDGE_COMPONENTS["hedge-api.ts (fetch client)<br/>HedgeDashboard<br/>HedgeRunForm<br/>HedgeOpportunityCard<br/>HedgeScenarioGrid<br/>HedgeFrontierChart<br/>HedgeRunHistory"]
+    end
+
+    %% Data ownership boundaries
+    PG -.-o|"read-only: portfolio_*"| HEDGE_API
+    PG -.-o|"read/write: hedge.*"| HEDGE_SCHEMA
+    ML -.-o|"market data"| HEDGE_API
+    HEDGE_API --> HEDGE_SCHEMA
+    HEDGE_API --> HEDGE_WORKER
+    HEDGE_WORKER --> HEDGE_SCHEMA
+    HEDGE_WORKER --> SCANNER
+    HEDGE_WORKER --> OPTIMIZER
+    HEDGE_WORKER --> SIMULATOR
+    HEDGE_WORKER --> VALIDATOR
+    SCANNER --> BSM
+    OPTIMIZER --> BSM
+    SIMULATOR --> BSM
+
+    %% API integration
+    NEXT -.->|"/hedge-api → :9080"| HEDGE_API
+    HEDGE_API --> HEDGE_TABLES
+
+    %% Frontend
+    NEXT --> HEDGE_PAGE
+    HEDGE_PAGE --> HEDGE_COMPONENTS
+
+    %% Existing flows preserved
+    DUCK --> SYNC --> PG
+    PG --> EC --> NEXT
+    ML --> NEXT
+
+    style HEDGE_API fill:#ff9800,stroke:#e65100,color:#fff
+    style HEDGE_WORKER fill:#ff9800,stroke:#e65100,color:#fff
+    style HEDGE_SCHEMA fill:#ffcc80,stroke:#ff9800
+    style HEDGE_PAGE fill:#9bcd9b,stroke:#5a9e5a
+    style PG fill:#8cb9ff,stroke:#4682b4
+    style ML fill:#8cb9ff,stroke:#4682b4
+    style NEXT fill:#9bcd9b,stroke:#5a9e5a
+```
+
+**Boundary rules (enforced by this architecture):**
+
+| System | Owns | Reads | Writes |
+|---|---|---|---|
+| Dashboard PWA | Portfolio UI, authentication, navigation | `portfolio_*` (via Electric), Market Lake API, Hedge API | Nothing (read-only) |
+| Hedge API | Hedge runs, results, assumption sets | `portfolio_*` (read-only), Market Lake API | `hedge.*` |
+| Market Lake API | Market data serving | Polygon.io, Tradier | DuckDB (unrelated), HTTP responses |
+| Life OS | Canonical portfolio data | Broker APIs, bank APIs | DuckDB |

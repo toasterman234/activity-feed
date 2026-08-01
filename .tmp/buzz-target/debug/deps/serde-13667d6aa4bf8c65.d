@@ -1,0 +1,14 @@
+/Users/bencharney/activity-feed/.tmp/buzz-target/debug/deps/serde-13667d6aa4bf8c65.d: /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/bencharney/activity-feed/.tmp/buzz-target/debug/build/serde-8a5997c0f28a067c/out/private.rs
+
+/Users/bencharney/activity-feed/.tmp/buzz-target/debug/deps/libserde-13667d6aa4bf8c65.rlib: /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/bencharney/activity-feed/.tmp/buzz-target/debug/build/serde-8a5997c0f28a067c/out/private.rs
+
+/Users/bencharney/activity-feed/.tmp/buzz-target/debug/deps/libserde-13667d6aa4bf8c65.rmeta: /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/bencharney/activity-feed/.tmp/buzz-target/debug/build/serde-8a5997c0f28a067c/out/private.rs
+
+/Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs:
+/Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs:
+/Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs:
+/Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs:
+/Users/bencharney/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs:
+/Users/bencharney/activity-feed/.tmp/buzz-target/debug/build/serde-8a5997c0f28a067c/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/bencharney/activity-feed/.tmp/buzz-target/debug/build/serde-8a5997c0f28a067c/out

@@ -1,0 +1,452 @@
+#!/usr/bin/env python3
+import json
+import os
+import subprocess
+import sys
+import time
+import traceback
+import uuid
+from dataclasses import dataclass, field
+from typing import Any
+
+PROTOCOL_VERSION = 2
+CLIENT_NAME = "iii-buzz-acp"
+CLIENT_VERSION = "0.1.0"
+DEFAULT_III_BIN = os.environ.get("III_ACP_III_BIN", os.path.expanduser("~/.local/bin/iii"))
+MAX_RESULTS = int(os.environ.get("III_ACP_MAX_RESULTS", "3"))
+MAX_LINE_CHARS = int(os.environ.get("III_ACP_MAX_LINE_CHARS", "320"))
+MAX_RESPONSE_CHARS = int(os.environ.get("III_ACP_MAX_RESPONSE_CHARS", "4000"))
+
+
+@dataclass
+class SessionState:
+    cwd: str | None = None
+    project: str | None = None
+    system_prompt: str | None = None
+    session_title: str | None = None
+    agentmemory_session_id: str | None = None
+    prompt_count: int = 0
+    created_at: float = field(default_factory=time.time)
+
+
+SESSIONS: dict[str, SessionState] = {}
+
+
+def send(obj: dict[str, Any]) -> None:
+    try:
+        sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
+        sys.stdout.flush()
+    except BrokenPipeError:
+        raise SystemExit(0)
+
+
+def send_result(msg_id: Any, result: Any) -> None:
+    send({"jsonrpc": "2.0", "id": msg_id, "result": result})
+
+
+def send_error(msg_id: Any, code: int, message: str, data: Any = None) -> None:
+    payload: dict[str, Any] = {
+        "jsonrpc": "2.0",
+        "id": msg_id,
+        "error": {"code": code, "message": message},
+    }
+    if data is not None:
+        payload["error"]["data"] = data
+    send(payload)
+
+
+def notify_update(session_id: str, update_type: str, text: str) -> None:
+    send(
+        {
+            "jsonrpc": "2.0",
+            "method": "session/update",
+            "params": {
+                "sessionId": session_id,
+                "update": {
+                    "sessionUpdate": update_type,
+                    "content": {"type": "text", "text": text},
+                },
+            },
+        }
+    )
+
+
+def trim(text: str, limit: int = MAX_LINE_CHARS) -> str:
+    text = " ".join(str(text).split())
+    if len(text) <= limit:
+        return text
+    return text[: limit - 1].rstrip() + "…"
+
+
+def iii_json(function_id: str, payload: dict[str, Any], timeout_s: int = 20) -> Any:
+    cmd = [DEFAULT_III_BIN, "trigger", function_id, "--json", json.dumps(payload)]
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s)
+    if proc.returncode != 0:
+        stderr = (proc.stderr or proc.stdout or "").strip()
+        raise RuntimeError(f"iii trigger failed for {function_id}: {trim(stderr, 500)}")
+    stdout = proc.stdout.strip()
+    if not stdout:
+        return None
+    return json.loads(stdout)
+
+
+def iii_api(function_id: str, body: dict[str, Any], timeout_s: int = 20) -> Any:
+    return iii_json(function_id, {"body": body}, timeout_s=timeout_s)
+
+
+def now_iso() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def infer_project(cwd: str | None) -> str:
+    if cwd:
+        name = os.path.basename(cwd.rstrip("/"))
+        if name:
+            return name
+    return os.environ.get("III_ACP_PROJECT", "activity-feed")
+
+
+def observe(session_id: str, hook_type: str, data: dict[str, Any], cwd: str | None, project: str | None) -> None:
+    try:
+        iii_json(
+            "mem::observe",
+            {
+                "sessionId": session_id,
+                "hookType": hook_type,
+                "timestamp": now_iso(),
+                "project": project,
+                "cwd": cwd,
+                "data": data,
+            },
+            timeout_s=15,
+        )
+    except Exception:
+        return
+
+
+def pull_working_context() -> str | None:
+    try:
+        result = iii_json("mem::working-context", {}, timeout_s=15)
+        if isinstance(result, dict) and result.get("success") and result.get("context"):
+            return str(result["context"])
+    except Exception:
+        return None
+    return None
+
+
+def pull_next_suggestion(project: str | None) -> str | None:
+    try:
+        result = iii_json("mem::next", {"project": project}, timeout_s=15)
+        if isinstance(result, dict):
+            suggestion = result.get("suggestion")
+            if isinstance(suggestion, dict):
+                title = str(suggestion.get("title") or "").strip()
+                desc = str(suggestion.get("description") or "").strip()
+                if title and desc:
+                    return f"{title}: {trim(desc, 220)}"
+                if title:
+                    return title
+            message = str(result.get("message") or "").strip()
+            if message:
+                return trim(message, 220)
+    except Exception:
+        return None
+    return None
+
+
+def pull_session_context(session_id: str, project: str) -> str | None:
+    try:
+        result = iii_api("api::context", {"sessionId": session_id, "project": project}, timeout_s=20)
+        body = result.get("body") if isinstance(result, dict) else None
+        if isinstance(body, dict) and body.get("context"):
+            return str(body["context"])
+    except Exception:
+        return None
+    return None
+
+
+def pull_session_summary(session_id: str) -> str | None:
+    try:
+        result = iii_api("api::summarize", {"sessionId": session_id}, timeout_s=20)
+        body = result.get("body") if isinstance(result, dict) else None
+        if isinstance(body, dict):
+            summary = str(body.get("summary") or "").strip()
+            if summary:
+                return summary
+            message = str(body.get("message") or "").strip()
+            if message:
+                return trim(message, 240)
+    except Exception:
+        return None
+    return None
+
+
+def summarize_search_hit(hit: dict[str, Any]) -> str | None:
+    obs = hit.get("observation") if isinstance(hit, dict) else None
+    if not isinstance(obs, dict):
+        return None
+    title = str(obs.get("title") or "").strip()
+    facts = obs.get("facts")
+    if isinstance(facts, list) and facts:
+        fact = trim(str(facts[0]), 220)
+        return f"{title or 'memory'} — {fact}" if fact else title
+    narrative = str(obs.get("narrative") or "").strip()
+    if narrative:
+        return f"{title or 'memory'} — {trim(narrative, 220)}"
+    files = obs.get("files")
+    if isinstance(files, list) and files:
+        return f"{title or 'memory'} — file: {files[0]}"
+    return title or None
+
+
+def pull_search(query: str, project: str | None = None, cwd: str | None = None) -> list[str]:
+    try:
+        payload: dict[str, Any] = {"query": query}
+        if project:
+            payload["project"] = project
+        if cwd:
+            payload["cwd"] = cwd
+        result = iii_json("mem::search", payload, timeout_s=20)
+    except Exception as exc:
+        return [f"search unavailable: {trim(str(exc), 220)}"]
+    if not isinstance(result, dict):
+        return []
+    raw = result.get("results")
+    if not isinstance(raw, list):
+        return []
+
+    keywords = {
+        token.lower()
+        for token in query.replace("/", " ").replace("-", " ").split()
+        if len(token) >= 3 and token.lower() not in {"what", "about", "does", "know", "with", "from", "that", "this", "bridge"}
+    }
+
+    ranked: list[str] = []
+    fallback: list[str] = []
+    for hit in raw[: max(MAX_RESULTS * 4, 8)]:
+        line = summarize_search_hit(hit)
+        if not line:
+            continue
+        lower = line.lower()
+        if keywords and any(word in lower for word in keywords):
+            ranked.append(line)
+        else:
+            fallback.append(line)
+
+    items = (ranked or fallback)[:MAX_RESULTS]
+    return items
+
+
+def build_response(prompt_text: str, state: SessionState) -> str:
+    query = trim(prompt_text, 500)
+    matches = pull_search(query, project=state.project, cwd=state.cwd)
+    next_step = pull_next_suggestion(state.project)
+    session_context = pull_session_context(state.agentmemory_session_id or "", state.project or "") if state.agentmemory_session_id and state.project else None
+    session_summary = pull_session_summary(state.agentmemory_session_id or "") if state.agentmemory_session_id and state.prompt_count >= 2 else None
+    working_context = pull_working_context()
+
+    lines: list[str] = []
+    lines.append("iii bridge is running in session-backed mode.")
+
+    if state.system_prompt:
+        lines.append(f"Stored system prompt: {trim(state.system_prompt, 180)}")
+    if state.cwd:
+        lines.append(f"Session cwd: {state.cwd}")
+    if state.project:
+        lines.append(f"Project: {state.project}")
+
+    if session_summary:
+        lines.append("")
+        lines.append(f"Session summary: {trim(session_summary, 420)}")
+
+    if session_context:
+        lines.append("")
+        lines.append("Session context:")
+        lines.append(trim(session_context, 1400))
+    elif working_context:
+        lines.append("")
+        lines.append("Current iii working context:")
+        lines.append(trim(working_context, 900))
+
+    if matches:
+        lines.append("")
+        lines.append("Relevant iii memory:")
+        for idx, item in enumerate(matches, start=1):
+            lines.append(f"{idx}. {item}")
+    else:
+        lines.append("")
+        lines.append("No strong direct memory hit for that prompt.")
+
+    if next_step:
+        lines.append("")
+        lines.append(f"Suggested next step: {next_step}")
+
+    lines.append("")
+    lines.append(
+        "This bridge now creates and reuses an iii session, records prompts into agentmemory, and answers from session context plus memory retrieval."
+    )
+
+    text = "\n".join(lines).strip()
+    if len(text) > MAX_RESPONSE_CHARS:
+        text = text[: MAX_RESPONSE_CHARS - 1].rstrip() + "…"
+    return text
+
+
+def extract_prompt_text(params: dict[str, Any]) -> str:
+    prompt = params.get("prompt")
+    if isinstance(prompt, list):
+        blocks: list[str] = []
+        for block in prompt:
+            if isinstance(block, dict) and block.get("type") == "text":
+                text = block.get("text")
+                if isinstance(text, str):
+                    blocks.append(text)
+        return "\n\n".join(blocks).strip()
+    return ""
+
+
+def handle_initialize(msg_id: Any, _params: dict[str, Any]) -> None:
+    send_result(
+        msg_id,
+        {
+            "protocolVersion": PROTOCOL_VERSION,
+            "agentCapabilities": {},
+            "serverInfo": {"name": CLIENT_NAME, "version": CLIENT_VERSION},
+        },
+    )
+
+
+def handle_session_new(msg_id: Any, params: dict[str, Any]) -> None:
+    session_id = f"iii-buzz-{uuid.uuid4()}"
+    cwd = params.get("cwd") if isinstance(params.get("cwd"), str) else None
+    project = infer_project(cwd)
+    title = (params.get("_meta") or {}).get("sessionTitle") if isinstance(params.get("_meta"), dict) else None
+    if not isinstance(title, str) or not title.strip():
+        title = "Buzz iii bridge"
+
+    start_result = iii_api(
+        "api::session::start",
+        {
+            "sessionId": session_id,
+            "project": project,
+            "cwd": cwd or os.getcwd(),
+            "title": title,
+        },
+        timeout_s=20,
+    )
+    if not isinstance(start_result, dict) or start_result.get("status_code") != 200:
+        raise RuntimeError(f"failed to start iii session: {trim(start_result, 500)}")
+
+    state = SessionState(
+        cwd=cwd,
+        project=project,
+        system_prompt=params.get("systemPrompt") if isinstance(params.get("systemPrompt"), str) else None,
+        session_title=title,
+        agentmemory_session_id=session_id,
+    )
+    SESSIONS[session_id] = state
+    send_result(msg_id, {"sessionId": session_id})
+
+
+def handle_session_prompt(msg_id: Any, params: dict[str, Any]) -> None:
+    session_id = params.get("sessionId")
+    if not isinstance(session_id, str) or session_id not in SESSIONS:
+        send_error(msg_id, -32602, "unknown sessionId")
+        return
+    prompt_text = extract_prompt_text(params)
+    if not prompt_text:
+        send_error(msg_id, -32602, "session/prompt requires text prompt blocks")
+        return
+
+    state = SESSIONS[session_id]
+    state.prompt_count += 1
+    observe(
+        state.agentmemory_session_id or session_id,
+        "prompt_submit",
+        {"prompt": prompt_text},
+        state.cwd,
+        state.project,
+    )
+    notify_update(session_id, "agent_thought_chunk", "Loading iii session context and memory…")
+    response_text = build_response(prompt_text, state)
+    observe(
+        state.agentmemory_session_id or session_id,
+        "post_tool_use",
+        {
+            "tool_name": "iii_buzz_acp_response",
+            "tool_input": prompt_text,
+            "tool_output": response_text,
+        },
+        state.cwd,
+        state.project,
+    )
+    notify_update(session_id, "agent_message_chunk", response_text)
+    send_result(msg_id, {"stopReason": "end_turn"})
+
+
+def handle_session_cancel(msg_id: Any, _params: dict[str, Any]) -> None:
+    if msg_id is not None:
+        send_result(msg_id, {})
+
+
+def close_sessions() -> None:
+    for state in list(SESSIONS.values()):
+        session_id = state.agentmemory_session_id
+        if not session_id:
+            continue
+        try:
+            iii_api("api::session::end", {"sessionId": session_id}, timeout_s=10)
+        except Exception:
+            pass
+
+
+def dispatch(msg: dict[str, Any]) -> None:
+    method = msg.get("method")
+    msg_id = msg.get("id")
+    params = msg.get("params") if isinstance(msg.get("params"), dict) else {}
+
+    if method == "initialize":
+        handle_initialize(msg_id, params)
+    elif method == "session/new":
+        handle_session_new(msg_id, params)
+    elif method == "session/prompt":
+        handle_session_prompt(msg_id, params)
+    elif method == "session/cancel":
+        handle_session_cancel(msg_id, params)
+    elif method == "shutdown":
+        if msg_id is not None:
+            send_result(msg_id, {})
+        raise SystemExit(0)
+    elif msg_id is not None:
+        send_error(msg_id, -32601, f"method not found: {method}")
+
+
+def main() -> int:
+    try:
+        for raw in sys.stdin:
+            line = raw.strip()
+            if not line:
+                continue
+            try:
+                msg = json.loads(line)
+                if not isinstance(msg, dict):
+                    continue
+                dispatch(msg)
+            except SystemExit:
+                raise
+            except Exception as exc:
+                msg_id = None
+                try:
+                    maybe = json.loads(line)
+                    if isinstance(maybe, dict):
+                        msg_id = maybe.get("id")
+                except Exception:
+                    pass
+                send_error(msg_id, -32000, str(exc), {"traceback": traceback.format_exc(limit=5)})
+        return 0
+    finally:
+        close_sessions()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,106 @@
+# Hedge Engine Integration — Current Architecture
+
+```mermaid
+graph TB
+    subgraph "Data Sources"
+        SCHWAB[("Schwab<br/>Brokerage")]
+        FIDELITY[("Fidelity<br/>Brokerage")]
+        ETH[("On-chain<br/>Wallets")]
+        BANKS[("Bank<br/>Accounts")]
+    end
+
+    subgraph "Life OS (DuckDB)"
+        DUCK[("footprint.duckdb<br/>~/.life/analytical/")]
+        DUCK_VIEWS["finance.positions<br/>finance.trades<br/>finance.balances<br/>finance.net_worth_daily<br/>finance.benchmarks<br/>finance.v_allocation"]
+    end
+
+    subgraph "Market Data"
+        POLYGON[("Polygon.io<br/>REST API")]
+        TRADIER[("Tradier<br/>REST API")]
+        YFINANCE[("yfinance<br/>Python lib")]
+        FRED[("FRED<br/>API")]
+    end
+
+    subgraph "Market Lake API (:9077)"
+        ML["Market Lake<br/>Python/FastAPI"]
+        ML_ENDPOINTS["/live/quotes<br/>/live/option-chain/:symbol<br/>/prices/historical/:symbol<br/>/fundamentals/:symbol<br/>/dividends/profile/:symbol<br/>/symbol/:symbol/vrp/latest<br/>/vrp/scan<br/>/scan/unified<br/>/research/strategies<br/>/research/findings<br/>/portfolio/schwab/positions<br/>/portfolio/fidelity/positions"]
+    end
+
+    subgraph "Ingestion"
+        SYNC["sync_lifeos_to_pg.py<br/>hourly cron (launchd)"]
+    end
+
+    subgraph "PostgreSQL (activity_log)"
+        PG[("PostgreSQL<br/>:5433")]
+        PG_TABLES["portfolio_positions<br/>portfolio_trades<br/>portfolio_balances<br/>portfolio_transactions<br/>portfolio_net_worth<br/>portfolio_benches<br/>portfolio_allocation"]
+    end
+
+    subgraph "Electric Circuits"
+        API["tRPC API (:8795)"]
+        DS["durable-streams (:8794)"]
+    end
+
+    subgraph "Dashboard (Next.js PWA)"
+        NEXT["Next.js 16<br/>App Router"]
+        REWRITES["/api → :8795 tRPC<br/>/market-lake → :9077 ML"]
+        PAGES["/personal (Portfolio, Flow, Watchlist, Screener, Analytics)<br/>/portfolio (legacy)<br/>/desktop/*<br/>/mobile/*"]
+        LIBS["market-lake.ts (fetch client)<br/>portfolio-analytics/ (greek, income, risk, scenarios)<br/>trade-lab-model.ts<br/>portfolio-risk-model.ts"]
+    end
+
+    subgraph "Portfolio Hedge Lab (GitHub)"
+        HEDGE_LAB["quant_pipeline.py<br/>110k-line monolith<br/>Markowitz + EW + options"]
+        HL_OUTPUT["output/quant_results.xlsx<br/>output/debug/*.xlsx"]
+    end
+
+    subgraph "macOS"
+        LAUNCHD["launchd<br/>LaunchAgents"]
+        WATCHDOG["market-lake watchdog<br/>Tailscale funnel"]
+    end
+
+    %% Data flow
+    SCHWAB --> DUCK
+    FIDELITY --> DUCK
+    ETH --> DUCK
+    BANKS --> DUCK
+    DUCK --> DUCK_VIEWS
+    DUCK_VIEWS --> SYNC
+    SYNC --> PG
+    PG --> API
+    API --> NEXT
+    DS --> NEXT
+    PG --> DS
+
+    POLYGON --> ML
+    TRADIER --> ML
+    YFINANCE --> ML
+    FRED --> ML
+    ML --> ML_ENDPOINTS
+    ML_ENDPOINTS --> NEXT
+
+    NEXT --> REWRITES
+    NEXT --> PAGES
+    PAGES --> LIBS
+
+    YFINANCE --> HEDGE_LAB
+    FRED --> HEDGE_LAB
+    HEDGE_LAB --> HL_OUTPUT
+
+    LAUNCHD --> SYNC
+    LAUNCHD --> WATCHDOG
+    WATCHDOG --> ML
+
+    style DUCK fill:#e5d9b6,stroke:#a4b465
+    style PG fill:#8cb9ff,stroke:#4682b4
+    style ML fill:#8cb9ff,stroke:#4682b4
+    style NEXT fill:#9bcd9b,stroke:#5a9e5a
+    style HEDGE_LAB fill:#ffcc80,stroke:#ff9800
+    style SYNC fill:#ccc,stroke:#999
+    style LAUNCHD fill:#ddd,stroke:#aaa
+```
+
+**Key observations:**
+1. Single PostgreSQL database, no separate data stores for analytics
+2. Market Lake is the single market data gateway — no direct broker API calls from the dashboard
+3. No job queue, worker pool, or async compute infrastructure exists
+4. The hedge-lab repo is fully disconnected from the live system — separate data, separate output
+5. Deployment: single OVH VPS + local Mac for development/scheduling

@@ -1,0 +1,31 @@
+# Hedge Engine — headless hedge analysis service
+# Python 3.11+
+#
+# Runs alongside the Activity Dashboard. Reads portfolio data from the
+# shared PostgreSQL database (read-only on portfolio_*, read/write on hedge.*)
+# and fetches live market data from Market Lake (:9077).
+#
+# Deploy: same OVH VPS as the dashboard, port 9080.
+
+[project]
+name = "hedge-engine"
+version = "0.1.0"
+description = "Headless hedge-analysis service for the Activity Dashboard"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "psycopg>=3.3",
+    "psycopg-binary>=3.3",
+    "httpx>=0.28",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pydantic>=2.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.25",
+    "httpx>=0.28",
+]

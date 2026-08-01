@@ -1,0 +1,233 @@
+{
+  "portfolio_id": "portfolio-redacted",
+  "snapshot_id": "snap-2026-08-01T00:00:00Z",
+  "valuation_time": "2026-08-01T00:00:00Z",
+  "base_currency": "USD",
+  "total_value": 1250000.00,
+  "cash_value": 85000.00,
+  "benchmark": "SPY",
+  "positions": [
+    {
+      "position_id": "pos-redacted-001",
+      "symbol": "AAPL",
+      "asset_type": "equity",
+      "quantity": 500,
+      "market_price": 220.50,
+      "market_value": 110250.00,
+      "cost_basis": 97500.00,
+      "unrealized_pnl": 12750.00,
+      "currency": "USD",
+      "sector": "Technology",
+      "account_id": "acct-redacted-schwab",
+      "institution": "schwab",
+      "option": null,
+      "metadata": {
+        "source": "portfolio_positions",
+        "as_of_date": "2026-07-31",
+        "position_kind": "Security"
+      }
+    },
+    {
+      "position_id": "pos-redacted-002",
+      "symbol": "SPY",
+      "asset_type": "equity",
+      "quantity": 200,
+      "market_price": 590.00,
+      "market_value": 118000.00,
+      "cost_basis": 105000.00,
+      "unrealized_pnl": 13000.00,
+      "currency": "USD",
+      "sector": "Broad Market ETF",
+      "account_id": "acct-redacted-fidelity",
+      "institution": "fidelity",
+      "option": null,
+      "metadata": {
+        "source": "portfolio_positions",
+        "as_of_date": "2026-07-31",
+        "position_kind": "Security"
+      }
+    },
+    {
+      "position_id": "pos-redacted-003",
+      "symbol": "NVDA",
+      "asset_type": "equity",
+      "quantity": 100,
+      "market_price": 128.50,
+      "market_value": 12850.00,
+      "cost_basis": 10000.00,
+      "unrealized_pnl": 2850.00,
+      "currency": "USD",
+      "sector": "Technology",
+      "account_id": "acct-redacted-schwab",
+      "institution": "schwab",
+      "option": null,
+      "metadata": {
+        "source": "portfolio_positions",
+        "as_of_date": "2026-07-31",
+        "position_kind": "Security"
+      }
+    },
+    {
+      "position_id": "pos-opt-redacted-001",
+      "symbol": "AAPL250117P00180000",
+      "asset_type": "option",
+      "quantity": -5,
+      "market_price": 2.35,
+      "market_value": -1175.00,
+      "cost_basis": -1250.00,
+      "unrealized_pnl": 75.00,
+      "currency": "USD",
+      "sector": "Technology",
+      "account_id": "acct-redacted-schwab",
+      "institution": "schwab",
+      "option": {
+        "underlying": "AAPL",
+        "expiration": "2025-01-17",
+        "strike": 180.00,
+        "option_type": "put",
+        "side": "short",
+        "multiplier": 100,
+        "exercise_style": "american",
+        "current_price": 2.35,
+        "bid": 2.30,
+        "ask": 2.40,
+        "implied_volatility": 0.2850,
+        "delta": -0.1234,
+        "gamma": 0.0023,
+        "vega": 0.0892,
+        "theta": -0.0289,
+        "open_interest": 15420,
+        "volume": 890,
+        "greeks_source": "market-lake",
+        "greeks_timestamp": "2026-07-31T20:00:00Z"
+      },
+      "metadata": {
+        "source": "trade netting (portfolio_trades)",
+        "greeks_source": "Market Lake /live/option-chain/AAPL"
+      }
+    },
+    {
+      "position_id": "pos-opt-redacted-002",
+      "symbol": "SPY260619C00650000",
+      "asset_type": "option",
+      "quantity": -3,
+      "market_price": 4.15,
+      "market_value": -1245.00,
+      "cost_basis": -1350.00,
+      "unrealized_pnl": 105.00,
+      "currency": "USD",
+      "sector": "Broad Market ETF",
+      "account_id": "acct-redacted-fidelity",
+      "institution": "fidelity",
+      "option": {
+        "underlying": "SPY",
+        "expiration": "2026-06-19",
+        "strike": 650.00,
+        "option_type": "call",
+        "side": "short",
+        "multiplier": 100,
+        "exercise_style": "american",
+        "current_price": 4.15,
+        "bid": 4.10,
+        "ask": 4.20,
+        "implied_volatility": 0.1850,
+        "delta": 0.2876,
+        "gamma": 0.0018,
+        "vega": 0.1345,
+        "theta": -0.0412,
+        "open_interest": 8920,
+        "volume": 345,
+        "greeks_source": "market-lake",
+        "greeks_timestamp": "2026-07-31T20:00:00Z"
+      },
+      "metadata": {
+        "source": "trade netting (portfolio_trades)",
+        "greeks_source": "Market Lake /live/option-chain/SPY"
+      }
+    },
+    {
+      "position_id": "pos-redacted-eth-001",
+      "symbol": "ETH",
+      "asset_type": "crypto",
+      "quantity": 2.5,
+      "market_price": 3200.00,
+      "market_value": 8000.00,
+      "cost_basis": 6000.00,
+      "unrealized_pnl": 2000.00,
+      "currency": "USD",
+      "sector": "Crypto",
+      "account_id": "wallet-redacted-mainnet",
+      "institution": "ethereum",
+      "option": null,
+      "metadata": {
+        "source": "portfolio_positions",
+        "as_of_date": "2026-07-31",
+        "position_kind": "On-chain"
+      }
+    },
+    {
+      "position_id": "pos-redacted-cash-001",
+      "symbol": "SWVXX",
+      "asset_type": "cash",
+      "quantity": 85000,
+      "market_price": 1.00,
+      "market_value": 85000.00,
+      "cost_basis": 85000.00,
+      "unrealized_pnl": 0,
+      "currency": "USD",
+      "sector": "Cash",
+      "account_id": "acct-redacted-schwab",
+      "institution": "schwab",
+      "option": null,
+      "metadata": {
+        "source": "portfolio_balances",
+        "as_of_date": "2026-07-31",
+        "position_kind": "Cash sweep"
+      }
+    }
+  ],
+  "existing_metrics": {
+    "portfolio_aggregated_greeks": {
+      "net_delta": 780.50,
+      "net_delta_dollars": 457000.00,
+      "net_gamma": -0.0105,
+      "net_theta": 145.75,
+      "net_vega": -2.34,
+      "net_rho": 0.089,
+      "as_of": "2026-08-01T00:00:00Z",
+      "positions_without_greeks": 2
+    },
+    "concentration": {
+      "top_1_pct": 0.235,
+      "top_3_pct": 0.482,
+      "top_5_pct": 0.615
+    },
+    "risk_status": {
+      "overall_score": 0.185,
+      "overall_status": "watch",
+      "buying_power_usage_pct": 0.42,
+      "stress_loss_pct": null,
+      "assignment_risk_count": 0
+    }
+  },
+  "data_quality": {
+    "option_positions_materialized": false,
+    "greeks_available": true,
+    "greeks_covered_positions": 2,
+    "greeks_missing_positions": 0,
+    "as_of_position_data": "2026-07-31",
+    "as_of_price_data": "2026-07-31T20:00:00Z",
+    "warnings": [
+      "Option positions derived from trade netting (not a materialized table)",
+      "Historical option chains not available — Greeks are live-snapshot only",
+      "Crypto positions included but not hedge-able with options"
+    ]
+  },
+  "source_versions": {
+    "portfolio_positions": "DuckDB finance.positions → PG via sync_lifeos_to_pg.py",
+    "portfolio_trades": "DuckDB finance.trades → PG via sync_lifeos_to_pg.py",
+    "market_data": "Market Lake API, Polygon.io + Tradier sources",
+    "option_greeks": "Market Lake /live/option-chain (live fetch at snapshot time)",
+    "snapshot_format_version": "1.0.0"
+  }
+}
