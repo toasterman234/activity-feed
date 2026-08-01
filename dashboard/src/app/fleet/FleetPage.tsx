@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FLEET_HOSTS, type BuzzAgentsSnapshot, type FleetActionId, type FleetHost, type FleetSnapshot } from "@/lib/fleet";
 import { Badge, StatusChip, type UiTone } from "@/components/ui";
 import type { NomadComputeSnapshot, NomadJobSummary, NomadAllocation } from "@/lib/nomad";
+import { NOMAD_DISPATCH_ALLOWLIST } from "@/lib/nomad";
 
 type AgentHealthEntry = {
   id: string;
@@ -212,11 +213,16 @@ function NomadJobsPanel({
   nomad,
   expandedJob,
   setExpandedJob,
+  dispatchState,
+  onDispatch,
 }: {
   nomad: NomadComputeSnapshot;
   expandedJob: string | null;
   setExpandedJob: (id: string | null) => void;
+  dispatchState: Record<string, string>;
+  onDispatch: (jobName: string) => void;
 }) {
+  const allowlisted = new Set(NOMAD_DISPATCH_ALLOWLIST);
   const allocsByJob = useMemo(() => {
     const map = new Map<string, NomadAllocation[]>();
     for (const alloc of nomad.allocations ?? []) {
@@ -255,6 +261,22 @@ function NomadJobsPanel({
                 <span className="text-[10px] font-mono text-foreground">{totalRunning}r</span>
                 {totalFailed > 0 && (
                   <span className="text-[10px] font-mono text-red-600 dark:text-red-400">{totalFailed}f</span>
+                )}
+                {allowlisted.has(job.name) && job.parameterized && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); onDispatch(job.name); }}
+                    disabled={dispatchState[job.name] === "dispatching…"}
+                    className="rounded-md bg-primary px-2 py-0.5 text-[9px] font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {dispatchState[job.name] === "dispatching…"
+                      ? "⋯"
+                      : dispatchState[job.name]?.startsWith("ok:")
+                        ? "✓"
+                        : dispatchState[job.name]?.startsWith("err:")
+                          ? "✕"
+                          : "Launch"}
+                  </button>
                 )}
                 {detailChevron(open)}
               </div>
@@ -309,6 +331,7 @@ export default function FleetPage() {
   const [macHealth, setMacHealth] = useState<string>("…");
   const [nomad, setNomad] = useState<NomadComputeSnapshot | null>(null);
   const [expandedNomadJob, setExpandedNomadJob] = useState<string | null>(null);
+  const [dispatchState, setDispatchState] = useState<Record<string, string>>({});
 
   const mergedHosts = useMemo(() => {
     const liveById = new Map((snapshot?.hosts || []).map((h) => [h.id, h]));
@@ -701,6 +724,31 @@ export default function FleetPage() {
           nomad={nomad}
           expandedJob={expandedNomadJob}
           setExpandedJob={setExpandedNomadJob}
+          dispatchState={dispatchState}
+          onDispatch={(jobName) => {
+            setDispatchState((prev) => ({ ...prev, [jobName]: "dispatching…" }));
+            setStatusLine(`Dispatching ${jobName}…`);
+            fetch("/api/compute/dispatch", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ jobName }),
+            })
+              .then((r) => r.json())
+              .then((d) => {
+                setDispatchState((prev) => ({
+                  ...prev,
+                  [jobName]: d.ok ? `ok:${d.message}` : `err:${d.message}`,
+                }));
+                setStatusLine(d.message);
+                setTimeout(() => loadNomad(), 2000);
+              })
+              .catch((e) => {
+                setDispatchState((prev) => ({
+                  ...prev,
+                  [jobName]: `err:${e.message}`,
+                }));
+              });
+          }}
         />
       )}
 

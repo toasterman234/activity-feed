@@ -5,7 +5,17 @@ const NOMAD_ADDR =
   process.env.NOMAD_ADDR || "http://100.101.106.60:4646";
 const NOMAD_TOKEN =
   process.env.NOMAD_TOKEN || "700b7f70-830a-0254-3098-bccc4d7988f3";
+const NOMAD_DISPATCH_TOKEN =
+  process.env.NOMAD_DISPATCH_TOKEN || "0a02932f-d675-979a-8948-2e572a67d42b";
 const NOMAD_TIMEOUT_MS = Number(process.env.NOMAD_TIMEOUT_MS || 8000);
+
+// ── Job allowlist ────────────────────────────────────────────────────
+// Only these job names can be dispatched from the PWA.
+// Add new parameterized jobs here before they show up as launchable.
+
+export const NOMAD_DISPATCH_ALLOWLIST: string[] = [
+  "demo-echo",
+];
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -60,6 +70,12 @@ export type NomadAllocation = {
   modifiedAt: string;
 };
 
+export type DispatchResult = {
+  ok: boolean;
+  evalId?: string;
+  message: string;
+};
+
 export type NomadComputeSnapshot = {
   ok: boolean;
   generatedAt: string;
@@ -87,6 +103,55 @@ async function nomadFetch<T>(path: string): Promise<T> {
       throw new Error(`Nomad API ${res.status}: ${res.statusText}`);
     }
     return (await res.json()) as T;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ── Dispatch a parameterized job (uses dispatcher token) ─────────────
+
+export async function dispatchJob(
+  jobName: string,
+  payload?: string,
+): Promise<DispatchResult> {
+  if (!NOMAD_DISPATCH_ALLOWLIST.includes(jobName)) {
+    return { ok: false, message: `Job "${jobName}" is not on the dispatch allowlist` };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), NOMAD_TIMEOUT_MS);
+  try {
+    const body = payload
+      ? JSON.stringify({ Payload: Buffer.from(payload).toString("base64") })
+      : "{}";
+    const res = await fetch(
+      `${NOMAD_ADDR}/v1/job/${encodeURIComponent(jobName)}/dispatch`,
+      {
+        method: "POST",
+        cache: "no-store",
+        signal: controller.signal,
+        headers: {
+          "content-type": "application/json",
+          "X-Nomad-Token": NOMAD_DISPATCH_TOKEN,
+        },
+        body,
+      },
+    );
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      return { ok: false, message: `Nomad API ${res.status}: ${res.statusText}${errText ? " — " + errText.slice(0, 200) : ""}` };
+    }
+    const data = (await res.json()) as { DispatchedJobID?: string; EvalID?: string };
+    return {
+      ok: true,
+      evalId: data.EvalID || data.DispatchedJobID,
+      message: `Dispatched "${jobName}"${data.EvalID ? ` (eval ${data.EvalID})` : ""}`,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : String(error),
+    };
   } finally {
     clearTimeout(timer);
   }
