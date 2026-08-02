@@ -555,7 +555,7 @@ export default function FleetPage() {
                       {!isPending && !isOk && !isErr && (
                         <>
                           <span className="ml-2 shrink-0 text-muted-foreground">{c.status || "running"}</span>
-                          {host.id === "zima" && (
+                          {(host.id === "zima" || host.id === "ovh") && (
                             <span className="ml-1 flex items-center gap-0.5">
                               <button type="button" onClick={() => void runCtnAction(host.id, c.name, "restart-container", "Restart")} className="rounded px-1 py-0.5 text-[9px] text-sky-600 hover:bg-sky-100 dark:text-sky-400 dark:hover:bg-sky-950" title="Restart container">↻</button>
                               <button type="button" onClick={() => void runCtnAction(host.id, c.name, "stop-container", "Stop")} className="rounded px-1 py-0.5 text-[9px] text-amber-600 hover:bg-amber-100 dark:text-amber-400 dark:hover:bg-amber-950" title="Stop container">■</button>

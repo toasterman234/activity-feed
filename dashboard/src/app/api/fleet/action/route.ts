@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildFleetSnapshot } from "@/lib/fleet-server";
+import { execFileNoStdin } from "@/lib/execFileNoStdin";
 import { FLEET_HOSTS, hostById, safeCommandForHost, type FleetActionId, type FleetHostId } from "@/lib/fleet";
 
 export const dynamic = "force-dynamic";
@@ -29,12 +30,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "unsupported action" }, { status: 400 });
     }
 
-    // Container management actions — forward to the telemetry bridge
+    // Container management actions
     if (action === "stop-container" || action === "restart-container" || action === "remove-container") {
       const containerName = (body as Record<string, unknown>).name as string | undefined;
       if (!containerName) {
         return NextResponse.json({ ok: false, error: "missing container name" }, { status: 400 });
       }
+
+      if (hostId === "ovh") {
+        // Run docker commands locally on OVH
+        const dockerCmd = action === "stop-container" ? "stop" : action === "restart-container" ? "restart" : "rm";
+        try {
+          const { stdout, stderr } = await execFileNoStdin("docker", [dockerCmd, containerName], { timeout: 15_000 });
+          const trimmed = (stdout || stderr || "").trim();
+          return NextResponse.json({ ok: true, action, hostId, name: containerName, message: trimmed || `${dockerCmd} ${containerName}` });
+        } catch (e) {
+          return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : String(e) }, { status: 502 });
+        }
+      }
+
+      // Zima — forward to the telemetry bridge
       const bridgeAction = action === "stop-container" ? "stop" : action === "restart-container" ? "restart" : "remove";
       const res = await fetch(`${FLEET_METRICS_URL}/zima/container/${bridgeAction}`, {
         method: "POST",

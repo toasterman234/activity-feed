@@ -239,7 +239,7 @@ async function readLocalProcessAndContainerData() {
           "echo '=PROCS='",
           "ps -ax -o pid= -o ppid= -o pcpu= -o pmem= -o comm= 2>/dev/null | sort -k3 -nr | head -n 12",
           "echo '=CONTAINERS='",
-          "if command -v docker >/dev/null 2>&1; then docker ps --format '{{.Names}}|{{.Status}}|{{.Image}}' 2>/dev/null; fi",
+          "if command -v docker >/dev/null 2>&1; then docker ps -a --format '{{.Names}}|{{.Status}}|{{.Image}}' 2>/dev/null; fi",
         ].join("; "),
       ],
       { timeout: 1500, maxBuffer: 128 * 1024 },
