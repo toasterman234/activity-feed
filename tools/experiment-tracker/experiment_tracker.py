@@ -123,6 +123,9 @@ def next_experiment_id(name: str, registry: dict[str, Any]) -> str:
 
 
 def parse_loose_block(text: str) -> ParsedBlock:
+    # Handle literal \n in text (e.g. when $'...' expansion fails in some shells)
+    if "\n" not in text and "\\n" in text:
+        text = text.replace("\\n", "\n")
     lines = [line.rstrip() for line in text.strip().splitlines() if line.strip()]
     if not lines:
         raise ValueError("Text is empty")
