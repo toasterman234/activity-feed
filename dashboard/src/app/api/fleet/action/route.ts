@@ -40,8 +40,9 @@ export async function POST(request: NextRequest) {
       if (hostId === "ovh") {
         // Run docker commands locally on OVH
         const dockerCmd = action === "stop-container" ? "stop" : action === "restart-container" ? "restart" : "rm";
+        const dockerArgs = action === "remove-container" ? ["rm", "-f", containerName] : [dockerCmd, containerName];
         try {
-          const { stdout, stderr } = await execFileNoStdin("docker", [dockerCmd, containerName], { timeout: 15_000 });
+          const { stdout, stderr } = await execFileNoStdin("docker", dockerArgs, { timeout: 15_000 });
           const trimmed = (stdout || stderr || "").trim();
           return NextResponse.json({ ok: true, action, hostId, name: containerName, message: trimmed || `${dockerCmd} ${containerName}` });
         } catch (e) {

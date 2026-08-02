@@ -407,8 +407,10 @@ export default function FleetPage() {
       {/* Host cards */}
       <div className="grid gap-3 sm:grid-cols-3">
         {mergedHosts.map((host) => {
-          const procs = (host.processes || []).slice(0, 5);
-          const ctns = (host.containers || []).slice(0, 5);
+          const procs = host.processes || [];
+          const ctns = host.containers || [];
+          const procsPreview = procs.slice(0, 5);
+          const ctnsPreview = ctns.slice(0, 5);
           const procsOpen = expandedProcs === host.id;
           const ctnsOpen = expandedCtns === host.id;
 
