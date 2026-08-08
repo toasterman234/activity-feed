@@ -49,7 +49,7 @@ python3 sync_lifeos_to_pg.py
 | `finance.positions` | `portfolio_positions` | 44 | All account holdings |
 | `finance.trades` | `portfolio_trades` | 5,450 | Complete trade history |
 | `finance.balances` | `portfolio_balances` | 9 | Cash account balances |
-| `finance.net_worth_daily` | `portfolio_net_worth` | 19 | Daily net worth snapshots |
+| `finance.net_worth_daily` | `portfolio_net_worth` | 19 | Daily net worth snapshots, updated to provide weekly aggregates |
 | `finance.benchmarks` | `portfolio_benchmarks` | 8,879 | SPY + VIX daily prices |
 | `finance.v_allocation` | `portfolio_allocation` | 4 | Asset class weights |
 
