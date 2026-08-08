@@ -1,6 +1,8 @@
 {
-  "updatedAt": "2026-07-28T00:17:35.057Z",
+  "updatedAt": "2026-08-08T08:30:58.259Z",
   "command": "update",
-  "gitHead": "892947a543b91e899ad50da14cc75ae3e4ea5170",
-  "model": "openai/gpt-4o-mini"
+  "gitHead": "ea543f4eed78c98e0b03be09f35fcd47ef15fe9c",
+  "model": "openai/gpt-4o-mini",
+  "status": "complete",
+  "language": "en"
 }

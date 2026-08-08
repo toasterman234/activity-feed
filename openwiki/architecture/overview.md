@@ -81,3 +81,8 @@ Tailscale serve terminates TLS and forwards to the local Next.js production serv
 
 - **`next dev`** ships HMR client and devtools that open a WebSocket back to the dev server. Over Tailscale (non-localhost), this dev-mode machinery stalls silently — React never hydrates. **Always use `next build && next start` for mobile access.**
 - **`next start`** strips all dev-mode code. Serves a clean production bundle that works identically on desktop and mobile.
+
+## Common Issues for Mobile Access
+
+- Always verify mobile access configuration before deployment.
+- Watch for dev-mode issues that may cause silent failures during runtime.
