@@ -11,4 +11,5 @@ okf_version: "0.1"
 - [architecture](architecture/)
 - [data-pipeline](data-pipeline/)
 - [deployment](deployment/)
+- [incidents](incidents/)
 - [web-ui](web-ui/)

@@ -33,7 +33,7 @@ Next.js PWA on OVH (@electric-circuits/client)
 
 **File:** `dashboard/ingestion/sync_lifeos_to_pg.py`
 
-**Dependencies:** `duckdb`, `psycopg[binary]`, Python 3.12+
+**Dependencies:** `duckdb`, `psycopg`, `psycopg-binary`, Python 3.12+
 
 **Usage:**
 ```bash
@@ -44,16 +44,17 @@ python3 sync_lifeos_to_pg.py --once
 python3 sync_lifeos_to_pg.py
 ```
 
-**What it syncs (6 tables):**
+**What it syncs:**
 
-| DuckDB Table | Postgres Table | Rows | Description |
-|---|---|---|---|
-| `finance.positions` | `portfolio_positions` | 44 | All account holdings |
-| `finance.trades` | `portfolio_trades` | 5,450 | Complete trade history |
-| `finance.balances` | `portfolio_balances` | 9 | Cash account balances |
-| `finance.net_worth_daily` | `portfolio_net_worth` | 19 | Daily net worth snapshots |
-| `finance.benchmarks` | `portfolio_benchmarks` | 8,879 | SPY + VIX daily prices |
-| `finance.v_allocation` | `portfolio_allocation` | 4 | Asset class weights |
+| DuckDB Table | Postgres Table | Description |
+|---|---|---|
+| `finance.positions` | `portfolio_positions` | All account holdings |
+| `finance.trades` | `portfolio_trades` | Complete trade history |
+| `finance.balances` | `portfolio_balances` | Cash account balances |
+| `finance.net_worth_daily` | `portfolio_net_worth` | Daily net worth snapshots |
+| `finance.benchmarks` | `portfolio_benchmarks` | SPY + VIX daily prices |
+| `finance.v_allocation` | `portfolio_allocation` | Asset class weights |
+| (computed from trades) | `portfolio_option_positions` | Live option positions (hedge engine, not electric-circuits) |
 
 **Sync strategy:**
 - `portfolio_net_worth` and `portfolio_allocation` — upsert by primary key (idempotent)
@@ -61,7 +62,7 @@ python3 sync_lifeos_to_pg.py
 
 ## Postgres Schema
 
-All tables require `REPLICA IDENTITY FULL` for electric-circuits logical replication:
+The 6 finance tables require `REPLICA IDENTITY FULL` for electric-circuits logical replication. `portfolio_option_positions` does **not** — it is read directly by the hedge engine and is not replicated:
 
 ```sql
 ALTER TABLE portfolio_positions REPLICA IDENTITY FULL;
@@ -70,30 +71,26 @@ ALTER TABLE portfolio_balances REPLICA IDENTITY FULL;
 ALTER TABLE portfolio_net_worth REPLICA IDENTITY FULL;
 ALTER TABLE portfolio_benchmarks REPLICA IDENTITY FULL;
 ALTER TABLE portfolio_allocation REPLICA IDENTITY FULL;
+-- portfolio_option_positions: omitted intentionally (hedge engine direct read)
 ```
 
 Each table includes an `updated_at TIMESTAMPTZ DEFAULT NOW()` column for tracking.
 
 ## Electric-Circuits Engine Configuration
 
-The engine's Docker Compose override (`docker/compose.activity-feed.yaml`) lists all tables to replicate:
-
-```yaml
-ELECTRIC_REPLICATION_TABLES: >
-  activity_log,
-  portfolio_positions,
-  portfolio_trades,
-  portfolio_balances,
-  portfolio_net_worth,
-  portfolio_benchmarks,
-  portfolio_allocation
-```
+The engine's Docker Compose override (`ops/ovh/compose.activity-feed.yaml` on the VPS) lists all tables to replicate via `ELECTRIC_CIRCUITS_PG_TABLES`. Finance tables in `REQUIRED_TABLES` (see ingestion script) are the set that requires `REPLICA IDENTITY FULL`. After adding new schema tables, rsync and restart the engine with `--force-recreate` on the VPS.
 
 On restart, the engine creates a replication slot, performs initial snapshot, and begins streaming changes.
 
 ## Activity Log Feeders
 
-Separate from the finance pipeline, feeders write to the `activity_log` table:
+Separate from the finance pipeline, feeders write to the `activity_log` (and related) tables. All live in `feeders/`:
 
-- **pi-watcher.js** — tail -f on pi agent logs
-- **git-post-commit.sh** — git post-commit hook in monitored repos
+- **pi-watcher.js** / **pi-session-watcher.js** — tail pi agent logs and session events
+- **pi-backfill.js** / **pi-session-backfill.js** — backfill historical pi session data
+- **iii-session-feed.js** — feeds iii (coding agent) session events
+- **claude-hook.sh** / **claude-transcript-watcher.js** — Claude Code hook integration
+- **git-post-commit.sh** — git post-commit hook in monitored repos (`install-git-hooks.sh` installs it)
+- **vault-channel-sync.js** — syncs Vault notes into channels
+- **auto-judge.js** — automated judgment pipeline over activity spans
+- **timeline-to-agentruns.js** — converts timeline entries to agent-run records

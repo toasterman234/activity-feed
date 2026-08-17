@@ -66,12 +66,11 @@ sticks on "Rendering":
 
 ## Transport: HTTPS / HTTP/2 (shipped 2026-07-25)
 
-Canonical phone URL:
-`https://bens-mac-mini.taila1553c.ts.net:8446` — Tailscale Serve terminates
-TLS and speaks **HTTP/2** to the browser, so the ~6-connection cliff does not
-apply. Production is kept up by launchd
-`com.bencharney.activityfeed.dashboard`.
+Canonical phone URL (since 2026-07-25):
+`https://ovh-vps.taila1553c.ts.net:8446` — Tailscale Serve terminates TLS and
+speaks **HTTP/2** to the browser, so the ~6-connection cliff does not apply.
+Production runs as systemd `activity-dashboard` on the OVH VPS.
 
 The shape budget still applies — fewer streams mean less engine fan-out and
 client recompute. Treat HTTP/2 as headroom, not a license to open more
-streams. Details: [Tailscale and PWA](../deployment/tailscale-and-pwa.md).
+streams. Details: [OVH Production](../deployment/ovh-production.md).
