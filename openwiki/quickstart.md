@@ -27,12 +27,12 @@ The production server listens at `http://0.0.0.0:3000` and is exposed via `tails
 
 ## What's Inside
 
-- **Activity feed** (`/`) — live streaming activity log from Claude Code, pi, and git hooks feeding into Postgres → electric-circuits
-- **Portfolio dashboard** (`/portfolio`) — net worth, asset allocation bar, positions table with live sync
-- **Live watchlist** (`/watchlist`) — add/remove stock symbols, real-time quotes from Market Lake API
-- **Trade history** (`/trades`) — 5,400+ trades including options, paginated with subset queries
-- **Research browser** (`/research`) — quant research strategies and findings from Market Lake
-- **VRP screener** (`/screener`) — volatility risk premium scan with IV rank filter
+- **Home** (`/`) — one-screen control panel: unread, needs-me, active work, agent/system status
+- **Channels** (`/channels`) — channel list, thread workspace, lifecycle management, Continuity
+- **Thread detail** (`/channels/[id]/[threadId]`) — lifecycle, plans, workflow steps, agent traces, artifacts
+- **Ops** (`/ops/fleet`, `/ops/activity`, `/ops/runs`, `/ops/config`) — fleet, raw activity feed, agent-run metrics, model/workflow config
+- **Personal** (`/personal`) — Portfolio, Flow, Watchlist, Screener, Analytics, Hedges tabs
+- **Projects** (`/projects`) — promoted/registered repos and work entry points
 
 ## How Data Flows
 
@@ -55,4 +55,4 @@ For the full lifecycle, see the [architecture overview](/openwiki/architecture/o
 - [Architecture](/openwiki/architecture/overview.md) — electric-circuits sync, data flow, Next.js rewrites, Tailscale routing
 - [Data Pipeline](/openwiki/data-pipeline/ingestion.md) — DuckDB → Postgres sync, Postgres schema, electric-circuits table replication
 - [Web UI](/openwiki/web-ui/pages-and-components.md) — page routes, electric-circuits shapes, Market Lake API client
-- [Deployment](/openwiki/deployment/tailscale-and-pwa.md) — Tailscale serve, PWA manifest, production build, mobile access
+- [Deployment](/openwiki/deployment/ovh-production.md) — OVH VPS setup, systemd, deploy workflow, Tailscale routing
